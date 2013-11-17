@@ -33,4 +33,19 @@
 
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>gradecak-public</id>
+      <url>http://gradecak.com/repository/releases</url>
+    </repository>
+    <repository>
+      <id>gradecak-public-snapshots</id>
+      <url>http://gradecak.com/repository/snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
 </project>
