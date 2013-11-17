@@ -6,20 +6,16 @@
 
   <parent>
     <groupId>com.gradecak.alfresco</groupId>
-    <artifactId>parent-distribution</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <relativePath>../parent-distribution</relativePath>
+    <artifactId>alfresco-parent-distribution</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+    <relativePath>../alfresco-parent-distribution/pom.xml</relativePath>
   </parent>
 
-  <version>2.0-SNAPSHOT</version>
-  <artifactId>alfresco.mvc</artifactId>
-  <name>alfresco.mvc</name>
+  <artifactId>alfresco-mvc</artifactId>
+  <name>alfresco-mvc</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <alfresco.groupId>org.alfresco</alfresco.groupId>
-    <jackson.version>1.9.9</jackson.version>
   </properties>
 
   <dependencies>
