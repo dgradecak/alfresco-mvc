@@ -1,0 +1,9 @@
+<webscript>
+  <shortname>mvc ws</shortname>
+  <url>/mvc</url>
+  <url>/mvc/{path}</url>
+  <authentication>none</authentication>
+  <transaction>none</transaction>
+  <format default="json"></format>
+  <formdata multipart-processing="false" />
+</webscript>
