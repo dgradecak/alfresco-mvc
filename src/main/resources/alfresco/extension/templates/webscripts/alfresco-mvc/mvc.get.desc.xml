@@ -2,7 +2,7 @@
   <shortname>mvc ws</shortname>
   <url>/mvc</url>
   <url>/mvc/{path}</url>
-  <authentication>none</authentication>
+  <authentication>user</authentication>
   <transaction>none</transaction>
   <format default="json"></format>
 </webscript>

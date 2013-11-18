@@ -16,26 +16,74 @@
 
 package com.gradecak.alfresco.mvc.aop;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.ObjectUtils;
 
-public class PackageAutoProxyCreator extends AbstractAutoProxyCreator {
+/**
+ * a proxy creator that applies the specified advisors to the classes defined in the base package. The default advisors are 
+ * {@link AuthenticationAdvice}, {@link RunAsAdvice} and {@link TransactionalAdvice} 
+ * however your own might be added and the default could be skipped by setting skipDefaultInterceptos to true
+ */
+public class PackageAutoProxyCreator extends AbstractAutoProxyCreator implements InitializingBean{
 
 	private static final long serialVersionUID = -1219238254256448615L;
 
-	private String basePackage;
+	private static final String[] DEFAULT_INTERCEPTORS = { "mvc.alfrescoAuthenticationAdvisor", "mvc.alfrescoRunAsAdvisor", "mvc.alfrescoTransactionAdvisor" };
 
+	private String basePackage;
+	private boolean skipDefaultInterceptos = false;
+	private boolean defaultInterceptorsSet = false;
+
+	public void afterPropertiesSet() throws Exception {
+		if(!defaultInterceptorsSet) {
+			super.setInterceptorNames(withDefaultInterceptorNames(null));
+		} 
+	}
+	
 	/**
-	 * Identify as bean to proxy if the bean name is in the configured list of names.
+	 * Identify as bean to proxy if the bean name is in the configured base package.
 	 */
-	protected Object[] getAdvicesAndAdvisorsForBean(Class<?> beanClass, String beanName, TargetSource targetSource) {
+	protected Object[] getAdvicesAndAdvisorsForBean(final Class<?> beanClass, final String beanName, final TargetSource targetSource) {
 		if (this.basePackage != null) {
 			if (beanClass != null && beanClass.getPackage() != null && beanClass.getPackage().getName().equals(basePackage)) { return PROXY_WITHOUT_ADDITIONAL_INTERCEPTORS; }
 		}
 		return DO_NOT_PROXY;
 	}
 
-	public void setBasePackage(String basePackage) {
+	@Override
+	public void setInterceptorNames(final String[] interceptorNames) {
+		super.setInterceptorNames(withDefaultInterceptorNames(interceptorNames));
+	}
+
+	private String[] withDefaultInterceptorNames(final String[] interceptorNames) {
+		List<String> interceptors = new ArrayList<String>();
+
+		if (!skipDefaultInterceptos) {
+			for (String interceptorName : DEFAULT_INTERCEPTORS) {
+				interceptors.add(interceptorName);
+			}
+			defaultInterceptorsSet = true;
+		}
+
+		if (!ObjectUtils.isEmpty(interceptorNames)) {
+			for (String interceptorName : interceptorNames) {
+				interceptors.add(interceptorName);
+      }
+		}
+
+		return interceptors.toArray(new String[interceptors.size()]);
+	}
+
+	public void setBasePackage(final String basePackage) {
 		this.basePackage = basePackage;
+	}
+
+	public void setSkipDefaultInterceptos(final boolean skipDefaultInterceptos) {
+		this.skipDefaultInterceptos = skipDefaultInterceptos;
 	}
 }
