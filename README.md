@@ -1,12 +1,12 @@
 alfresco @mvc
-============
+====
 Personally I do not like webscripts because of the boilerplate code that comes with them (XML, FTL, Java/Javascript). Also I am not a big fan of javascript on the server side 
 as in a medium sized application that becomes unmaintainable. That is why I wrote Alfresco @MVC.
 
 This small library enables the usage of Spring @MVC within Alfresco. Instead of writing webscripts and all the glue configuration that goes with that, you can simply write Springframework 
 Controllers, Services/Components, ... with Spring annotations.
 
-@Controller
+```@Controller
 @RequestMapping("/sample/**")
 public class CustomDocumentController {
 
@@ -19,6 +19,7 @@ public class CustomDocumentController {
 	  // yes this works in Alfresco
 	}
 }
+```
 
 Autowiring of Alfresco and custom dependencies is enabled and thus you may finally have a rapid development with Alfresco.
 
@@ -40,21 +41,26 @@ and is distributed as a JAR file (actually AMP).
 Maven dependency:
 ----
 Latest snapshot version:
+```
 <dependency>
   <groupId>com.gradecak.alfresco</groupId>
   <artifactId>alfresco-mvc</artifactId>
   <version>2.0.1-SNAPSHOT</version>
 </dependency>
+```
 
 Latest release version:
+```
 <dependency>
   <groupId>com.gradecak.alfresco</groupId>
   <artifactId>alfresco-mvc</artifactId>
   <version>2.0.0-RELEASE</version>
 </dependency>
+```
 
 Maven repositories:
 ----
+```
 <repositories>
   <repository>
     <id>gradecak</id>
@@ -65,4 +71,5 @@ Maven repositories:
     <url>http://gradecak.com/repository/snapshots/</url>
   </repository>
 </repositories>
+```
 
