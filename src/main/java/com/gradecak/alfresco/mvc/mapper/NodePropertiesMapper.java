@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.alfresco.service.namespace.QName;
 
-public interface NodeMapper<T> {
+public interface NodePropertiesMapper<T> {
 
-	public T mapNode(Map<QName, Serializable> properties);
+	public T mapNodeProperties(Map<QName, Serializable> properties);
 }

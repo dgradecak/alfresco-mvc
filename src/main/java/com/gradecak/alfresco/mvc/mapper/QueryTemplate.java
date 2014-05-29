@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
+import org.alfresco.service.cmr.dictionary.PropertyDefinition;
+import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.ResultSet;
@@ -37,19 +40,41 @@ public class QueryTemplate {
     this.defaultMaxItems = maxItems;
   }
 
-  public <T> T queryForObject(final NodeRef nodeRef, final NodeMapper<T> mapper) {
+  public <T> T queryForObject(final NodeRef nodeRef, final NodePropertiesMapper<T> mapper) {
     Assert.notNull(mapper);
     Assert.notNull(nodeRef);
 
     Map<QName, Serializable> properties = serviceRegistry.getNodeService().getProperties(nodeRef);
-    return mapper.mapNode(properties);
+
+    if (mapper instanceof ContentPropertyStringMapper) {
+      for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
+        QName qname = entry.getKey();
+        PropertyDefinition def = this.serviceRegistry.getDictionaryService().getProperty(qname);
+        // Skip when there is no property definition. This might be the case if a property was renamed in the model
+        if (def == null) {
+          continue;
+        }
+
+        if (DataTypeDefinition.CONTENT.equals(def.getDataType().getName())) {
+          ContentReader reader = this.serviceRegistry.getContentService().getReader(nodeRef, qname);
+          if (reader != null) {
+            String mimetype = reader.getMimetype();
+            if (this.serviceRegistry.getMimetypeService().isText(mimetype)) {
+              entry.setValue(reader.getContentString());
+            }
+          }
+        }
+      }
+    }
+
+    return mapper.mapNodeProperties(properties);
   }
 
-  public <T> T queryForObject(final Query query, final NodeMapper<T> mapper) {
+  public <T> T queryForObject(final Query query, final NodePropertiesMapper<T> mapper) {
     return queryForObject(query.toString(), mapper);
   }
 
-  public <T> T queryForObject(final String query, final NodeMapper<T> mapper) throws IncorrectResultSizeException {
+  public <T> T queryForObject(final String query, final NodePropertiesMapper<T> mapper) throws IncorrectResultSizeException {
     Assert.notNull(mapper);
     Assert.hasText(query);
 
@@ -70,11 +95,11 @@ public class QueryTemplate {
     }
   }
 
-  public <T> List<T> queryForList(final Query query, final NodeMapper<T> mapper) {
+  public <T> List<T> queryForList(final Query query, final NodePropertiesMapper<T> mapper) {
     return queryForList(query.toString(), mapper, defaultMaxItems, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_LUCENE);
   }
 
-  public <T> List<T> queryForList(final String query, final NodeMapper<T> mapper, final int maxItems, final StoreRef store,
+  public <T> List<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final int maxItems, final StoreRef store,
       final String searchLanguage) {
     Assert.notNull(query);
     Assert.notNull(mapper);
