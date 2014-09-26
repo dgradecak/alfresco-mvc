@@ -64,7 +64,7 @@ There is more things to add, so TBC ...
 Alfresco versions
 ----
 - Works on Enterprise as well as on community.
-- Tested with Alfresco Community 3.4.d, 4.0.x, 4.2.x
+- Tested with Alfresco Community 3.4.d, 4.0.x, 4.2.x, 5.0.a
 - Tested with Alfresco Enterprise 3.4.5, 4.1.5, 4.2.1
 
 Distribution
