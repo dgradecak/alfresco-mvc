@@ -112,6 +112,7 @@ public class QueryTemplate {
     SearchParameters sp = new SearchParameters();
     sp.addStore(store);
     sp.setLanguage(searchLanguage);
+    sp.addSort("@{http://www.alfresco.org/model/content/1.0}created", true);
     sp.setMaxItems(maxItems);
     sp.setQuery(query.toString());
     ResultSet results = null;
