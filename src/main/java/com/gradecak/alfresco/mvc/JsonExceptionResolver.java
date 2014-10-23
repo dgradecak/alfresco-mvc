@@ -51,6 +51,8 @@ public class JsonExceptionResolver implements HandlerExceptionResolver {
 		protocol.put("data", data);
 
 		res.put("protocol", protocol);
+		
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
 		return new ModelAndView(view, res);
 	}

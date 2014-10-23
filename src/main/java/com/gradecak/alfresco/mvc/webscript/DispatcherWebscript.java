@@ -98,6 +98,8 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 				params.put("causeMessage", nestedServletException.getCause().getMessage());
 			}
 		}
+		
+		res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
 		objectMapper.writeValue(res.getOutputStream(), params);
 	}
