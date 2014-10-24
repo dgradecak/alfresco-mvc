@@ -31,7 +31,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import org.alfresco.service.ServiceRegistry;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +56,6 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 	private DispatcherServlet s;
 	private String contextConfigLocation;
 	private ApplicationContext applicationContext;
-	private ServiceRegistry serviceRegistry;
 	private ServletContext servletContext;
 
 	public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -78,6 +76,7 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 		try {
 			s.service(wrapper, sr);
 		} catch (ServletException e) {
+		  e.printStackTrace();
 			convertExceptionToJson(e, sr);
 		}
 
@@ -123,11 +122,6 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
 		s.setContextConfigLocation(contextConfigLocation);
 		s.init(new DelegatingServletConfig());
-
-		if (this.serviceRegistry == null) {
-			this.serviceRegistry = (ServiceRegistry) applicationContext.getBean("ServiceRegistry");
-		}
-		// logger.info("DispatcherWebScript initialized");
 	}
 
 	public void setContextConfigLocation(String contextConfigLocation) {
@@ -136,10 +130,6 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-	}
-
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
 	}
 
 	public void setServletContext(ServletContext servletContext) {
