@@ -74,9 +74,8 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
 		WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
 		try {
-			s.service(wrapper, sr);
+			s.service(wrapper, sr);			
 		} catch (ServletException e) {
-		  e.printStackTrace();
 			convertExceptionToJson(e, sr);
 		}
 
