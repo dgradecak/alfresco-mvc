@@ -29,18 +29,18 @@ import org.springframework.transaction.annotation.Propagation;
 @Inherited
 public @interface AlfrescoTransaction {
 
-	/**
-	 * <code>true</code> if the transaction is read-only.
-	 * <p>
-	 * Defaults to <code>false</code>.
-	 */
-	boolean readOnly() default false;
+  /**
+   * <code>true</code> if the transaction is read-only.
+   * <p>
+   * Defaults to <code>false</code>.
+   */
+  boolean readOnly() default false;
 
-	/**
-	 * The transaction propagation type.
-	 * <p>
-	 * Defaults to {@link Propagation#REQUIRED}.
-	 */
-	Propagation propagation() default Propagation.REQUIRED;
+  /**
+   * The transaction propagation type.
+   * <p>
+   * Defaults to {@link Propagation#REQUIRED}.
+   */
+  Propagation propagation() default Propagation.REQUIRED;
 
 }

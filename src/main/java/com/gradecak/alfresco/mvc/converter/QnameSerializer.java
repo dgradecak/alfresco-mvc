@@ -27,21 +27,21 @@ import org.codehaus.jackson.map.SerializerProvider;
 
 public class QnameSerializer extends JsonSerializer<QName> {
 
-	private ServiceRegistry serviceRegistry;
+  private ServiceRegistry serviceRegistry;
 
-	public QnameSerializer(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
-	}
+  public QnameSerializer(ServiceRegistry serviceRegistry) {
+    this.serviceRegistry = serviceRegistry;
+  }
 
-	@Override
-	public void serialize(QName value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-		String prefixString = value.toPrefixString(serviceRegistry.getNamespaceService());
-		jgen.writeString(prefixString);
-	}
+  @Override
+  public void serialize(QName value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+    String prefixString = value.toPrefixString(serviceRegistry.getNamespaceService());
+    jgen.writeString(prefixString);
+  }
 
-	@Override
-	public Class<QName> handledType() {
-		return QName.class;
-	}
+  @Override
+  public Class<QName> handledType() {
+    return QName.class;
+  }
 
 }

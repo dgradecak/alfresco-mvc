@@ -35,47 +35,49 @@ import com.gradecak.alfresco.mvc.converter.QnameDeserializer;
 import com.gradecak.alfresco.mvc.converter.QnameSerializer;
 
 public class JacksonPostProcessor implements BeanPostProcessor {
-	public static final String DEFAULT_JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+  public static final String DEFAULT_JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
-	@Autowired
-	private ServiceRegistry serviceRegistry;
+  @Autowired
+  private ServiceRegistry serviceRegistry;
 
-	private String dateFormat;
+  private String dateFormat;
 
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		return bean;
-	}
+  public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    return bean;
+  }
 
-	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		if (bean instanceof AnnotationMethodHandlerAdapter) {
-			AnnotationMethodHandlerAdapter adapter = (AnnotationMethodHandlerAdapter) bean;
-			HttpMessageConverter<?>[] converters = adapter.getMessageConverters();
-			for (HttpMessageConverter<?> converter : converters) {
-				if (converter instanceof MappingJacksonHttpMessageConverter) {
-					MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
+  public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    if (bean instanceof AnnotationMethodHandlerAdapter) {
+      AnnotationMethodHandlerAdapter adapter = (AnnotationMethodHandlerAdapter) bean;
+      HttpMessageConverter<?>[] converters = adapter.getMessageConverters();
+      for (HttpMessageConverter<?> converter : converters) {
+        if (converter instanceof MappingJacksonHttpMessageConverter) {
+          MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
 
-					ObjectMapper objectMapper = new ObjectMapper();
-					SimpleModule module = new SimpleModule("Alfresco MVC Module", new Version(1, 0, 0, null));
-					module.addSerializer(QName.class, new QnameSerializer(serviceRegistry));
-					module.addDeserializer(QName.class, new QnameDeserializer(serviceRegistry));
+          ObjectMapper objectMapper = new ObjectMapper();
+          SimpleModule module = new SimpleModule("Alfresco MVC Module", new Version(1, 0, 0, null));
+          module.addSerializer(QName.class, new QnameSerializer(serviceRegistry));
+          module.addDeserializer(QName.class, new QnameDeserializer(serviceRegistry));
 
-					objectMapper.setDateFormat(new SimpleDateFormat(getDateFormat()));
-					objectMapper.registerModule(module);
+          objectMapper.setDateFormat(new SimpleDateFormat(getDateFormat()));
+          objectMapper.registerModule(module);
 
-					jsonConverter.setObjectMapper(objectMapper);
-				}
-			}
-		}
-		return bean;
-	}
+          jsonConverter.setObjectMapper(objectMapper);
+        }
+      }
+    }
+    return bean;
+  }
 
-	public void setDateFormat(String dateFormat) {
-		this.dateFormat = dateFormat;
-	}
+  public void setDateFormat(String dateFormat) {
+    this.dateFormat = dateFormat;
+  }
 
-	public String getDateFormat() {
-		if (StringUtils.hasText(this.dateFormat)) { return this.dateFormat; }
-		return DEFAULT_JSON_DATE_FORMAT;
-	}
+  public String getDateFormat() {
+    if (StringUtils.hasText(this.dateFormat)) {
+      return this.dateFormat;
+    }
+    return DEFAULT_JSON_DATE_FORMAT;
+  }
 
 }

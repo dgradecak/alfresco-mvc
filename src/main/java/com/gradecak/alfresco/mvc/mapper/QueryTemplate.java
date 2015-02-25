@@ -78,7 +78,7 @@ public class QueryTemplate {
     Assert.notNull(mapper);
     Assert.hasText(query);
 
-    List<T> list = queryForList(query.toString(), mapper, defaultMaxItems, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
+    List<T> list = queryForList(query.toString(), mapper, defaultMaxItems, 0, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
         SearchService.LANGUAGE_LUCENE);
     int size = list.size();
     switch (size) {
@@ -96,11 +96,12 @@ public class QueryTemplate {
   }
 
   public <T> List<T> queryForList(final Query query, final NodePropertiesMapper<T> mapper) {
-    return queryForList(query.toString(), mapper, defaultMaxItems, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_LUCENE);
+    return queryForList(query.toString(), mapper, defaultMaxItems, 0, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
+        SearchService.LANGUAGE_LUCENE);
   }
 
-  public <T> List<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final int maxItems, final StoreRef store,
-      final String searchLanguage) {
+  public <T> List<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final int maxItems, final int skipCount,
+      final StoreRef store, final String searchLanguage) {
     Assert.notNull(query);
     Assert.notNull(mapper);
     Assert.isTrue(maxItems > 0, "maxItems must be a positive integer");
@@ -115,6 +116,10 @@ public class QueryTemplate {
     sp.addSort("@{http://www.alfresco.org/model/content/1.0}created", true);
     sp.setMaxItems(maxItems);
     sp.setQuery(query.toString());
+    if (skipCount > 0) {
+      sp.setSkipCount(skipCount);
+    }
+
     ResultSet results = null;
     try {
       results = serviceRegistry.getSearchService().query(sp);

@@ -36,8 +36,7 @@ public class JsonUtils {
     if (obj != null) {
       if (obj instanceof List<?>) {
         response.put("total", ((List<?>) obj).size());
-      }
-      else {
+      } else {
         response.put("total", 1);
       }
 

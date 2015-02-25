@@ -32,58 +32,58 @@ import com.gradecak.alfresco.mvc.annotation.AlfrescoTransaction;
 
 public class TransactionalAdvice implements MethodInterceptor {
 
-	private ServiceRegistry serviceRegistry;
+  private ServiceRegistry serviceRegistry;
 
-	public Object invoke(final MethodInvocation invocation) throws Throwable {
-		Class<?> targetClass = invocation.getThis() != null ? invocation.getThis().getClass() : null;
+  public Object invoke(final MethodInvocation invocation) throws Throwable {
+    Class<?> targetClass = invocation.getThis() != null ? invocation.getThis().getClass() : null;
 
-		Method specificMethod = ClassUtils.getMostSpecificMethod(invocation.getMethod(), targetClass);
-		// If we are dealing with method with generic parameters, find the original
-		// method.
-		specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
-		AlfrescoTransaction alfrescoTransaction = parseAnnotation(specificMethod);
+    Method specificMethod = ClassUtils.getMostSpecificMethod(invocation.getMethod(), targetClass);
+    // If we are dealing with method with generic parameters, find the original
+    // method.
+    specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
+    AlfrescoTransaction alfrescoTransaction = parseAnnotation(specificMethod);
 
-		if (alfrescoTransaction != null) {
-			RetryingTransactionCallback<Object> exampleWork = new RetryingTransactionCallback<Object>() {
-				public Object execute() throws Throwable {
-					return invocation.proceed();
-				}
-			};
-			boolean readonly = alfrescoTransaction.readOnly();
-			Propagation propagation = alfrescoTransaction.propagation();
+    if (alfrescoTransaction != null) {
+      RetryingTransactionCallback<Object> exampleWork = new RetryingTransactionCallback<Object>() {
+        public Object execute() throws Throwable {
+          return invocation.proceed();
+        }
+      };
+      boolean readonly = alfrescoTransaction.readOnly();
+      Propagation propagation = alfrescoTransaction.propagation();
 
-			boolean requiresNew = Propagation.REQUIRES_NEW.equals(propagation);
-			return serviceRegistry.getTransactionService().getRetryingTransactionHelper().doInTransaction(exampleWork, readonly, requiresNew);
-		} else {
-			return invocation.proceed();
-		}
+      boolean requiresNew = Propagation.REQUIRES_NEW.equals(propagation);
+      return serviceRegistry.getTransactionService().getRetryingTransactionHelper().doInTransaction(exampleWork, readonly, requiresNew);
+    } else {
+      return invocation.proceed();
+    }
 
-	}
+  }
 
-	private AlfrescoTransaction parseAnnotation(AnnotatedElement ae) {
-		AlfrescoTransaction ann = ae.getAnnotation(AlfrescoTransaction.class);
-		if (ann == null) {
-			for (Annotation metaAnn : ae.getAnnotations()) {
-				ann = metaAnn.annotationType().getAnnotation(AlfrescoTransaction.class);
-				if (ann != null) {
-					break;
-				}
-			}
-		}
-		if (ann != null) {
-			return parseAnnotation(ann);
-		} else {
-			return null;
-		}
-	}
+  private AlfrescoTransaction parseAnnotation(AnnotatedElement ae) {
+    AlfrescoTransaction ann = ae.getAnnotation(AlfrescoTransaction.class);
+    if (ann == null) {
+      for (Annotation metaAnn : ae.getAnnotations()) {
+        ann = metaAnn.annotationType().getAnnotation(AlfrescoTransaction.class);
+        if (ann != null) {
+          break;
+        }
+      }
+    }
+    if (ann != null) {
+      return parseAnnotation(ann);
+    } else {
+      return null;
+    }
+  }
 
-	private AlfrescoTransaction parseAnnotation(AlfrescoTransaction ann) {
-		// parse if needed something else
-		return ann;
-	}
+  private AlfrescoTransaction parseAnnotation(AlfrescoTransaction ann) {
+    // parse if needed something else
+    return ann;
+  }
 
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
-	}
+  public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+    this.serviceRegistry = serviceRegistry;
+  }
 
 }

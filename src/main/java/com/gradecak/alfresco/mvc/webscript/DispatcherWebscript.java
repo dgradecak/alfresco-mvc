@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,152 +50,151 @@ import org.springframework.web.util.NestedServletException;
 
 public class DispatcherWebscript extends AbstractWebScript implements ServletContextAware, ApplicationContextAware, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
 
-	private DispatcherServlet s;
-	private String contextConfigLocation;
-	private ApplicationContext applicationContext;
-	private ServletContext servletContext;
+  private DispatcherServlet s;
+  private String contextConfigLocation;
+  private ApplicationContext applicationContext;
+  private ServletContext servletContext;
 
-	public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
+  public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
-		final WebScriptServletRequest origReq = (WebScriptServletRequest) req;
+    final WebScriptServletRequest origReq = (WebScriptServletRequest) req;
 
-		WebScriptServletResponse wsr = null;
-		if (res instanceof WrappingWebScriptResponse) {
+    WebScriptServletResponse wsr = null;
+    if (res instanceof WrappingWebScriptResponse) {
 
-			wsr = (WebScriptServletResponse) ((WrappingWebScriptResponse) res).getNext();
-		} else {
-			wsr = (WebScriptServletResponse) res;
-		}
+      wsr = (WebScriptServletResponse) ((WrappingWebScriptResponse) res).getNext();
+    } else {
+      wsr = (WebScriptServletResponse) res;
+    }
 
-		final HttpServletResponse sr = wsr.getHttpServletResponse();
+    final HttpServletResponse sr = wsr.getHttpServletResponse();
 
-		WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
-		try {
-			s.service(wrapper, sr);			
-		} catch (ServletException e) {
-			convertExceptionToJson(e, sr);
-		}
+    WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
+    try {
+      s.service(wrapper, sr);
+    } catch (Throwable e) {
+      convertExceptionToJson(e, sr);
+    }
 
-	}
+  }
 
-	private void convertExceptionToJson(Exception ex, HttpServletResponse res) throws IOException {
-		ObjectMapper objectMapper = new ObjectMapper();
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("success", false);
-		params.put("event", "exception");
-		params.put("exception", ex.getClass());
-		params.put("message", JavaScriptUtils.javaScriptEscape(ex.getMessage()));
+  private void convertExceptionToJson(Throwable ex, HttpServletResponse res) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("success", false);
+    params.put("event", "exception");
+    params.put("exception", ex.getClass());
+    params.put("message", JavaScriptUtils.javaScriptEscape(ex.getMessage()));
 
-		if (ex instanceof NestedServletException) {
-			NestedServletException nestedServletException = (NestedServletException) ex;
-			if (nestedServletException.getCause() != null) {
-				params.put("cause", nestedServletException.getCause().getClass());
-				params.put("causeMessage", nestedServletException.getCause().getMessage());
-			}
-		}
-		
-		res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    if (ex instanceof NestedServletException) {
+      NestedServletException nestedServletException = (NestedServletException) ex;
+      if (nestedServletException.getCause() != null) {
+        params.put("cause", nestedServletException.getCause().getClass());
+        params.put("causeMessage", nestedServletException.getCause().getMessage());
+      }
+    }
 
-		objectMapper.writeValue(res.getOutputStream(), params);
-	}
+    res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-	public void afterPropertiesSet() throws Exception {
+    objectMapper.writeValue(res.getOutputStream(), params);
+  }
 
-		s = new DispatcherServlet() {
+  public void afterPropertiesSet() throws Exception {
 
-			private static final long serialVersionUID = -7492692694742840997L;
+    s = new DispatcherServlet() {
 
-			@Override
-			protected WebApplicationContext initWebApplicationContext() {
-				WebApplicationContext wac = createWebApplicationContext(applicationContext);
-				if (wac == null) {
-					wac = super.initWebApplicationContext();
-				}
-				return wac;
-			}
+      private static final long serialVersionUID = -7492692694742840997L;
 
-		};
+      @Override
+      protected WebApplicationContext initWebApplicationContext() {
+        WebApplicationContext wac = createWebApplicationContext(applicationContext);
+        if (wac == null) {
+          wac = super.initWebApplicationContext();
+        }
+        return wac;
+      }
 
-		s.setContextConfigLocation(contextConfigLocation);
-		s.init(new DelegatingServletConfig());
-	}
+    };
 
-	public void setContextConfigLocation(String contextConfigLocation) {
-		this.contextConfigLocation = contextConfigLocation;
-	}
+    s.setContextConfigLocation(contextConfigLocation);
+    s.init(new DelegatingServletConfig());
+  }
 
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-	}
+  public void setContextConfigLocation(String contextConfigLocation) {
+    this.contextConfigLocation = contextConfigLocation;
+  }
 
-	public void setServletContext(ServletContext servletContext) {
-		this.servletContext = servletContext;
-	}
+  public void setApplicationContext(ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
+  }
 
-	/**
-	 * Internal implementation of the {@link ServletConfig} interface, to be passed to the servlet
-	 * adapter.
-	 */
-	private class DelegatingServletConfig implements ServletConfig {
+  public void setServletContext(ServletContext servletContext) {
+    this.servletContext = servletContext;
+  }
 
-		public String getServletName() {
-			return "dispatcherWebscript";
-		}
+  /**
+   * Internal implementation of the {@link ServletConfig} interface, to be passed to the servlet adapter.
+   */
+  private class DelegatingServletConfig implements ServletConfig {
 
-		public ServletContext getServletContext() {
-			return DispatcherWebscript.this.servletContext;
-		}
+    public String getServletName() {
+      return "dispatcherWebscript";
+    }
 
-		public String getInitParameter(String paramName) {
-			return null;
-		}
+    public ServletContext getServletContext() {
+      return DispatcherWebscript.this.servletContext;
+    }
 
-		public Enumeration<String> getInitParameterNames() {
-			return Collections.enumeration(new HashSet<String>());
-		}
-	}
+    public String getInitParameter(String paramName) {
+      return null;
+    }
 
-	public class WebscriptRequestWrapper extends HttpServletRequestWrapper {
+    public Enumeration<String> getInitParameterNames() {
+      return Collections.enumeration(new HashSet<String>());
+    }
+  }
 
-		private WebScriptServletRequest origReq;
+  public class WebscriptRequestWrapper extends HttpServletRequestWrapper {
 
-		public WebscriptRequestWrapper(WebScriptServletRequest request) {
-			super(request.getHttpServletRequest());
-			this.origReq = request;
-		}
+    private WebScriptServletRequest origReq;
 
-		@Override
-		public String getRequestURI() {
-			String uri = super.getRequestURI();
-			Pattern pattern = Pattern.compile("(^" + origReq.getServiceContextPath() + "/)(.*)(/" + origReq.getExtensionPath() + ")");
-			Matcher matcher = pattern.matcher(uri);
+    public WebscriptRequestWrapper(WebScriptServletRequest request) {
+      super(request.getHttpServletRequest());
+      this.origReq = request;
+    }
 
-			final int extensionPathRegexpGroupIndex = 3;
-			if (matcher.find()) {
-				try {
-					return matcher.group(extensionPathRegexpGroupIndex);
-				} catch (Exception e) {
-					// let an empty string be returned
-					LOGGER.warn("no such group (3) in regexp while URI evaluation", e);
-				}
-			}
+    @Override
+    public String getRequestURI() {
+      String uri = super.getRequestURI();
+      Pattern pattern = Pattern.compile("(^" + origReq.getServiceContextPath() + "/)(.*)(/" + origReq.getExtensionPath() + ")");
+      Matcher matcher = pattern.matcher(uri);
 
-			return "";
-		}
+      final int extensionPathRegexpGroupIndex = 3;
+      if (matcher.find()) {
+        try {
+          return matcher.group(extensionPathRegexpGroupIndex);
+        } catch (Exception e) {
+          // let an empty string be returned
+          LOGGER.warn("no such group (3) in regexp while URI evaluation", e);
+        }
+      }
 
-		public String getContextPath() {
-			return origReq.getContextPath();
-		}
+      return "";
+    }
 
-		public String getServletPath() {
-			return "";
-		}
+    public String getContextPath() {
+      return origReq.getContextPath();
+    }
 
-		public WebScriptServletRequest getWebScriptServletRequest() {
-			return origReq;
-		}
-	}
+    public String getServletPath() {
+      return "";
+    }
+
+    public WebScriptServletRequest getWebScriptServletRequest() {
+      return origReq;
+    }
+  }
 
 }

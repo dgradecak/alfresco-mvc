@@ -32,29 +32,29 @@ import org.springframework.web.util.JavaScriptUtils;
 
 public class JsonExceptionResolver implements HandlerExceptionResolver {
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(JsonExceptionResolver.class);
+  protected static final Logger LOGGER = LoggerFactory.getLogger(JsonExceptionResolver.class);
 
-	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+  public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
-		LOGGER.error("Error occurred for handler [" + handler + "]", ex);
+    LOGGER.error("Error occurred for handler [" + handler + "]", ex);
 
-		View view = new MappingJacksonJsonView();
-		Map<String, Object> res = new HashMap<String, Object>();
-		res.put("success", false);
+    View view = new MappingJacksonJsonView();
+    Map<String, Object> res = new HashMap<String, Object>();
+    res.put("success", false);
 
-		Map<String, Object> protocol = new HashMap<String, Object>();
-		protocol.put("event", "exception");
+    Map<String, Object> protocol = new HashMap<String, Object>();
+    protocol.put("event", "exception");
 
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("exception", ex.getClass());
-		data.put("message", JavaScriptUtils.javaScriptEscape(ex.getMessage()));
-		protocol.put("data", data);
+    Map<String, Object> data = new HashMap<String, Object>();
+    data.put("exception", ex.getClass());
+    data.put("message", JavaScriptUtils.javaScriptEscape(ex.getMessage()));
+    protocol.put("data", data);
 
-		res.put("protocol", protocol);
-		
-		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    res.put("protocol", protocol);
 
-		return new ModelAndView(view, res);
-	}
+    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+    return new ModelAndView(view, res);
+  }
 
 }

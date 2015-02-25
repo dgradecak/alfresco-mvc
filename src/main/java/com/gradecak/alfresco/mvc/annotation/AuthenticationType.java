@@ -18,12 +18,12 @@ package com.gradecak.alfresco.mvc.annotation;
 
 public enum AuthenticationType {
 
-	NONE,
+  NONE,
 
-	GUEST,
+  GUEST,
 
-	USER,
+  USER,
 
-	ADMIN
+  ADMIN
 
 }

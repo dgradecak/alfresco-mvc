@@ -28,19 +28,21 @@ import org.springframework.util.StringUtils;
 
 public class QnameDeserializer extends JsonDeserializer<QName> {
 
-	private ServiceRegistry serviceRegistry;
+  private ServiceRegistry serviceRegistry;
 
-	public QnameDeserializer(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
-	}
+  public QnameDeserializer(ServiceRegistry serviceRegistry) {
+    this.serviceRegistry = serviceRegistry;
+  }
 
-	@Override
-	public QName deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+  @Override
+  public QName deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
 
-		String qname = jp.getText();
-		if (StringUtils.hasText(qname)) { return QName.createQName(qname, serviceRegistry.getNamespaceService()); }
+    String qname = jp.getText();
+    if (StringUtils.hasText(qname)) {
+      return QName.createQName(qname, serviceRegistry.getNamespaceService());
+    }
 
-		throw ctxt.mappingException("Expected a valid QName string representation");
-	}
+    throw ctxt.mappingException("Expected a valid QName string representation");
+  }
 
 }
