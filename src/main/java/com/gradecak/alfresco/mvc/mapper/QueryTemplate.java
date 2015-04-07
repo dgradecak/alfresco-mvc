@@ -150,4 +150,9 @@ public class QueryTemplate {
   public void setDefaultMaxItems(int maxItems) {
     this.defaultMaxItems = maxItems;
   }
+
+  public <T> List<T> queryForList(String string, NodePropertiesMapper<T> instance, int i, StoreRef storeRefWorkspaceSpacesstore, String languageLucene) {
+    return queryForList(string, instance, defaultMaxItems, 0, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
+        SearchService.LANGUAGE_LUCENE);
+  }
 }
