@@ -5,4 +5,5 @@
   <authentication>user</authentication>
   <transaction>none</transaction>
   <format default="json"></format>
+  <formdata multipart-processing="false" />
 </webscript>
