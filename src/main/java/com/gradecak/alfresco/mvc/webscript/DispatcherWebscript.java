@@ -60,24 +60,22 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
   public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
     final WebScriptServletRequest origReq = (WebScriptServletRequest) req;
-   
-    LOGGER.debug("WebScriptResponse instanceof: "+res.getClass());
     
     WebScriptServletResponse wsr = null;
-    if (res instanceof WrappingWebScriptResponse) {      
+    if (res instanceof WrappingWebScriptResponse) {
       wsr = (WebScriptServletResponse) ((WrappingWebScriptResponse) res).getNext();
     } else {
       wsr = (WebScriptServletResponse) res;
     }
 
     final HttpServletResponse sr = wsr.getHttpServletResponse();
-//    res.setHeader("Access-Control-Allow-Origin", "*");    
     res.setHeader("Cache-Control", "no-cache");
 
     WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
     try {
       s.service(wrapper, sr);
     } catch (Throwable e) {
+      LOGGER.error("MVC could not proceed", e);
       convertExceptionToJson(e, sr);
     }
 
