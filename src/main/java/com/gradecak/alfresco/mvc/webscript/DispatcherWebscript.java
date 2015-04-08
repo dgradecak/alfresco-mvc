@@ -72,7 +72,7 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
     final HttpServletResponse sr = wsr.getHttpServletResponse();
 //    res.setHeader("Access-Control-Allow-Origin", "*");    
-//    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Cache-Control", "no-cache");
 
     WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
     try {
