@@ -24,12 +24,38 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.util.StringUtils;
 
+/**
+ * supports only lucene and fts_alfresco languages. Other languages have not been tested, might be that it works for
+ * some of them.
+ * 
+ * @author dgradecak
+ *
+ */
 public class Query {
   private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
   private final StringBuilder queryBuilder = new StringBuilder();
+
+  private final String language;
+
+  public Query() {
+    language = SearchService.LANGUAGE_LUCENE;
+  }
+
+  public Query(final String language) {
+    if (!SearchService.LANGUAGE_LUCENE.equals(language) && !SearchService.LANGUAGE_FTS_ALFRESCO.equals(language)) {
+      // TODO add logger
+    }
+
+    this.language = language;
+  }
+  
+  public String getLanguage() {
+    return language;
+  }
 
   public Query exactAnd(Map<QName, Serializable> properties) {
     for (Entry<QName, Serializable> entry : properties.entrySet()) {
@@ -149,7 +175,7 @@ public class Query {
 
   public Query property(QName property) {
     queryBuilder.append("@");
-    queryBuilder.append(escapeQName(property));
+    queryBuilder.append(escapeQName(this.language, property));
     queryBuilder.append(":");
     return this;
   }
@@ -158,7 +184,7 @@ public class Query {
     queryBuilder.append("ISNOTNULL");
     queryBuilder.append(":");
     queryBuilder.append("\"");
-    queryBuilder.append(escapeQName(property));
+    queryBuilder.append(escapeQName(this.language, property));
     queryBuilder.append("\"");
     return this;
   }
@@ -167,7 +193,7 @@ public class Query {
     queryBuilder.append("ISNULL");
     queryBuilder.append(":");
     queryBuilder.append("\"");
-    queryBuilder.append(escapeQName(property));
+    queryBuilder.append(escapeQName(this.language, property));
     queryBuilder.append("\"");
     return this;
   }
@@ -176,21 +202,21 @@ public class Query {
     queryBuilder.append("ISUNSET");
     queryBuilder.append(":");
     queryBuilder.append("\"");
-    queryBuilder.append(escapeQName(property));
+    queryBuilder.append(escapeQName(this.language, property));
     queryBuilder.append("\"");
     return this;
   }
 
   public Query id(String id) {
     queryBuilder.append("ID:\"");
-    queryBuilder.append(escape(id));
+    queryBuilder.append(escape(this.language, id));
     queryBuilder.append("\"");
     return this;
   }
 
   public Query type(QName type) {
     queryBuilder.append("TYPE:\"");
-    queryBuilder.append(escapeQName(type));
+    queryBuilder.append(escapeQName(this.language, type));
     queryBuilder.append("\"");
     return this;
   }
@@ -204,7 +230,7 @@ public class Query {
 
   public Query aspect(QName aspect) {
     queryBuilder.append("ASPECT:\"");
-    queryBuilder.append(escapeQName(aspect));
+    queryBuilder.append(escapeQName(this.language, aspect));
     queryBuilder.append("\"");
     return this;
   }
@@ -263,12 +289,16 @@ public class Query {
     return queryBuilder.toString();
   }
 
-  public static String escapeQName(QName qName) {
+  public static String escapeQName(final String language, final QName qName) {
     String string = qName.toString();
-    return escape(string);
+    return escape(language, string);
   }
 
-  public static String escape(String string) {
+  public static String escape(final String language, final String string) {
+    if (!SearchService.LANGUAGE_LUCENE.equals(language)) {
+      return string;
+    }
+
     final int numOfCharsToAdd = 4;
 
     StringBuilder builder = new StringBuilder(string.length() + numOfCharsToAdd);
