@@ -141,6 +141,7 @@ public class QueryTemplate {
 
     List<T> list = new ArrayList<T>();
     ResultSet results = null;
+    boolean hasMore = false;
     try {
       results = serviceRegistry.getSearchService().query(sp);
       if (results != null && results.length() != 0) {        
@@ -161,6 +162,7 @@ public class QueryTemplate {
 
           count++;
         }
+        hasMore = results.hasMore();
       }
     } finally {
       if (results != null) {
@@ -168,7 +170,7 @@ public class QueryTemplate {
       }
     }
 
-    return new CountData<T>(new Long(results.length()), list);
+    return new CountData<T>(new Long(results.length()), list, hasMore);
   }
 
   public void setServiceRegistry(ServiceRegistry serviceRegistry) {
