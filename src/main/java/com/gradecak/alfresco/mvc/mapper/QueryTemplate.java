@@ -137,7 +137,7 @@ public class QueryTemplate {
     Assert.notNull(mapper);
     
     final int ps = pageSize > 0 ? pageSize : defaultPagesize;
-    final int p = page > 1 ? page : 0; 
+    final int p = page > 1 ? page - 1 : 0; 
 
     List<T> list = new ArrayList<T>();
     ResultSet results = null;
@@ -162,7 +162,7 @@ public class QueryTemplate {
 
           count++;
         }
-        hasMore = results.hasMore();
+        hasMore = results.getNumberFound() < sp.getLimit() ;
       }
     } finally {
       if (results != null) {
