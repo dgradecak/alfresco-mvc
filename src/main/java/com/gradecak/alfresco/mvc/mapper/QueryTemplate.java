@@ -162,7 +162,7 @@ public class QueryTemplate {
 
           count++;
         }
-        hasMore = results.getNumberFound() < sp.getLimit() ;
+        hasMore = results.getNumberFound() >= sp.getLimit() ;
       }
     } finally {
       if (results != null) {
