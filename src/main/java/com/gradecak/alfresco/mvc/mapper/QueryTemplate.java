@@ -150,7 +150,7 @@ public class QueryTemplate {
         
         for (ResultSetRow resultSetRow : results) {
 
-          if (count >= startIndex && list.size() < ps) {
+          if (count > startIndex && list.size() < ps) {
             NodeRef nodeRef = resultSetRow.getNodeRef();
             if (serviceRegistry.getNodeService().exists(nodeRef)) {
               if (LOGGER.isDebugEnabled()) {
