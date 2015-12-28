@@ -1,11 +1,14 @@
 package com.gradecak.alfresco.mvc;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("serial")
-public class ResponseMapBuilder extends HashMap<String, Object> {
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
+
+public class ResponseMapBuilder {
+
+  private final Builder<String, Object> variables = ImmutableMap.builder();
 
   public ResponseMapBuilder withData(final Object data) {
 
@@ -15,12 +18,12 @@ public class ResponseMapBuilder extends HashMap<String, Object> {
         size = ((List<?>) data).size();
       }
     }
-    
+
     return withEntry("data", data).withEntry("total", size);
   }
 
   public ResponseMapBuilder withSuccess(final boolean success) {
-    return withEntry("success", success);    
+    return withEntry("success", success);
   }
 
   public ResponseMapBuilder withConfig(final Map<String, Object> config) {
@@ -28,8 +31,12 @@ public class ResponseMapBuilder extends HashMap<String, Object> {
   }
 
   public ResponseMapBuilder withEntry(final String key, final Object value) {
-    put(key, value);
+    variables.put(key, value);
     return this;
+  }
+
+  public Map<String, Object> build() {
+    return variables.build();
   }
 
   static public ResponseMapBuilder createSuccessResponseMap() {

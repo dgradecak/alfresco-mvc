@@ -26,15 +26,15 @@ import java.util.Map;
 public class JsonUtils {
 
   static public Map<String, Object> createSuccessResponseMap() {
-    return ResponseMapBuilder.createSuccessResponseMap();
+    return ResponseMapBuilder.createSuccessResponseMap().build();
   }
 
   static public Map<String, Object> createFailResponseMap() {
-    return ResponseMapBuilder.createFailResponseMap();
+    return ResponseMapBuilder.createFailResponseMap().build();
   }
 
   static public Map<String, Object> createResponseMap(final Object obj, final boolean success) {
-    return ResponseMapBuilder.createResponseMap(obj, success);
+    return ResponseMapBuilder.createResponseMap(obj, success).build();
   }
 
 }
