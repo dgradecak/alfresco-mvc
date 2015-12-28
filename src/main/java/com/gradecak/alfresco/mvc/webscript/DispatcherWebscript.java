@@ -48,6 +48,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.NestedServletException;
 
+import com.gradecak.alfresco.mvc.ResponseMapBuilder;
+
 public class DispatcherWebscript extends AbstractWebScript implements ServletContextAware, ApplicationContextAware, InitializingBean {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
@@ -83,23 +85,22 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
   private void convertExceptionToJson(Throwable ex, HttpServletResponse res) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("success", false);
-    params.put("event", "exception");
-    params.put("exception", ex.getClass());
-    params.put("message", JavaScriptUtils.javaScriptEscape(ex.getMessage()));
+    ResponseMapBuilder builder = ResponseMapBuilder.createFailResponseMap().
+    withEntry("event", "exception").
+    withEntry("exception", ex.getClass()).
+    withEntry("message", JavaScriptUtils.javaScriptEscape(ex.getMessage()));
 
     if (ex instanceof NestedServletException) {
       NestedServletException nestedServletException = (NestedServletException) ex;
       if (nestedServletException.getCause() != null) {
-        params.put("cause", nestedServletException.getCause().getClass());
-        params.put("causeMessage", nestedServletException.getCause().getMessage());
+        builder.withEntry("cause", nestedServletException.getCause().getClass());
+        builder.withEntry("causeMessage", nestedServletException.getCause().getMessage());
       }
     }
 
     res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-    objectMapper.writeValue(res.getOutputStream(), params);
+    objectMapper.writeValue(res.getOutputStream(), builder.build());
   }
 
   public void afterPropertiesSet() throws Exception {
