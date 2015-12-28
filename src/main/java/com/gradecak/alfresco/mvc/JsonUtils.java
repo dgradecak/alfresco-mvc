@@ -16,35 +16,25 @@
 
 package com.gradecak.alfresco.mvc;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+/**
+ * 
+ * @deprecated use {@link ResponseMapBuilder}
+ *
+ */
 public class JsonUtils {
 
   static public Map<String, Object> createSuccessResponseMap() {
-    return createResponseMap(null, true);
+    return ResponseMapBuilder.createSuccessResponseMap();
   }
 
   static public Map<String, Object> createFailResponseMap() {
-    return createResponseMap(null, false);
+    return ResponseMapBuilder.createFailResponseMap();
   }
 
   static public Map<String, Object> createResponseMap(final Object obj, final boolean success) {
-    Map<String, Object> response = new HashMap<String, Object>();
-
-    if (obj != null) {
-      if (obj instanceof List<?>) {
-        response.put("total", ((List<?>) obj).size());
-      } else {
-        response.put("total", 1);
-      }
-
-      response.put("data", obj);
-    }
-
-    response.put("success", success);
-    return response;
+    return ResponseMapBuilder.createResponseMap(obj, success);
   }
 
 }

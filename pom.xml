@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.gradecak.alfresco</groupId>
-  <version>3.0.2-SNAPSHOT</version>
+  <version>3.0.3-SNAPSHOT</version>
   <artifactId>alfresco-mvc</artifactId>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <alfresco.groupId>org.alfresco</alfresco.groupId>
-    <alfresco.version>4.2.e</alfresco.version>
+    <alfresco.version>4.2.f</alfresco.version>
   </properties>
 
   <dependencies>
@@ -55,6 +55,15 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
       </plugin>
     </plugins>
   </build>
