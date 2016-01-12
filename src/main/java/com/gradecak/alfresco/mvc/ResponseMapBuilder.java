@@ -26,12 +26,10 @@ public class ResponseMapBuilder {
     return withEntry("success", success);
   }
 
-  public ResponseMapBuilder withConfig(final Map<String, Object> config) {
-    return withEntry("config", config);
-  }
-
   public ResponseMapBuilder withEntry(final String key, final Object value) {
-    variables.put(key, value);
+    if (value != null) {
+      variables.put(key, value);
+    }
     return this;
   }
 
@@ -40,14 +38,18 @@ public class ResponseMapBuilder {
   }
 
   static public ResponseMapBuilder createSuccessResponseMap() {
-    return createResponseMap(null, true);
+    return new ResponseMapBuilder().withSuccess(true);
   }
 
   static public ResponseMapBuilder createFailResponseMap() {
-    return createResponseMap(null, false);
+    return new ResponseMapBuilder().withSuccess(false);
   }
 
   static public ResponseMapBuilder createResponseMap(final Object data, final boolean success) {
     return new ResponseMapBuilder().withData(data).withSuccess(success);
+  }
+  
+  static public ResponseMapBuilder createResponseMap(final CountData<?> data, final boolean success) {
+    return new ResponseMapBuilder().withData(data.dataList).withEntry("count", data.count).withSuccess(success);
   }
 }
