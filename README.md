@@ -33,6 +33,10 @@ public class DocumentController {
 	}
 }
 ```
+The invoke URL for the above sample would be:
+ - http://localhost:8080/share/proxy/alfresco/mvc/document/sample
+ - http://localhost:8080/localhost/alfresco/service/mvc/document/sample
+
 for more information please check: com.gradecak.alfresco.mvc.sample.controller.DocumentController
 
 Autowiring of Alfresco and custom dependencies is enabled and thus you may finally have a rapid development with Alfresco.
