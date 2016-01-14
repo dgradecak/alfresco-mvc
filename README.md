@@ -12,11 +12,30 @@ is configured as follows.
 
 ```
 <bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript" parent="webscript">
-    <property name="contextConfigLocation" value="classpath:alfresco/module/sovini-flow/context/servlet-context.xml" />
+    <property name="contextConfigLocation" value="classpath:alfresco/module/YOUR-MODULE/context/servlet-context.xml" />
 </bean>
 ```
 
 Surely, you can configure any other webscript descriptor.
+
+in the servlet-context you can simply use
+```
+  <mvc:annotation-driven />
+```
+
+another utility in order to auto proxy all your services would be  (check the type="annotation" in component scanning)
+
+```
+  <bean id="my.autowiredProcessor" class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+
+  <context:component-scan base-package="com.gradecak.alfresco.sample.service" annotation-config="false">
+    <context:include-filter expression="org.springframework.stereotype.Service" type="annotation" />
+  </context:component-scan>
+  
+  <bean id="my.services" class="com.gradecak.alfresco.mvc.aop.PackageAutoProxyCreator">
+    <property name="basePackage" value="com.gradecak.alfresco.sample.service" />
+  </bean>
+```
 
 
 ```@Controller
