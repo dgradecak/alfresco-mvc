@@ -76,6 +76,20 @@ Document document = new QueryTemplate(serviceRegistry).queryForObject(ref, new D
 List<Document> documentList = new QueryTemplate(serviceRegistry).queryForList(new Query().type(ContentModel.TYPE_CONTENT), new DocumentNodeMapper());
 ```
 
+Annotations (AOP Advices)
+----
+there are 3 annotations that come with this library.
+
+- @AlfrescoAuthentication
+  used on a service method to indicate what type of authentication is allowed, same usage as in the webscript decriptor <authentication>user</authentication>.
+  Four possibilities are   NONE, GUEST, USER, ADMIN as defined in the AuthenticationType enum. Defaults to USER
+- @AlfrescoRunAs
+  allows with a simple annotation to use the runas mechanism of alfresco. The value has to be a static string with the username. 
+- @AlfrescoTransaction
+   this one uses the RetryingTansaction in order to avoid to write all lines for a RetryingTransactionCallback, Params: readOnly defaults to true and 
+   propagation defaults to org.springframework.transaction.annotation.Propagation.REQUIRED
+
+
 There is more things to add, so TBC ...
 
 Alfresco versions
