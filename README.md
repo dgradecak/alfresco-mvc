@@ -10,11 +10,12 @@ This library is deployed as an alfresco module (jar packaged) and offers some ou
 is configured as follows.
 
 
-```<bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript"
-    parent="webscript">
+```
+<bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript" parent="webscript">
     <property name="contextConfigLocation" value="classpath:alfresco/module/sovini-flow/context/servlet-context.xml" />
 </bean>
 ```
+
 Surely, you can configure any other webscript descriptor.
 
 
