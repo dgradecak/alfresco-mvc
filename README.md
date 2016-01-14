@@ -23,7 +23,7 @@ in the servlet-context you can simply use
   <mvc:annotation-driven />
 ```
 
-another utility in order to auto proxy all your services would be  (check the type="annotation" in component scanning)
+another utility in order to auto proxy all your services and add the 3 spring AOP interceptors would be  (check the type="annotation" in component scanning)
 
 ```
   <bean id="my.autowiredProcessor" class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
@@ -95,7 +95,7 @@ Document document = new QueryTemplate(serviceRegistry).queryForObject(ref, new D
 List<Document> documentList = new QueryTemplate(serviceRegistry).queryForList(new Query().type(ContentModel.TYPE_CONTENT), new DocumentNodeMapper());
 ```
 
-Annotations (AOP Advices)
+Annotations (AOP Advices/Spring interceptors)
 ----
 there are 3 annotations that come with this library.
 
