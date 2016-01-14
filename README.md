@@ -6,6 +6,18 @@ as in a medium sized application that becomes unmaintainable. That is why I wrot
 This small library enables the usage of Spring @MVC within Alfresco. Instead of writing webscripts and all the glue configuration that goes with that, you can simply write Springframework 
 Controllers, Services/Components, ... with Spring annotations.
 
+This library is deployed as an alfresco module (jar packaged) and offers some out of the box configurations for webscript bindings. The entry endpoint is bydefault /mvc only if the DispatcherWebscript
+is configured as follows.
+
+
+```<bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript"
+    parent="webscript">
+    <property name="contextConfigLocation" value="classpath:alfresco/module/sovini-flow/context/servlet-context.xml" />
+</bean>
+```
+Surely, you can configure any other webscript descriptor.
+
+
 ```@Controller
 @RequestMapping("/document/**")
 public class DocumentController {
@@ -28,7 +40,7 @@ Json is my preferable way to use for Alfresco integrations and some helpers are 
 
 A very useful class in this library is com.gradecak.alfresco.mvc.Query. It allows to write alfresco lucene/solr queries in a much simpler way.
 
-New things in 3.0.0
+New things in 3.0.3-SNAPSHOT
 ---
 - moved Query class in the Alfresco @MVC package
 - moved JsonUtils in the Alfresco @MVC package
@@ -42,8 +54,8 @@ String q = query.toString();
 
 Mapping to POJO
 ```
-public class DocumentNodeMapper implements NodeMapper<Document> {
-  public Document mapNode(Map<QName, Serializable> properties) {
+public class DocumentNodeMapper implements NodePropertiesMapper<Document> {
+  public Document mapNode(NodeRef nodeRef, Map<QName, Serializable> properties) {
     Document dl = new Document();
 	dl.setDescription((String) properties.get(ContentModel.PROP_DESCRIPTION));
 	return dl;
@@ -64,10 +76,10 @@ There is more things to add, so TBC ...
 Alfresco versions
 ----
 - Works on Enterprise as well as on community.
-- Tested with Alfresco Community 3.4.d, 4.0.x, 4.2.x, 5.0.a
-- Tested with Alfresco Enterprise 3.4.5, 4.1.5, 4.2.1
+- Tested with Alfresco Community 3.4.d, 4.0.x, 4.2.x, 5.0.a, 5.0.d
+- Tested with Alfresco Enterprise 3.4.5, 4.1.5, 4.2.1, 5.1
 
-Distribution
+Distribution (TODO as it is not yet inline with the latests @MVC library)
 ----
 Alfresco @MVC comes with a sample application: https://github.com/dgradecak/alfresco-mvc-sample
 and is distributed as a JAR file (actually AMP).
@@ -79,7 +91,7 @@ Latest snapshot version:
 <dependency>
   <groupId>com.gradecak.alfresco</groupId>
   <artifactId>alfresco-mvc</artifactId>
-  <version>3.0.0-SNAPSHOT</version>
+  <version>3.0.3-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -88,7 +100,7 @@ Latest release version:
 <dependency>
   <groupId>com.gradecak.alfresco</groupId>
   <artifactId>alfresco-mvc</artifactId>
-  <version>2.0.0-RELEASE</version>
+  <version>3.0.0-RELEASE</version>
 </dependency>
 ```
 
