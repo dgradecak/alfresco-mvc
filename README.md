@@ -64,12 +64,10 @@ Json is my preferable way to use for Alfresco integrations and some helpers are 
 
 A very useful class in this library is com.gradecak.alfresco.mvc.Query. It allows to write alfresco lucene/solr queries in a much simpler way.
 
-New things in 3.0.3-SNAPSHOT
+New things in 4
 ---
-- moved Query class in the Alfresco @MVC package
-- moved JsonUtils in the Alfresco @MVC package
-- deprecating Alfresco-Simpless project
-- introducing NodeMapper for POJO mapping to alfresco properties and QueryTemplate
+- deprecated JsonUtils in the Alfresco @MVC package
+- NodePropertiesMapper introduced another parameter, which is the NodeRef of the node and therefore any kind of manipulation in the mapper is possible
 
 ```
 Query query = new Query().path("some path").and().type(Qname).or()...
@@ -79,20 +77,33 @@ String q = query.toString();
 Mapping to POJO
 ```
 public class DocumentNodeMapper implements NodePropertiesMapper<Document> {
+  private final ServiceRegistry serviceRegistry;
+
+  public DocumentPropertiesMapper(final ServiceRegistry serviceRegistry) {
+    this.serviceRegistry = serviceRegistry;
+  }
+  
   public Document mapNode(NodeRef nodeRef, Map<QName, Serializable> properties) {
-    Document dl = new Document();
-	dl.setDescription((String) properties.get(ContentModel.PROP_DESCRIPTION));
-	return dl;
+    Document doc = new Document();
+	doc.setDescription((String) properties.get(ContentModel.PROP_DESCRIPTION));
+	
+	ContentReader reader = serviceRegistry.getContentService().getReader(nodeRef, ContentModel.PROP_CONTENT);
+    if (reader != null && reader.exists()) {
+      doc.setSize(reader.getSize());
+    }
+	
+	
+	return doc;
   }	
 }
 ```
 The mapper is used in querying with com.gradecak.alfresco.mvc.mapper.QueryTemplate
 ```
-Document document = new QueryTemplate(serviceRegistry).queryForObject(ref, new DocumentNodeMapper());
+Document document = new QueryTemplate(serviceRegistry).queryForObject(ref, new DocumentNodeMapper(serviceRegistry));
 ```
 
 ```
-List<Document> documentList = new QueryTemplate(serviceRegistry).queryForList(new Query().type(ContentModel.TYPE_CONTENT), new DocumentNodeMapper());
+List<Document> documentList = new QueryTemplate(serviceRegistry).queryForList(new Query().type(ContentModel.TYPE_CONTENT), new DocumentNodeMapper(serviceRegistry));
 ```
 
 Annotations (AOP Advices/Spring interceptors)
@@ -120,7 +131,7 @@ Alfresco versions
 Distribution (TODO as it is not yet inline with the latests @MVC library)
 ----
 Alfresco @MVC comes with a sample application: https://github.com/dgradecak/alfresco-mvc-sample
-and is distributed as a JAR file (actually AMP).
+and is distributed as an AMP packed in a JAR file.
 
 Maven dependency:
 ----
@@ -129,7 +140,7 @@ Latest snapshot version:
 <dependency>
   <groupId>com.gradecak.alfresco</groupId>
   <artifactId>alfresco-mvc</artifactId>
-  <version>3.0.3-SNAPSHOT</version>
+  <version>4.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -138,7 +149,7 @@ Latest release version:
 <dependency>
   <groupId>com.gradecak.alfresco</groupId>
   <artifactId>alfresco-mvc</artifactId>
-  <version>3.0.0-RELEASE</version>
+  <version>4.0.0-RELEASE</version>
 </dependency>
 ```
 
