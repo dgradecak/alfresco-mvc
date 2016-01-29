@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.converter;
+package com.gradecak.alfresco.mvc.jackson;
 
 import java.io.IOException;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.JsonSerializer;
-import org.codehaus.jackson.map.SerializerProvider;
 
-public class QnameSerializer extends JsonSerializer<QName> {
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+
+public class Jackson2QnameSerializer extends JsonSerializer<QName> {
 
   private ServiceRegistry serviceRegistry;
 
-  public QnameSerializer(ServiceRegistry serviceRegistry) {
+  public Jackson2QnameSerializer(ServiceRegistry serviceRegistry) {
     this.serviceRegistry = serviceRegistry;
   }
 
