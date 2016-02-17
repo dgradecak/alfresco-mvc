@@ -7,3 +7,6 @@ bin
 Servers
 deployment
 local
+.idea
+*iml
+*.log

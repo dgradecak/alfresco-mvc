@@ -19,10 +19,6 @@ package com.gradecak.alfresco.mvc.aop;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.Map;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 
 import org.alfresco.repo.security.authentication.AuthenticationException;
 import org.alfresco.service.ServiceRegistry;
@@ -33,8 +29,6 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.gradecak.alfresco.mvc.annotation.AlfrescoAuthentication;
 import com.gradecak.alfresco.mvc.annotation.AuthenticationType;
@@ -62,9 +56,8 @@ public class AuthenticationAdvice implements MethodInterceptor {
         AuthenticationService authenticationService = serviceRegistry.getAuthenticationService();
         AuthorityService authorityService = serviceRegistry.getAuthorityService();
 
-        String ticket = getTicket();
+        String ticket = authenticationService.getCurrentTicket();
         if (StringUtils.hasText(ticket)) {
-          authenticationService.validate(ticket);
           if (AuthenticationType.USER.equals(authenticationType) && authorityService.hasGuestAuthority()) {
             throw new AuthenticationException("User has guest authority where at least a user authentication is required.");
           } else if (AuthenticationType.ADMIN.equals(authenticationType) && !authorityService.hasAdminAuthority()) {
@@ -81,42 +74,6 @@ public class AuthenticationAdvice implements MethodInterceptor {
     }
 
     return invocation.proceed();
-  }
-
-  private String getTicket() {
-
-    String ticket = "";
-    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-
-    Cookie[] cookies = request.getCookies();
-    if (cookies != null) {
-      for (int i = 0; i < cookies.length; i++) {
-        Cookie cookie = cookies[i];
-        if (cookie != null && "TICKET".equals(cookie.getName().toUpperCase())) {
-          ticket = cookie.getValue();
-        }
-      }
-    }
-
-    @SuppressWarnings("unchecked")
-    Map<String, Object> parameterMap = request.getParameterMap();
-
-    if (parameterMap != null) {
-      for (Object parameter : parameterMap.keySet()) {
-        if (parameter != null && "TICKET".equals(((String) parameter).toUpperCase())) {
-          ticket = (String) parameterMap.get(parameter);
-        }
-      }
-    }
-
-    // HttpSession session = request.getSession();
-    // if (session != null) {
-    // // TODO dgradecak: FIX THIS
-    // User user = (User)session.getAttribute("_alfAuthTicket");
-    // ticket = user.getTicket();
-    // }
-
-    return ticket;
   }
 
   private AlfrescoAuthentication parseAnnotation(AnnotatedElement ae) {
