@@ -44,6 +44,12 @@ public class TestController {
     return ResponseMapBuilder.createResponseMap(id, true).build();
   }
   
+  @RequestMapping(value = "/post2", method = { RequestMethod.POST })
+  @ResponseBody
+  public Map<String, Object> post() {
+    return ResponseMapBuilder.createSuccessResponseMap().build();
+  }
+  
   @RequestMapping(value = "/exception", method = { RequestMethod.GET })
   @ResponseBody
   public Map<String, Object> exception(@RequestParam String id) {
@@ -56,4 +62,9 @@ public class TestController {
     return ResponseMapBuilder.createResponseMap(body, true).build();
   }
 
+  @RequestMapping(value = "/delete", method = { RequestMethod.DELETE, RequestMethod.PUT })
+  @ResponseBody
+  public Map<String, Object> delete() {
+    return ResponseMapBuilder.createSuccessResponseMap().build();
+  }  
 }

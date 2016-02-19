@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 
@@ -58,10 +59,17 @@ public class DispatcherWebscriptTest {
   }
 
   @Test
-  public void requestPost_responseOk() throws Exception {
+  public void requestPost_withParams_responseOk() throws Exception {
     MockHttpServletResponse res = mockWebscript.withPostRequest().withParameters(ImmutableMap.of("id", "testId")).withControllerMapping("test/post").execute();
     Assert.assertTrue(res.getStatus() == 200);
     Assert.assertEquals("{\"data\":\"testId\",\"total\":1,\"success\":true}", res.getContentAsString());
+  }
+  
+  @Test
+  public void requestPost_responseOk() throws Exception {
+    MockHttpServletResponse res = mockWebscript.withPostRequest().withControllerMapping("test/post2").execute();
+    Assert.assertTrue(res.getStatus() == 200);
+    Assert.assertEquals("{\"success\":true}", res.getContentAsString());
   }
 
   @Test
@@ -88,6 +96,26 @@ public class DispatcherWebscriptTest {
     MockHttpServletResponse res = mockWebscript.withPostRequest().withParameters(ImmutableMap.of("id", "testId")).withControllerMapping("test/get").execute();
     Assert.assertTrue(res.getStatus() == 405);
     Assert.assertEquals("Request method 'POST' not supported", res.getErrorMessage());
+  }
+  
+  @Test
+  public void requestDelete_responseOk() throws Exception {
+    MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.DELETE).withControllerMapping("test/delete").execute();
+    Assert.assertTrue(res.getStatus() == 200);
+    Assert.assertEquals("{\"success\":true}", res.getContentAsString());
+  }
+  
+  @Test
+  public void requestPut_responseOk() throws Exception {
+    MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.PUT).withControllerMapping("test/delete").execute();
+    Assert.assertTrue(res.getStatus() == 200);
+    Assert.assertEquals("{\"success\":true}", res.getContentAsString());
+  }
+  
+  @Test
+  public void requestHead_response405() throws Exception {
+    MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.HEAD).withControllerMapping("test/delete").execute();
+    Assert.assertTrue(res.getStatus() == 405);
   }
 
   @Test
