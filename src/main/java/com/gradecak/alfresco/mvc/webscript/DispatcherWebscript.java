@@ -75,7 +75,6 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     try {
       s.service(wrapper, sr);
     } catch (Throwable e) {
-      LOGGER.error("MVC could not proceed", e);
       convertExceptionToJson(e, sr);
     }
 
