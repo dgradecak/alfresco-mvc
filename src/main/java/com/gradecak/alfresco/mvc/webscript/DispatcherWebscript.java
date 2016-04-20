@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,7 +49,7 @@ import org.springframework.web.util.NestedServletException;
 
 import com.gradecak.alfresco.mvc.ResponseMapBuilder;
 
-public class DispatcherWebscript extends AbstractWebScript implements ServletContextAware, ApplicationContextAware, InitializingBean {
+public class DispatcherWebscript extends AbstractWebScript implements ServletContextAware, ApplicationContextAware, InitializingBean, RepositoryBootstrapFinishedListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
 
@@ -103,6 +104,29 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
   public void afterPropertiesSet() throws Exception {
 
+    RepositoryBootstrapListenerManager listeners = (RepositoryBootstrapListenerManager) applicationContext.getBean("repositoryBootstrapListenerManager");
+    System.out.println("DispatcherWebscript: afterPropertiesSet");
+    listeners.addListener(this);
+
+  }
+
+  public void setContextConfigLocation(String contextConfigLocation) {
+    this.contextConfigLocation = contextConfigLocation;
+  }
+
+  public void setApplicationContext(ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
+  }
+
+  public void setServletContext(ServletContext servletContext) {
+    this.servletContext = servletContext;
+  }
+
+  @Override
+  public void onBootstrapFinishedEvent() {
+
+    System.out.println("DispatcherWebscript: onBootstrapFinishedEvent");
+
     s = new DispatcherServlet() {
 
       private static final long serialVersionUID = -7492692694742840997L;
@@ -119,19 +143,12 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     };
 
     s.setContextConfigLocation(contextConfigLocation);
-    s.init(new DelegatingServletConfig());
-  }
-
-  public void setContextConfigLocation(String contextConfigLocation) {
-    this.contextConfigLocation = contextConfigLocation;
-  }
-
-  public void setApplicationContext(ApplicationContext applicationContext) {
-    this.applicationContext = applicationContext;
-  }
-
-  public void setServletContext(ServletContext servletContext) {
-    this.servletContext = servletContext;
+    try {
+      s.init(new DelegatingServletConfig());
+    } catch (ServletException e) {
+      System.out.println("Exception: " + e.getMessage());
+      e.printStackTrace();
+    }
   }
 
   /**
