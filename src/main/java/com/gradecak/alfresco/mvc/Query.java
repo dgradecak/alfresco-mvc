@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
  * some of them.
  * 
  * @author dgradecak
- *
+ * @deprecated use {@link com.gradecak.alfresco.mvc.QueryBuilder}
  */
 public class Query {
   private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);

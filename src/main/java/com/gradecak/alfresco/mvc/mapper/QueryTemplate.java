@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import com.gradecak.alfresco.mvc.CountData;
-import com.gradecak.alfresco.mvc.Query;
+import com.gradecak.alfresco.mvc.QueryBuilder;;
 
 public class QueryTemplate {
 
@@ -65,8 +65,8 @@ public class QueryTemplate {
     return mapper.mapNodeProperties(nodeRef, properties);
   }
 
-  public <T> T queryForObject(final Query query, final NodePropertiesMapper<T> mapper) {
-    return queryForObject(query.toString(), mapper, query.getLanguage());
+  public <T> T queryForObject(final QueryBuilder query, final NodePropertiesMapper<T> mapper) {
+    return queryForObject(query.build(), mapper, query.getLanguage());
   }
 
   public <T> T queryForObject(final String query, final NodePropertiesMapper<T> mapper, final String language) throws IncorrectResultSizeException {
@@ -89,8 +89,8 @@ public class QueryTemplate {
     }
   }
 
-  public <T> List<T> queryForList(final Query query, final NodePropertiesMapper<T> mapper) {
-    return queryForList(query.toString(), mapper, defaultMaxItems, 0, defaultPagesize, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, query.getLanguage()).dataList;
+  public <T> List<T> queryForList(final QueryBuilder query, final NodePropertiesMapper<T> mapper) {
+    return queryForList(query.build(), mapper, defaultMaxItems, 0, defaultPagesize, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, query.getLanguage()).dataList;
   }
 
   public <T> CountData<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final int maxItems, final int page, final int pageSize, final StoreRef store,
