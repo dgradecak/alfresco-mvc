@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import com.gradecak.alfresco.mvc.CountData;
+import com.gradecak.alfresco.mvc.PaginationParams;
+import com.gradecak.alfresco.mvc.PaginationParams.Direction;
 import com.gradecak.alfresco.mvc.QueryBuilder;;
 
 public class QueryTemplate {
@@ -93,12 +95,22 @@ public class QueryTemplate {
     return queryForList(query.build(), mapper, defaultMaxItems, 0, defaultPagesize, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, query.getLanguage()).dataList;
   }
 
+  public <T> CountData<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final PaginationParams pagination, final StoreRef store,
+      final String searchLanguage) {
+    return queryForList(query, mapper, pagination.getLimit(), pagination.getPage(), pagination.getLimit(), pagination.getSort(), pagination.getDir(), store, searchLanguage, QueryConsistency.TRANSACTIONAL);
+  }
+  
   public <T> CountData<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final int maxItems, final int page, final int pageSize, final StoreRef store,
       final String searchLanguage) {
     return queryForList(query, mapper, maxItems, page, pageSize, store, searchLanguage, QueryConsistency.TRANSACTIONAL);
   }
 
   public <T> CountData<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final int maxItems, final int page, final int pageSize, final StoreRef store,
+      final String searchLanguage, final QueryConsistency queryConsistency) {
+    return queryForList(query, mapper, maxItems, page, pageSize, "@{http://www.alfresco.org/model/content/1.0}created", Direction.ASC, store, searchLanguage, queryConsistency);
+  }
+  
+  public <T> CountData<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final int maxItems, final int page, final int pageSize, final String sort, final Direction dir, final StoreRef store,
       final String searchLanguage, final QueryConsistency queryConsistency) {
     Assert.notNull(query);
     Assert.notNull(mapper);
@@ -110,7 +122,7 @@ public class QueryTemplate {
     SearchParameters sp = new SearchParameters();
     sp.addStore(store);
     sp.setLanguage(searchLanguage);
-    sp.addSort("@{http://www.alfresco.org/model/content/1.0}created", true);
+    sp.addSort(sort, Direction.ASC.equals(dir));
     // sp.setMaxItems(maxItems);
     sp.setLimit(maxItems);
     sp.setLimitBy(LimitBy.FINAL_SIZE);

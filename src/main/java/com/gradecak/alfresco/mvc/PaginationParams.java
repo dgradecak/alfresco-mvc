@@ -8,7 +8,7 @@ public class PaginationParams {
   private Integer page = 1;
   private Integer limit = 25;
   private String sort;
-  private Direction dir = Direction.DESC;
+  private Direction dir = Direction.ASC;
 
   public enum Direction {
     ASC, DESC
