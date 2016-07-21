@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.mapper;
+package com.gradecak.alfresco.querytemplate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,10 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import com.gradecak.alfresco.mvc.CountData;
-import com.gradecak.alfresco.mvc.PaginationParams;
-import com.gradecak.alfresco.mvc.PaginationParams.Direction;
-import com.gradecak.alfresco.mvc.QueryBuilder;;
+import com.gradecak.alfresco.querytemplate.PaginationParams.Direction;;
 
 public class QueryTemplate {
 

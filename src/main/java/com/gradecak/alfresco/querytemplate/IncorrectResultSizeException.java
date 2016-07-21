@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.mapper;
+package com.gradecak.alfresco.querytemplate;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 

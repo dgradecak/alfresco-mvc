@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc;
+package com.gradecak.alfresco.querytemplate;
 
 import java.util.List;
 

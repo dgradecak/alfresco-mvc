@@ -28,7 +28,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -46,6 +45,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.NestedServletException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gradecak.alfresco.mvc.ResponseMapBuilder;
 
 public class DispatcherWebscript extends AbstractWebScript implements ServletContextAware, ApplicationContextAware, InitializingBean {
@@ -60,7 +60,7 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
   public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
     final WebScriptServletRequest origReq = (WebScriptServletRequest) req;
-    
+
     WebScriptServletResponse wsr = null;
     if (res instanceof WrappingWebScriptResponse) {
       wsr = (WebScriptServletResponse) ((WrappingWebScriptResponse) res).getNext();
@@ -82,10 +82,8 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
   private void convertExceptionToJson(Throwable ex, HttpServletResponse res) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
-    ResponseMapBuilder builder = ResponseMapBuilder.createFailResponseMap().
-    withEntry("event", "exception").
-    withEntry("exception", ex.getClass()).
-    withEntry("message", JavaScriptUtils.javaScriptEscape(ex.getMessage()));
+    ResponseMapBuilder builder = ResponseMapBuilder.createFailResponseMap().withEntry("event", "exception").withEntry("exception", ex.getClass()).withEntry("message",
+        JavaScriptUtils.javaScriptEscape(ex.getMessage()));
 
     if (ex instanceof NestedServletException) {
       NestedServletException nestedServletException = (NestedServletException) ex;

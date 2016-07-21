@@ -28,16 +28,18 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.util.StringUtils;
 
+import com.gradecak.alfresco.querytemplate.QueryBuilder;
+
 /**
  * supports only lucene and fts_alfresco languages. Other languages have not been tested, might be that it works for
  * some of them.
  * 
  * @author dgradecak
- * @deprecated use {@link com.gradecak.alfresco.mvc.QueryBuilder}
+ * @deprecated use {@link com.gradecak.alfresco.querytemplate.QueryBuilder}
  */
 public class Query {
   private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
-  private final StringBuilder queryBuilder = new StringBuilder();
+  private final QueryBuilder queryBuilder = new QueryBuilder();
 
   private final String language;
 
@@ -52,7 +54,7 @@ public class Query {
 
     this.language = language;
   }
-  
+
   public String getLanguage() {
     return language;
   }
@@ -175,7 +177,7 @@ public class Query {
 
   public Query property(QName property) {
     queryBuilder.append("@");
-    queryBuilder.append(escapeQName(this.language, property));
+    queryBuilder.append(QueryBuilder.escapeQName(this.language, property));
     queryBuilder.append(":");
     return this;
   }
@@ -184,7 +186,7 @@ public class Query {
     queryBuilder.append("ISNOTNULL");
     queryBuilder.append(":");
     queryBuilder.append("\"");
-    queryBuilder.append(escapeQName(this.language, property));
+    queryBuilder.append(QueryBuilder.escapeQName(this.language, property));
     queryBuilder.append("\"");
     return this;
   }
@@ -193,7 +195,7 @@ public class Query {
     queryBuilder.append("ISNULL");
     queryBuilder.append(":");
     queryBuilder.append("\"");
-    queryBuilder.append(escapeQName(this.language, property));
+    queryBuilder.append(QueryBuilder.escapeQName(this.language, property));
     queryBuilder.append("\"");
     return this;
   }
@@ -202,21 +204,21 @@ public class Query {
     queryBuilder.append("ISUNSET");
     queryBuilder.append(":");
     queryBuilder.append("\"");
-    queryBuilder.append(escapeQName(this.language, property));
+    queryBuilder.append(QueryBuilder.escapeQName(this.language, property));
     queryBuilder.append("\"");
     return this;
   }
 
   public Query id(String id) {
     queryBuilder.append("ID:\"");
-    queryBuilder.append(escape(this.language, id));
+    queryBuilder.append(QueryBuilder.escape(this.language, id));
     queryBuilder.append("\"");
     return this;
   }
 
   public Query type(QName type) {
     queryBuilder.append("TYPE:\"");
-    queryBuilder.append(escapeQName(this.language, type));
+    queryBuilder.append(QueryBuilder.escapeQName(this.language, type));
     queryBuilder.append("\"");
     return this;
   }
@@ -230,15 +232,13 @@ public class Query {
 
   public Query aspect(QName aspect) {
     queryBuilder.append("ASPECT:\"");
-    queryBuilder.append(escapeQName(this.language, aspect));
+    queryBuilder.append(QueryBuilder.escapeQName(this.language, aspect));
     queryBuilder.append("\"");
     return this;
   }
 
   public Query or() {
-    if (queryBuilder.length() != 0) {
-      queryBuilder.append(" OR ");
-    }
+    queryBuilder.append(" OR ");
     return this;
   }
 
@@ -248,9 +248,7 @@ public class Query {
   }
 
   public Query and() {
-    if (queryBuilder.length() != 0) {
-      queryBuilder.append(" AND ");
-    }
+    queryBuilder.append(" AND ");
     return this;
   }
 
@@ -287,29 +285,5 @@ public class Query {
 
   public String toString() {
     return queryBuilder.toString();
-  }
-
-  public static String escapeQName(final String language, final QName qName) {
-    String string = qName.toString();
-    return escape(language, string);
-  }
-
-  public static String escape(final String language, final String string) {
-    if (!SearchService.LANGUAGE_LUCENE.equals(language)) {
-      return string;
-    }
-
-    final int numOfCharsToAdd = 4;
-
-    StringBuilder builder = new StringBuilder(string.length() + numOfCharsToAdd);
-    for (int i = 0; i < string.length(); i++) {
-      char character = string.charAt(i);
-      if ((character == '{') || (character == '}') || (character == ':') || (character == '-')) {
-        builder.append('\\');
-      }
-
-      builder.append(character);
-    }
-    return builder.toString();
   }
 }
