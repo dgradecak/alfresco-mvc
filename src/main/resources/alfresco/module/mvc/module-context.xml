@@ -18,7 +18,7 @@
     </property>
   </bean>
 
-  <bean id="mvc.queryTemplate" class="com.gradecak.alfresco.mvc.mapper.QueryTemplate">
+  <bean id="mvc.queryTemplate" class="com.gradecak.alfresco.querytemplate.QueryTemplate">
     <property name="serviceRegistry" ref="ServiceRegistry" />
     <property name="defaultMaxItems" value="${mvc.queryTemplate.maxItems}" />
   </bean>
