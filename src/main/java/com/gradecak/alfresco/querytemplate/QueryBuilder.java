@@ -38,7 +38,7 @@ import com.gradecak.alfresco.mvc.Query;
  * 
  * @author dgradecak
  */
-public class QueryBuilder extends Query{
+public class QueryBuilder {
   
   private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
   private final StringBuilder queryStringBuilder = new StringBuilder();
