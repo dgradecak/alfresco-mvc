@@ -29,8 +29,6 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.util.StringUtils;
 
-import com.gradecak.alfresco.mvc.Query;
-
 
 /**
  * supports only lucene/solr and fts_alfresco languages. Other languages have not been tested, might be that it works for

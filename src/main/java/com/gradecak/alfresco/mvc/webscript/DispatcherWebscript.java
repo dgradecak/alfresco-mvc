@@ -17,6 +17,7 @@
 package com.gradecak.alfresco.mvc.webscript;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.dao.DataAccessException;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
@@ -46,13 +48,14 @@ import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.NestedServletException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gradecak.alfresco.mvc.LocalHttpServletResponse;
 import com.gradecak.alfresco.mvc.ResponseMapBuilder;
 
 public class DispatcherWebscript extends AbstractWebScript implements ServletContextAware, ApplicationContextAware, InitializingBean {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
 
-  private DispatcherServlet s;
+  protected DispatcherServlet s;
   private String contextConfigLocation;
   private ApplicationContext applicationContext;
   private ServletContext servletContext;
@@ -68,12 +71,24 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
       wsr = (WebScriptServletResponse) res;
     }
 
+    
     final HttpServletResponse sr = wsr.getHttpServletResponse();
-    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Cache-Control", "no-cache");    
 
     WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
     try {
-      s.service(wrapper, sr);
+      LocalHttpServletResponse mockHttpServletResponse = new LocalHttpServletResponse();
+      s.service(wrapper, mockHttpServletResponse);
+      
+      String contentAsString = mockHttpServletResponse.getContentAsString();
+      
+      Collection<String> headerNames = mockHttpServletResponse.getHeaderNames();
+      for (String header : headerNames) {
+        res.setHeader(header, mockHttpServletResponse.getHeader(header));
+      }
+      
+      res.setContentType(mockHttpServletResponse.getContentType());
+      res.getWriter().write(contentAsString);
     } catch (Throwable e) {
       convertExceptionToJson(e, sr);
     }
@@ -90,10 +105,13 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
       if (nestedServletException.getCause() != null) {
         builder.withEntry("cause", nestedServletException.getCause().getClass());
         builder.withEntry("causeMessage", nestedServletException.getCause().getMessage());
+        if(nestedServletException.getCause() instanceof DataAccessException) {
+          res.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);    
+        }
       }
     }
 
-    res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    //res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
     objectMapper.writeValue(res.getOutputStream(), builder.build());
   }
@@ -118,13 +136,25 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     s.setContextConfigLocation(contextConfigLocation);
     s.init(new DelegatingServletConfig());
   }
+  
+  public String getContextConfigLocation() {
+    return contextConfigLocation;
+  }
 
   public void setContextConfigLocation(String contextConfigLocation) {
     this.contextConfigLocation = contextConfigLocation;
   }
+  
+  public ApplicationContext getApplicationContext() {
+    return applicationContext;
+  }
 
   public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
+  }
+  
+  public ServletContext getServletContext() {
+    return servletContext;
   }
 
   public void setServletContext(ServletContext servletContext) {
@@ -134,10 +164,10 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
   /**
    * Internal implementation of the {@link ServletConfig} interface, to be passed to the servlet adapter.
    */
-  private class DelegatingServletConfig implements ServletConfig {
+  public class DelegatingServletConfig implements ServletConfig {
 
     public String getServletName() {
-      return "dispatcherWebscript";
+      return "Alfresco @MVC Dispatcher Webscript";
     }
 
     public ServletContext getServletContext() {
