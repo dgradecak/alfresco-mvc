@@ -17,6 +17,7 @@
 package com.gradecak.alfresco.mvc.webscript;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -77,48 +78,58 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     res.setHeader("Cache-Control", "no-cache");    
 
     WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
-    try {
-      LocalHttpServletResponse mockHttpServletResponse = new LocalHttpServletResponse();
+    LocalHttpServletResponse mockHttpServletResponse = new LocalHttpServletResponse();
+    try {      
       s.service(wrapper, mockHttpServletResponse);
       
-      String contentAsString = mockHttpServletResponse.getContentAsString();
-      
-      Collection<String> headerNames = mockHttpServletResponse.getHeaderNames();
-      for (String header : headerNames) {
-        res.setHeader(header, mockHttpServletResponse.getHeader(header));
-      }
-      
-      res.setStatus(mockHttpServletResponse.getStatus());
-      res.setContentType(mockHttpServletResponse.getContentType());
-      
-      if(StringUtils.hasText(contentAsString)) {
-        res.getWriter().write(contentAsString);
-      }
+      writeResponseToWebscript(wsr, sr, mockHttpServletResponse);
     } catch (Throwable e) {
-      convertExceptionToJson(e, sr);
+      convertExceptionToJson(e, wsr, sr, mockHttpServletResponse);
     }
-
   }
 
-  private void convertExceptionToJson(Throwable ex, HttpServletResponse res) throws IOException {
+  private void writeResponseToWebscript(WebScriptServletResponse wsr, final HttpServletResponse sr, LocalHttpServletResponse mockHttpServletResponse) throws UnsupportedEncodingException, IOException {
+    String contentAsString = mockHttpServletResponse.getContentAsString();
+    
+    Collection<String> headerNames = mockHttpServletResponse.getHeaderNames();
+    for (String header : headerNames) {
+      wsr.setHeader(header, mockHttpServletResponse.getHeader(header));
+    }
+    
+    wsr.setStatus(mockHttpServletResponse.getStatus());
+    wsr.setContentType(mockHttpServletResponse.getContentType());
+    
+    if(StringUtils.hasText(mockHttpServletResponse.getErrorMessage())){
+     sr.sendError(mockHttpServletResponse.getStatus(), mockHttpServletResponse.getErrorMessage());
+    } else if(StringUtils.hasText(contentAsString)) {
+      wsr.getWriter().write(contentAsString);
+    }
+  }
+
+  private void convertExceptionToJson(Throwable ex, WebScriptServletResponse wsr, final HttpServletResponse sr, LocalHttpServletResponse mockHttpServletResponse) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
     ResponseMapBuilder builder = ResponseMapBuilder.createFailResponseMap().withEntry("event", "exception").withEntry("exception", ex.getClass()).withEntry("message",
         JavaScriptUtils.javaScriptEscape(ex.getMessage()));
 
+    if(HttpServletResponse.SC_OK == mockHttpServletResponse.getStatus()) {
+      mockHttpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+    
     if (ex instanceof NestedServletException) {
       NestedServletException nestedServletException = (NestedServletException) ex;
       if (nestedServletException.getCause() != null) {
         builder.withEntry("cause", nestedServletException.getCause().getClass());
         builder.withEntry("causeMessage", nestedServletException.getCause().getMessage());
         if(nestedServletException.getCause() instanceof DataAccessException) {
-          res.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);    
+          if(HttpServletResponse.SC_OK == mockHttpServletResponse.getStatus()) {
+            mockHttpServletResponse.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+          }
         }
       }
     }
 
-    //res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-    objectMapper.writeValue(res.getOutputStream(), builder.build());
+    objectMapper.writeValue(mockHttpServletResponse.getOutputStream(), builder.build());
+    writeResponseToWebscript(wsr, sr, mockHttpServletResponse);
   }
 
   public void afterPropertiesSet() throws Exception {
