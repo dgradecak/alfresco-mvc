@@ -41,6 +41,7 @@ import org.springframework.extensions.webscripts.WebScriptResponse;
 import org.springframework.extensions.webscripts.WrappingWebScriptResponse;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletRequest;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletResponse;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -89,7 +90,10 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
       
       res.setStatus(mockHttpServletResponse.getStatus());
       res.setContentType(mockHttpServletResponse.getContentType());
-      res.getWriter().write(contentAsString);
+      
+      if(StringUtils.hasText(contentAsString)) {
+        res.getWriter().write(contentAsString);
+      }
     } catch (Throwable e) {
       convertExceptionToJson(e, sr);
     }
