@@ -87,6 +87,7 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
         res.setHeader(header, mockHttpServletResponse.getHeader(header));
       }
       
+      res.setStatus(mockHttpServletResponse.getStatus());
       res.setContentType(mockHttpServletResponse.getContentType());
       res.getWriter().write(contentAsString);
     } catch (Throwable e) {
