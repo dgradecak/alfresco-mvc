@@ -46,12 +46,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.NestedServletException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gradecak.alfresco.mvc.LocalHttpServletResponse;
-import com.gradecak.alfresco.mvc.ResponseMapBuilder;
 
 public class DispatcherWebscript extends AbstractWebScript implements ServletContextAware, ApplicationContextAware, InitializingBean {
 
@@ -82,13 +79,13 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     try {      
       s.service(wrapper, mockHttpServletResponse);
       
-      writeResponseToWebscript(wsr, sr, mockHttpServletResponse);
+      writeResponseToWebscript(wsr, mockHttpServletResponse);
     } catch (Throwable e) {
       convertExceptionToJson(e, wsr, sr, mockHttpServletResponse);
     }
   }
 
-  private void writeResponseToWebscript(WebScriptServletResponse wsr, final HttpServletResponse sr, LocalHttpServletResponse mockHttpServletResponse) throws UnsupportedEncodingException, IOException {
+  private void writeResponseToWebscript(WebScriptServletResponse wsr, LocalHttpServletResponse mockHttpServletResponse) throws UnsupportedEncodingException, IOException {
     String contentAsString = mockHttpServletResponse.getContentAsString();
     
     Collection<String> headerNames = mockHttpServletResponse.getHeaderNames();
@@ -100,36 +97,39 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     wsr.setContentType(mockHttpServletResponse.getContentType());
     
     if(StringUtils.hasText(mockHttpServletResponse.getErrorMessage())){
-     sr.sendError(mockHttpServletResponse.getStatus(), mockHttpServletResponse.getErrorMessage());
+    wsr.getHttpServletResponse().sendError(mockHttpServletResponse.getStatus(), mockHttpServletResponse.getErrorMessage());
     } else if(StringUtils.hasText(contentAsString)) {
       wsr.getWriter().write(contentAsString);
     }
   }
 
   private void convertExceptionToJson(Throwable ex, WebScriptServletResponse wsr, final HttpServletResponse sr, LocalHttpServletResponse mockHttpServletResponse) throws IOException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    ResponseMapBuilder builder = ResponseMapBuilder.createFailResponseMap().withEntry("event", "exception").withEntry("exception", ex.getClass()).withEntry("message",
-        JavaScriptUtils.javaScriptEscape(ex.getMessage()));
+//    ObjectMapper objectMapper = new ObjectMapper();
+//    ResponseMapBuilder builder = ResponseMapBuilder.createFailResponseMap().withEntry("event", "exception").withEntry("exception", ex.getClass()).withEntry("message",
+//        JavaScriptUtils.javaScriptEscape(ex.getMessage()));
 
-    if(HttpServletResponse.SC_OK == mockHttpServletResponse.getStatus()) {
-      mockHttpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    int status = mockHttpServletResponse.getStatus();
+    if(HttpServletResponse.SC_OK == status) {
+      status = HttpServletResponse.SC_BAD_REQUEST;
     }
     
+    String errorMessage = ex.getLocalizedMessage();
     if (ex instanceof NestedServletException) {
       NestedServletException nestedServletException = (NestedServletException) ex;
       if (nestedServletException.getCause() != null) {
-        builder.withEntry("cause", nestedServletException.getCause().getClass());
-        builder.withEntry("causeMessage", nestedServletException.getCause().getMessage());
+        //builder.withEntry("cause", nestedServletException.getCause().getClass());
+        errorMessage = nestedServletException.getCause().getMessage();
         if(nestedServletException.getCause() instanceof DataAccessException) {
           if(HttpServletResponse.SC_OK == mockHttpServletResponse.getStatus()) {
-            mockHttpServletResponse.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            status = HttpServletResponse.SC_NOT_ACCEPTABLE;
           }
         }
       }
     }
 
-    objectMapper.writeValue(mockHttpServletResponse.getOutputStream(), builder.build());
-    writeResponseToWebscript(wsr, sr, mockHttpServletResponse);
+    mockHttpServletResponse.sendError(status, errorMessage);
+    //objectMapper.writeValue(mockHttpServletResponse.getOutputStream(), builder.build());
+    writeResponseToWebscript(wsr, mockHttpServletResponse);
   }
 
   public void afterPropertiesSet() throws Exception {
