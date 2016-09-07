@@ -119,8 +119,8 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     if (ex instanceof NestedServletException) {
       NestedServletException nestedServletException = (NestedServletException) ex;
       if (nestedServletException.getCause() != null) {
-        // builder.withEntry("cause", nestedServletException.getCause().getClass());
-        // errorMessage = nestedServletException.getCause().getMessage();
+        builder.withEntry("cause", nestedServletException.getCause().getClass());
+        builder.withEntry("causeMessage", nestedServletException.getCause().getMessage());
         if (nestedServletException.getCause() instanceof DataAccessException) {
           if (HttpServletResponse.SC_OK == mockHttpServletResponse.getStatus()) {
             status = HttpServletResponse.SC_NOT_ACCEPTABLE;
@@ -130,6 +130,7 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     }
 
     // mockHttpServletResponse.sendError(status, errorMessage);
+    mockHttpServletResponse.setStatus(status);
     objectMapper.writeValue(mockHttpServletResponse.getOutputStream(), builder.build());
     writeResponseToWebscript(wsr, mockHttpServletResponse);
   }
