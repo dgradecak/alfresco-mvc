@@ -57,8 +57,9 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
 
-  protected DispatcherServlet s;
+  protected DispatcherServlet s;  
   private String contextConfigLocation;
+  private Class<?> contextClass;
   private ApplicationContext applicationContext;
   private ServletContext servletContext;
 
@@ -153,9 +154,16 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
     };
 
+    if(contextClass != null) {
+      s.setContextClass(contextClass);
+    }
     s.setContextConfigLocation(contextConfigLocation);
+    configureDispatcherServlet(s);
+
     s.init(new DelegatingServletConfig());
   }
+
+  public void configureDispatcherServlet(DispatcherServlet dispatcherServlet) {}
 
   public String getContextConfigLocation() {
     return contextConfigLocation;
@@ -179,6 +187,14 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
   public void setServletContext(ServletContext servletContext) {
     this.servletContext = servletContext;
+  }
+
+  public void setContextClass(Class<?> contextClass) {
+    this.contextClass = contextClass;
+  }
+
+  public Class<?> getContextClass() {
+    return this.contextClass;
   }
 
   /**
