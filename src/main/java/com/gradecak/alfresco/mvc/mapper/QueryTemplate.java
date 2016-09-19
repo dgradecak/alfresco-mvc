@@ -83,7 +83,7 @@ public class QueryTemplate {
     Assert.notNull(mapper);
     Assert.hasText(query);
 
-    List<T> list = queryForList(query.toString(), mapper, 2, 0, 1, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, language).dataList;
+    List<T> list = queryForList(query.toString(), mapper, 2, 0, 2, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, language).dataList;
     int size = list.size();
     switch (size) {
     case 0:
