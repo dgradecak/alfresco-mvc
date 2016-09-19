@@ -18,6 +18,7 @@ package com.gradecak.alfresco.querytemplate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -92,11 +93,11 @@ public class QueryTemplate {
     return queryForList(query.build(), mapper, defaultMaxItems, 0, defaultPagesize, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, query.getLanguage()).dataList;
   }
 
-  public <T> CountData<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final PaginationParams pagination, final StoreRef store,
-      final String searchLanguage) {
-    return queryForList(query, mapper, pagination.getLimit(), pagination.getPage(), pagination.getLimit(), pagination.getSort(), pagination.getDir(), store, searchLanguage, QueryConsistency.TRANSACTIONAL);
+  public <T> CountData<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final PaginationParams pagination, final StoreRef store, final String searchLanguage) {
+    return queryForList(query, mapper, pagination.getLimit(), pagination.getPage(), pagination.getLimit(), pagination.getSort(), pagination.getDir(), store, searchLanguage,
+        QueryConsistency.TRANSACTIONAL);
   }
-  
+
   public <T> CountData<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final int maxItems, final int page, final int pageSize, final StoreRef store,
       final String searchLanguage) {
     return queryForList(query, mapper, maxItems, page, pageSize, store, searchLanguage, QueryConsistency.TRANSACTIONAL);
@@ -106,9 +107,9 @@ public class QueryTemplate {
       final String searchLanguage, final QueryConsistency queryConsistency) {
     return queryForList(query, mapper, maxItems, page, pageSize, "@{http://www.alfresco.org/model/content/1.0}created", Direction.ASC, store, searchLanguage, queryConsistency);
   }
-  
-  public <T> CountData<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final int maxItems, final int page, final int pageSize, final String sort, final Direction dir, final StoreRef store,
-      final String searchLanguage, final QueryConsistency queryConsistency) {
+
+  public <T> CountData<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final int maxItems, final int page, final int pageSize, final String sort, final Direction dir,
+      final StoreRef store, final String searchLanguage, final QueryConsistency queryConsistency) {
     Assert.notNull(query);
     Assert.notNull(mapper);
     Assert.isTrue(maxItems > 0, "maxItems must be a positive integer");
@@ -134,34 +135,35 @@ public class QueryTemplate {
   public <T> CountData<T> queryForList(final SearchParameters sp, final NodePropertiesMapper<T> mapper, final int page, final int pageSize) {
     Assert.notNull(sp);
     Assert.notNull(mapper);
-    
+
     final int ps = pageSize > 0 ? pageSize : defaultPagesize;
-    final int p = page > 1 ? page - 1 : 0; 
+    final int p = page > 1 ? page - 1 : 0;
 
     List<T> list = new ArrayList<T>();
     ResultSet results = null;
     boolean hasMore = false;
     try {
       results = serviceRegistry.getSearchService().query(sp);
-      if (results != null && results.length() != 0) {        
-        final int startIndex =  (p * ps) -1;
+      if (results != null && results.length() != 0) {
+        final int startIndex = (p * ps) - 1;
         int count = 0;
-        
+
         for (ResultSetRow resultSetRow : results) {
 
           if (count > startIndex && list.size() < ps) {
             NodeRef nodeRef = resultSetRow.getNodeRef();
             if (serviceRegistry.getNodeService().exists(nodeRef)) {
-              if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Adding a row to the result list. NodeRef: " + nodeRef);
+              Map<QName, Serializable> properties = new HashMap<>();
+              for (Map.Entry<String, Serializable> entry : resultSetRow.getValues().entrySet()) {
+                properties.put(QName.createQName(entry.getKey()), entry.getValue());
               }
-              list.add(queryForObject(nodeRef, mapper));
+              list.add(mapper.mapNodeProperties(nodeRef, properties));
             }
           }
 
           count++;
         }
-        hasMore = results.getNumberFound() >= sp.getLimit() ;
+        hasMore = results.getNumberFound() >= sp.getLimit();
       }
     } finally {
       if (results != null) {
