@@ -39,7 +39,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.web.util.WebUtils;
