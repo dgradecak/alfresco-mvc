@@ -97,7 +97,10 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     }
 
     wsr.setStatus(mockHttpServletResponse.getStatus());
-    wsr.setContentType(mockHttpServletResponse.getContentType());
+    String contentType = mockHttpServletResponse.getContentType();
+    if(StringUtils.hasText(contentType)) {
+      wsr.setContentType(contentType);
+    }
 
     if (StringUtils.hasText(mockHttpServletResponse.getErrorMessage())) {
       wsr.getHttpServletResponse().sendError(mockHttpServletResponse.getStatus(), mockHttpServletResponse.getErrorMessage());
