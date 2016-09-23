@@ -84,15 +84,34 @@ those are enabled through the DispatcherWebscript and have to be configured with
 public class DocumentController {
 
 	@Autowired
-	private ServiceRegistry serviceRegistry;
+	private CoreDocumentService coreDocumentService;
 
 	@RequestMapping(value = "sample", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public Map<String, Object> index(@RequestBody final Document content) {
 	  // yes this works in Alfresco
+	  coreDocumentService.get(...)
 	}
 }
 ```
+
+```
+@Service
+public class CoreDocumentService {
+
+  @Autowired
+  private ServiceRegistry serviceRegistry;
+
+  @Autowired
+  private QueryTemplate queryTemplate;
+
+  @AlfrescoTransaction(readOnly = true)
+  public <T> T get(NodePropertiesMapper<T> nodeMapper, final NodeRef nodeRef) {
+    return queryTemplate.queryForObject(nodeRef, nodeMapper);
+  }
+}
+```  
+  
 The invoke URL for the above sample would be:
  - http://localhost:8080/share/proxy/alfresco/mvc/document/sample
  - http://localhost:8080/localhost/alfresco/service/mvc/document/sample
