@@ -12,6 +12,8 @@ is configured as follows.
 
 @EnableAlfrescoMvcProxy (latest on dev)
 ---
+might be used in the DispatcherWebscript child context, or in the alfresco module context Java configurations in order to benefit of the same services in different behaviors or so.
+This annotation takes care to register a single AutowiredAnnotationBeanPostProcessor and a PackageAutoProxyCreator for each configured package
 
 in the module-context.xml add these two lines
 ```
@@ -55,13 +57,12 @@ Surely, you can configure any other webscript descriptor.
 in the servlet-context you can simply use
 ```
   <mvc:annotation-driven />
+  <bean id="my.autowiredProcessor" class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
 ```
 
 another utility in order to auto proxy all your services and add the 3 spring AOP interceptors would be  (check the type="annotation" in component scanning)
 
 ```
-  <bean id="my.autowiredProcessor" class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
-
   <context:component-scan base-package="com.gradecak.alfresco.sample.service" annotation-config="false">
     <context:include-filter expression="org.springframework.stereotype.Service" type="annotation" />
   </context:component-scan>
@@ -71,8 +72,14 @@ another utility in order to auto proxy all your services and add the 3 spring AO
   </bean>
 ```
 
+Spring MVC Controllers
+---
 
-```@Controller
+those are enabled through the DispatcherWebscript and have to be configured with @ComponentScan or <context:component-scan base-package="..." annotation-config="false">
+
+
+```
+@Controller
 @RequestMapping("/document/**")
 public class DocumentController {
 
@@ -81,7 +88,7 @@ public class DocumentController {
 
 	@RequestMapping(value = "sample", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public Map<String, Object> index(@RequestBodyfinal Document content) {
+	public Map<String, Object> index(@RequestBody final Document content) {
 	  // yes this works in Alfresco
 	}
 }
@@ -102,6 +109,8 @@ New things in 4
 ---
 - deprecated JsonUtils in the Alfresco @MVC package
 - NodePropertiesMapper introduced another parameter, which is the NodeRef of the node and therefore any kind of manipulation in the mapper is possible
+- EnableAlfrescoMvcProxy annotation
+- old Jackson classes removed
 
 ```
 Query query = new Query().path("some path").and().type(Qname).or()...
@@ -174,7 +183,7 @@ Latest snapshot version:
 <dependency>
   <groupId>com.gradecak.alfresco</groupId>
   <artifactId>alfresco-mvc</artifactId>
-  <version>4.0.1-SNAPSHOT</version>
+  <version>4.0.5-SNAPSHOT</version>
 </dependency>
 ```
 
