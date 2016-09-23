@@ -10,6 +10,40 @@ This library is deployed as an alfresco module (jar packaged) and offers some ou
 is configured as follows.
 
 
+@EnableAlfrescoMvcProxy (latest on dev)
+---
+
+in the module-context.xml add these two lines
+```
+ <bean class="org.springframework.context.annotation.ConfigurationClassPostProcessor" />
+ <bean class="your.module.ModuleConfig" />
+```
+
+in the ModuleConfig class
+```
+@Configuration
+@ComponentScan(basePackageClasses = YourServiceClass.class )
+@EnableAlfrescoMvcProxy(basePackageClasses = YourServiceClass.class )
+public class ModuleConfig {
+
+  @Autowired
+  ListableBeanFactory beanFactory; // just as example
+
+  @Bean(name = { "webscript.alfresco-mvc.mvc.post", "webscript.alfresco-mvc.mvc.get", "webscript.alfresco-mvc.mvc.delete", "webscript.alfresco-mvc.mvc.put" })
+  public DispatcherWebscript dispatcherWebscript() {
+    DispatcherWebscript dispatcherWebscript = new DispatcherWebscript();
+    dispatcherWebscript.setContextClass(org.springframework.web.context.support.AnnotationConfigWebApplicationContext.class);
+    dispatcherWebscript.setContextConfigLocation(AlfrescoMvcHateoasConfig.class.getName());
+    return dispatcherWebscript;
+  }
+}
+```
+note that the DispatcherWebscript also takes its own Java config context
+
+
+Old XML fashion
+---
+
 ```
 <bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript" parent="webscript">
     <property name="contextConfigLocation" value="classpath:alfresco/module/YOUR-MODULE/context/servlet-context.xml" />

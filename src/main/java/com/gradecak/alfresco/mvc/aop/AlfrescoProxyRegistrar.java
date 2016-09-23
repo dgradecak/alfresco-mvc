@@ -21,9 +21,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -35,7 +37,11 @@ import com.gradecak.alfresco.mvc.annotation.EnableAlfrescoMvcProxy;
 
 public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 
-  public static final String PACKAGE_PROXY_CREATOR_BEAN_NAME = "com.gradecak.alfresco.mvc.aop.internalPackageAutoProxyCreator";
+  public static final String PACKAGE_PROXY_CREATOR_BEAN_NAME = "com.gradecak.alfresco.mvc.aop.alfrescoMvcPackageAutoProxyCreator";
+  public static final String AUTOWIRED_PROCESSOR_BEAN_NAME = "org.springframework.beans.factory.annotation.alfrescoMvcAutowiredAnnotationBeanPostProcessor";
+  public static final String CONFIGURATION_PROCESSOR_BEAN_NAME = "org.springframework.context.annotation.alfrescoMvcConfigurationClassPostProcessor";
+  // <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+  // <bean class="org.springframework.context.annotation.ConfigurationClassPostProcessor" />
 
   private AnnotationAttributes attributes;
   private AnnotationMetadata metadata;
@@ -57,6 +63,18 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
     for (String basePackage : basePackages) {
       registerOrEscalateApcAsRequired(PackageAutoProxyCreator.class, registry, null, basePackage);
     }
+
+    if (!registry.containsBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME)) {
+      RootBeanDefinition beanDefinition = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
+      beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+      registry.registerBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME, beanDefinition);
+    }
+
+//    if (!registry.containsBeanDefinition(CONFIGURATION_PROCESSOR_BEAN_NAME)) {
+//      RootBeanDefinition beanDefinition = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
+//      beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+//      registry.registerBeanDefinition(CONFIGURATION_PROCESSOR_BEAN_NAME, beanDefinition);
+//    }
   }
 
   public Iterable<String> getBasePackages() {
