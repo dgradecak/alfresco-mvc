@@ -119,8 +119,10 @@ public class BeanPropertiesMapper<T> implements NodePropertiesMapper<T> {
         String prefixedString = underscoredName.replaceFirst("_", ":");
         prefixedString.replaceFirst("_", ":");
 
-        QName qName = QName.createQName(prefixedString, serviceRegistry.getNamespaceService());
-        this.mappedQNames.put(qName, pd);
+        if (prefixedString.contains(":")) {
+          QName qName = QName.createQName(prefixedString, serviceRegistry.getNamespaceService());
+          this.mappedQNames.put(qName, pd);
+        }
       }
     }
   }
