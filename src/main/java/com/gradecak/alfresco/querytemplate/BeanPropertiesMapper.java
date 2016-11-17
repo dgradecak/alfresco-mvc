@@ -110,14 +110,13 @@ public class BeanPropertiesMapper<T> implements NodePropertiesMapper<T> {
     for (PropertyDescriptor pd : pds) {
       if (pd.getWriteMethod() != null) {
         this.mappedFields.put(pd.getName().toLowerCase(), pd);
-        String underscoredName = underscoreName(pd.getName());
-        if (!pd.getName().toLowerCase().equals(underscoredName)) {
-          this.mappedFields.put(underscoredName, pd);
+        String prefixName = prefixName(pd.getName());
+        if (!pd.getName().toLowerCase().equals(prefixName)) {
+          this.mappedFields.put(prefixName, pd);
         }
         this.mappedProperties.add(pd.getName());
 
-        String prefixedString = underscoredName.replaceFirst("_", ":");
-        prefixedString.replaceFirst("_", ":");
+        String prefixedString = prefixName.replaceFirst("_", ":");
 
         if (prefixedString.contains(":")) {
           QName qName = QName.createQName(prefixedString, serviceRegistry.getNamespaceService());
@@ -134,15 +133,21 @@ public class BeanPropertiesMapper<T> implements NodePropertiesMapper<T> {
    * @param name the string containing original name
    * @return the converted name
    */
-  private String underscoreName(String name) {
+  private String prefixName(String name) {
     StringBuilder result = new StringBuilder();
+    boolean first = true;
     if (name != null && name.length() > 0) {
       result.append(name.substring(0, 1).toLowerCase());
       for (int i = 1; i < name.length(); i++) {
         String s = name.substring(i, i + 1);
         if (s.equals(s.toUpperCase())) {
-          result.append("_");
-          result.append(s.toLowerCase());
+          if(first) {
+            result.append("_");            
+            result.append(s.toLowerCase());
+            first = false;
+          } else {
+            result.append(s);
+          }
         } else {
           result.append(s);
         }
