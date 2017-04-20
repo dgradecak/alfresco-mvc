@@ -42,6 +42,7 @@ import org.springframework.extensions.webscripts.WebScriptResponse;
 import org.springframework.extensions.webscripts.WrappingWebScriptResponse;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletRequest;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletResponse;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
@@ -62,6 +63,17 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
   private Class<?> contextClass;
   private ApplicationContext applicationContext;
   private ServletContext servletContext;
+  
+  private final String servletName;
+  
+  public DispatcherWebscript() {
+    this.servletName = "Alfresco @MVC Dispatcher Webscript";
+  }
+  
+  public DispatcherWebscript(final String servletName) {
+    Assert.hasText(servletName);
+    this.servletName = servletName;
+  }
 
   public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
@@ -163,7 +175,7 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     s.setContextConfigLocation(contextConfigLocation);
     configureDispatcherServlet(s);
 
-    s.init(new DelegatingServletConfig());
+    s.init(new DelegatingServletConfig(servletName));
   }
 
   public void configureDispatcherServlet(DispatcherServlet dispatcherServlet) {}
@@ -204,9 +216,15 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
    * Internal implementation of the {@link ServletConfig} interface, to be passed to the servlet adapter.
    */
   public class DelegatingServletConfig implements ServletConfig {
+    
+    final private String name;
+    public DelegatingServletConfig(final String name) {
+      Assert.hasText(name);
+      this.name = name;
+    }
 
     public String getServletName() {
-      return "Alfresco @MVC Dispatcher Webscript";
+      return name;
     }
 
     public ServletContext getServletContext() {
