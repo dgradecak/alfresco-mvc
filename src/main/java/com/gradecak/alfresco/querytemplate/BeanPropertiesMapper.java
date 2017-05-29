@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.InvalidQNameException;
+import org.alfresco.service.namespace.NamespaceException;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
@@ -119,8 +121,14 @@ public class BeanPropertiesMapper<T> implements NodePropertiesMapper<T> {
         String prefixedString = prefixName.replaceFirst("_", ":");
 
         if (prefixedString.contains(":")) {
-          QName qName = QName.createQName(prefixedString, serviceRegistry.getNamespaceService());
-          this.mappedQNames.put(qName, pd);
+          try {
+            QName qName = QName.createQName(prefixedString, serviceRegistry.getNamespaceService());
+            if (serviceRegistry.getDictionaryService().getProperty(qName) != null) {
+              this.mappedQNames.put(qName, pd);
+            }
+          } catch (NamespaceException e) {
+            // ; noop
+          }
         }
       }
     }
@@ -141,8 +149,8 @@ public class BeanPropertiesMapper<T> implements NodePropertiesMapper<T> {
       for (int i = 1; i < name.length(); i++) {
         String s = name.substring(i, i + 1);
         if (s.equals(s.toUpperCase())) {
-          if(first) {
-            result.append("_");            
+          if (first) {
+            result.append("_");
             result.append(s.toLowerCase());
             first = false;
           } else {
