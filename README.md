@@ -1,36 +1,50 @@
-alfresco @mvc
-====
-Personally I do not like webscripts because of the boilerplate code that comes with them (XML, FTL, Java/Javascript). Also I am not a big fan of javascript on the server side 
-as in a medium sized application that becomes unmaintainable. That is why I wrote Alfresco @MVC.
+A new project structure is created since Alfresco MVC 5.0.0
 
-This small library enables the usage of Spring @MVC within Alfresco. Instead of writing webscripts and all the glue configuration that goes with that, you can simply write Springframework 
-Controllers, Services/Components, ... with Spring annotations.
+Personally I do not like webscripts because of the boilerplate code that comes with them (XML, FTL, Java/Javascript). Also I am not a big fan of javascript on the server side as in a medium sized application that becomes unmaintainable. That is why I wrote Alfresco @MVC.
 
-This library is deployed as an alfresco module (jar packaged) and offers some out of the box configurations for webscript bindings. The entry endpoint is bydefault /mvc only if the DispatcherWebscript
-is configured as follows.
+Alfresco @MVC consist of 3 libraries, REST, AOP and QueryTemplate. REST and AOP have no third party dependencies, where QueryTemplate has. 
+
+alfresco-mvc REST
+===
+This small library enables the usage of Spring @MVC within Alfresco. Instead of writing webscripts and all the glue configuration that goes with that, you can simply write Springframework Controllers, Services/Components, ... with Spring annotations.
+
+```
+@Controller
+@RequestMapping("/document")
+public class DocumentController {
+
+	@Autowired
+	private SomeService service;
+
+	@RequestMapping(value = "{id}", method = { RequestMethod.GET })
+	@ResponseBody
+	public ResponseEntity<?> index(@@PathVariable Long id) {
+	  // yes this works in Alfresco
+	  return new ResponseEntity<?>(service.get(id), HttpStatus.OK);
+	}
+}
+```
+
+This library offers some out of the box configurations for webscript descriptor bindings. The entry endpoint is by default /alfresco/service/mvc only if the DispatcherWebscript is configured with bean names as follows: "webscript.alfresco-mvc.mvc.post", "webscript.alfresco-mvc.mvc.get", "webscript.alfresco-mvc.mvc.delete", "webscript.alfresco-mvc.mvc.put"
+
+otherwise you are free to create your own webscript descriptors and configure the beans correctly.
 
 
-@EnableAlfrescoMvcProxy (latest on dev)
+A DispatcherWebscript can be connfigured :
+
+with a servlet-conext.xml file
+--- 
+```
+  <bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript" parent="webscript">
+    <property name="contextConfigLocation" value="classpath:alfresco/module/YOUR_MODULE/context/servlet-context.xml" />
+  </bean>
+  
+  <alias name="webscript.alfresco-mvc.mvc.post" alias="webscript.alfresco-mvc.mvc.get" />
+```
+
+with Java config
 ---
-might be used in the DispatcherWebscript child context, or in the alfresco module context Java configurations in order to benefit of the same services in different behaviors or so.
-This annotation takes care to register a single AutowiredAnnotationBeanPostProcessor and a PackageAutoProxyCreator for each configured package
-
-in the module-context.xml add these two lines
 ```
- <bean class="org.springframework.context.annotation.ConfigurationClassPostProcessor" />
- <bean class="your.module.ModuleConfig" />
-```
-
-in the ModuleConfig class
-```
-@Configuration
-@ComponentScan(basePackageClasses = YourServiceClass.class )
-@EnableAlfrescoMvcProxy(basePackageClasses = YourServiceClass.class )
-public class ModuleConfig {
-
-  @Autowired
-  ListableBeanFactory beanFactory; // just as example
-
   @Bean(name = { "webscript.alfresco-mvc.mvc.post", "webscript.alfresco-mvc.mvc.get", "webscript.alfresco-mvc.mvc.delete", "webscript.alfresco-mvc.mvc.put" })
   public DispatcherWebscript dispatcherWebscript() {
     DispatcherWebscript dispatcherWebscript = new DispatcherWebscript();
@@ -38,110 +52,79 @@ public class ModuleConfig {
     dispatcherWebscript.setContextConfigLocation(AlfrescoMvcHateoasConfig.class.getName());
     return dispatcherWebscript;
   }
-}
 ```
-note that the DispatcherWebscript also takes its own Java config context
+
+AlfrescoMvcHateoasConfig has to be a spring' @Configuration class and please note the contextClass property should be AnnotationConfigWebApplicationContext
+```
+  @Configuration
+  @ComponentScan(basePackageClasses = { "...controller" })
+  @EnableWebMvc
+  public class AlfrescoMvcHateoasConfig {
+    ...
+  }
+```
 
 
-Old XML fashion
+=> The library is mainly used on the alfresco repository side, but is also suitable for alfresco share.
+
+
+alfresco-mvc AOP
+===
+Enables a couple of useful annotations on the alfresco repository side.
+
+@AlfrescoAuthentication
 ---
+  used on a service method to indicate what type of authentication is allowed, same usage as in the webscript decriptor <authentication>user</authentication>.
+  Four possibilities are   NONE, GUEST, USER, ADMIN as defined in the AuthenticationType enum. Defaults to USER
+  
+@AlfrescoRunAs
+---
+  allows with a simple annotation to use the runas mechanism of alfresco. The value has to be a static string with the username. 
 
-```
-<bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript" parent="webscript">
-    <property name="contextConfigLocation" value="classpath:alfresco/module/YOUR-MODULE/context/servlet-context.xml" />
-</bean>
-```
+@AlfrescoTransaction
+---
+   this one uses the RetryingTansaction in order to avoid to write all lines for a RetryingTransactionCallback, Params: readOnly defaults to true and 
+   propagation defaults to org.springframework.transaction.annotation.Propagation.REQUIRED
 
-Surely, you can configure any other webscript descriptor.
+Configuration:
 
-in the servlet-context you can simply use
+XML
+---
 ```
-  <mvc:annotation-driven />
-  <bean id="my.autowiredProcessor" class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
-```
-
-another utility in order to auto proxy all your services and add the 3 spring AOP interceptors would be  (check the type="annotation" in component scanning)
-
-```
-  <context:component-scan base-package="com.gradecak.alfresco.sample.service" annotation-config="false">
+  <context:component-scan base-package="com.gradecak.alfresco.mvc.sample.service">
     <context:include-filter expression="org.springframework.stereotype.Service" type="annotation" />
   </context:component-scan>
-  
-  <bean id="my.services" class="com.gradecak.alfresco.mvc.aop.PackageAutoProxyCreator">
-    <property name="basePackage" value="com.gradecak.alfresco.sample.service" />
+
+  <bean class="com.gradecak.alfresco.mvc.aop.PackageAutoProxyCreator">
+    <property name="basePackage" value="com.gradecak.alfresco.mvc.sample.service" />
   </bean>
 ```
 
-Spring MVC Controllers
+Java Config
 ---
+@ComponentScan(basePackageClasses = { "com.gradecak.alfresco.mvc.sample.service" })
+@EnableAlfrescoMvcProxy(basePackageClasses = { "com.gradecak.alfresco.mvc.sample.service" })
 
-those are enabled through the DispatcherWebscript and have to be configured with @ComponentScan or <context:component-scan base-package="..." annotation-config="false">
+EnableAlfrescoMvcProxy or PackageAutoProxyCreator will auto create spring's proxies for all the classes in the specified package in order to apply the advices 
 
+=> Notice
+Some issues while using CMIS were spotted if the services are wired via @ComponentScan therefore for now it is recommended to use the xml config in order to declare the services scanning only.
+There is a spring proxy limitation (spring 3.2.x) in order to use @Autowired on constructors, therefore @Autowired for now should be used on fields
 
+alfresco-mvc QUERY TEMPLATE
+=
+Inspired by spring's jdbc/rest templates this is a very useful way of writing alfresco lucene/solr queries (not canned queries). Has a dependencies on Srring Data Commons
+ 
 ```
-@Controller
-@RequestMapping("/document/**")
-public class DocumentController {
-
-	@Autowired
-	private CoreDocumentService coreDocumentService;
-
-	@RequestMapping(value = "sample", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public Map<String, Object> index(@RequestBody final Document content) {
-	  // yes this works in Alfresco
-	  coreDocumentService.get(...)
-	}
-}
+new Query().type(Qname).or().property(Qname).and(...)...
 ```
 
-```
-@Service
-public class CoreDocumentService {
-
-  @Autowired
-  private ServiceRegistry serviceRegistry;
-
-  @Autowired
-  private QueryTemplate queryTemplate;
-
-  @AlfrescoTransaction(readOnly = true)
-  public <T> T get(NodePropertiesMapper<T> nodeMapper, final NodeRef nodeRef) {
-    return queryTemplate.queryForObject(nodeRef, nodeMapper);
-  }
-}
-```  
-  
-The invoke URL for the above sample would be:
- - http://localhost:8080/share/proxy/alfresco/mvc/document/sample
- - http://localhost:8080/localhost/alfresco/service/mvc/document/sample
-
-for more information please check: com.gradecak.alfresco.mvc.sample.controller.DocumentController
-
-Autowiring of Alfresco and custom dependencies is enabled and thus you may finally have a rapid development with Alfresco.
-
-Json is my preferable way to use for Alfresco integrations and some helpers are also provided (can be seen in the sample application). On the other hand Springframework content negotiation resolver could be use in order to allow different kind of responses.  
-
-A very useful class in this library is com.gradecak.alfresco.mvc.Query. It allows to write alfresco lucene/solr queries in a much simpler way.
-
-New things in 4
----
-- deprecated JsonUtils in the Alfresco @MVC package
-- NodePropertiesMapper introduced another parameter, which is the NodeRef of the node and therefore any kind of manipulation in the mapper is possible
-- EnableAlfrescoMvcProxy annotation
-- old Jackson classes removed
-
-```
-Query query = new Query().path("some path").and().type(Qname).or()...
-String q = query.toString(); 
-```
-
-Mapping to POJO
+There is also a mapper mechanism that allows mapping to POJO classes
 ```
 public class DocumentNodeMapper implements NodePropertiesMapper<Document> {
   private final ServiceRegistry serviceRegistry;
 
-  public DocumentPropertiesMapper(final ServiceRegistry serviceRegistry) {
+  public DocumentNodeMapper(final ServiceRegistry serviceRegistry) {
     this.serviceRegistry = serviceRegistry;
   }
   
@@ -158,61 +141,57 @@ public class DocumentNodeMapper implements NodePropertiesMapper<Document> {
 	return doc;
   }	
 }
-```
-The mapper is used in querying with com.gradecak.alfresco.mvc.mapper.QueryTemplate
-```
-Document document = new QueryTemplate(serviceRegistry).queryForObject(ref, new DocumentNodeMapper(serviceRegistry));
-```
 
-```
+Document document = new QueryTemplate(serviceRegistry).queryForObject(NodeRef, new DocumentNodeMapper(serviceRegistry));
+
 List<Document> documentList = new QueryTemplate(serviceRegistry).queryForList(new Query().type(ContentModel.TYPE_CONTENT), new DocumentNodeMapper(serviceRegistry));
 ```
 
-Annotations (AOP Advices/Spring interceptors)
+Supported Alfresco versions
 ----
-there are 3 annotations that come with this library.
-
-- @AlfrescoAuthentication
-  used on a service method to indicate what type of authentication is allowed, same usage as in the webscript decriptor <authentication>user</authentication>.
-  Four possibilities are   NONE, GUEST, USER, ADMIN as defined in the AuthenticationType enum. Defaults to USER
-- @AlfrescoRunAs
-  allows with a simple annotation to use the runas mechanism of alfresco. The value has to be a static string with the username. 
-- @AlfrescoTransaction
-   this one uses the RetryingTansaction in order to avoid to write all lines for a RetryingTransactionCallback, Params: readOnly defaults to true and 
-   propagation defaults to org.springframework.transaction.annotation.Propagation.REQUIRED
+- Tested with Alfresco Community 5.0.d, 5.2.f (might work with older version, if not please check previous releases/snapshots)
+- Tested with Alfresco Enterprise 5.1 (might work with older version, if not please check previous releases/snapshots)
 
 
-There is more things to add, so TBC ...
-
-Alfresco versions
+Sample Application
 ----
-- Works on Enterprise as well as on community.
-- Tested with Alfresco Community 3.4.d, 4.0.x, 4.2.x, 5.0.a, 5.0.d
-- Tested with Alfresco Enterprise 3.4.5, 4.1.5, 4.2.1, 5.1
+Alfresco @MVC comes with sample applications
 
-Distribution (TODO as it is not yet inline with the latests @MVC library)
-----
-Alfresco @MVC comes with a sample application: https://github.com/dgradecak/alfresco-mvc-sample
-and is distributed as an AMP packed in a JAR file.
+
+alfresco-mvc-rest-sample => http://localhost:8080/alfresco/service/mvc/rest/sample
+
+
 
 Maven dependency:
 ----
 Latest snapshot version:
 ```
-<dependency>
-  <groupId>com.gradecak.alfresco</groupId>
-  <artifactId>alfresco-mvc</artifactId>
-  <version>4.0.5-SNAPSHOT</version>
-</dependency>
+  <dependency>
+  	<groupId>com.gradecak.alfresco-mvc</groupId>
+  	<artifactId>alfresco-mvc-rest</artifactId>
+  	<scope>compile</scope>
+  </dependency>
+  
+  <dependency>
+  	<groupId>com.gradecak.alfresco-mvc</groupId>
+  	<artifactId>alfresco-mvc-aop</artifactId>
+  	<scope>compile</scope>
+  </dependency>
+  
+  <dependency>
+  	<groupId>com.gradecak.alfresco-mvc</groupId>
+  	<artifactId>alfresco-mvc-querytemplate</artifactId>
+  	<scope>compile</scope>
+  </dependency>
 ```
 
 Latest release version:
 ```
-<dependency>
-  <groupId>com.gradecak.alfresco</groupId>
-  <artifactId>alfresco-mvc</artifactId>
-  <version>4.0.0-RELEASE</version>
-</dependency>
+  <dependency>
+    <groupId>com.gradecak.alfresco</groupId>
+    <artifactId>alfresco-mvc</artifactId>
+    <version>4.5.0-RELEASE</version>
+  </dependency>
 ```
 
 Maven repositories:
