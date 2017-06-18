@@ -107,13 +107,17 @@ XML
 
 Java Config
 ---
+```
 @ComponentScan(basePackageClasses = { "com.gradecak.alfresco.mvc.sample.service" })
 @EnableAlfrescoMvcProxy(basePackageClasses = { "com.gradecak.alfresco.mvc.sample.service" })
+```
 
 EnableAlfrescoMvcProxy or PackageAutoProxyCreator will auto create spring's proxies for all the classes in the specified package in order to apply the advices 
 
-=> Notice
-Some issues while using CMIS were spotted if the services are wired via @ComponentScan therefore for now it is recommended to use the xml config in order to declare the services scanning only.
+Notice
+-
+Some issues while using CMIS were spotted if the services are registered via @ComponentScan and used in alfresco behaviors, therefore for now it is recommended to use the xml config for service scanning only.
+
 There is a spring proxy limitation (spring 3.2.x) in order to use @Autowired on constructors, therefore @Autowired for now should be used on fields
 
 Alfresco-MVC QUERY TEMPLATE
