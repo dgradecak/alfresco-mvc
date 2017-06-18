@@ -1,4 +1,8 @@
-A new project structure is created since Alfresco MVC 5.0.0
+since Alfresco MVC 5.0.0
+---
+- a new project structure is created
+- no alfresco modules are registered
+- include samples
 
 Personally I do not like webscripts because of the boilerplate code that comes with them (XML, FTL, Java/Javascript). Also I am not a big fan of javascript on the server side as in a medium sized application that becomes unmaintainable. That is why I wrote Alfresco @MVC.
 
@@ -167,8 +171,20 @@ alfresco-mvc-querytemplate-sample => http://localhost:8080/alfresco/service/mvc/
 
 Maven dependency:
 ----
-Latest snapshot version:
+Latest snapshot version comes with a BOM:
 ```
+  <dependencyManagement>
+  	<dependencies>
+  	  <dependency>
+  	    <groupId>com.gradecak.alfresco-mvc</groupId>
+  	  	 <artifactId>alfresco-mvc-bom</artifactId>
+  	  	 <version>5.0.0-SNAPSHOT</version>
+  	  	 <type>pom</type>
+  	  	 <scope>import</scope>
+  	  </dependency>
+  	</dependencies>
+  </dependencyManagement>
+
   <dependency>
   	<groupId>com.gradecak.alfresco-mvc</groupId>
   	<artifactId>alfresco-mvc-rest</artifactId>
