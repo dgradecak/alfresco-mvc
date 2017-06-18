@@ -1,8 +1,10 @@
 since Alfresco MVC 5.0.0
 ---
 - a new project structure is created
-- no alfresco modules are registered
+- no alfresco modules are registered when the jar/amp files are deployed
 - include samples
+- include a deployable alfresco project (alfresco-mvc-samples-bom/alfresco-5.2.e). You need to configure the database and alf_data
+- an AMP artifact can be build from the source code (mvn clean package). You will find it under alfresco-mvc-dist/target. However, it is better to include the dependencies in your build
 
 Personally I do not like webscripts because of the boilerplate code that comes with them (XML, FTL, Java/Javascript). Also I am not a big fan of javascript on the server side as in a medium sized application that becomes unmaintainable. That is why I wrote Alfresco @MVC.
 
@@ -159,14 +161,13 @@ Supported Alfresco versions
 
 Sample Applications
 ----
-Alfresco @MVC comes with a couple of sample applications
+Alfresco @MVC comes with a couple of sample applications that are located in /alfresco-mvc-samples-bom
 
 
-alfresco-mvc-rest-sample => http://localhost:8080/alfresco/service/mvc/rest/sample
-alfresco-mvc-aop-sample => http://localhost:8080/alfresco/service/mvc/aop/sample
-alfresco-mvc-querytemplate-sample => http://localhost:8080/alfresco/service/mvc/querytemplate/sample 
-                                  => http://localhost:8080/alfresco/service/mvc/querytemplate/search (search engine has to be enabled)
-
+- alfresco-mvc-rest-sample 			=> http://localhost:8080/alfresco/service/mvc/rest/sample
+- alfresco-mvc-aop-sample 			=> http://localhost:8080/alfresco/service/mvc/aop/sample
+- alfresco-mvc-querytemplate-sample => http://localhost:8080/alfresco/service/mvc/querytemplate/sample 
+                                    => http://localhost:8080/alfresco/service/mvc/querytemplate/search (search engine has to be enabled)
 
 
 Maven dependency:
