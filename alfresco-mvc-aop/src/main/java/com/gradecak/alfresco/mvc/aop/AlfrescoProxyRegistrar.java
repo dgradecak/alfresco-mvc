@@ -21,10 +21,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -37,8 +37,7 @@ import com.gradecak.alfresco.mvc.annotation.EnableAlfrescoMvcProxy;
 public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 
   public static final String PACKAGE_PROXY_CREATOR_BEAN_NAME = "com.gradecak.alfresco.mvc.aop.alfrescoMvcPackageAutoProxyCreator";
-  public static final String AUTOWIRED_PROCESSOR_BEAN_NAME = "org.springframework.beans.factory.annotation.alfrescoMvcAutowiredAnnotationBeanPostProcessor";
-  public static final String CONFIGURATION_PROCESSOR_BEAN_NAME = "org.springframework.context.annotation.alfrescoMvcConfigurationClassPostProcessor";
+//  public static final String AUTOWIRED_PROCESSOR_BEAN_NAME = "org.springframework.beans.factory.annotation.alfrescoMvcAutowiredAnnotationBeanPostProcessor";
 
   private AnnotationAttributes attributes;
   private AnnotationMetadata metadata;
@@ -47,6 +46,19 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 
     Assert.notNull(annotationMetadata, "AnnotationMetadata must not be null!");
     Assert.notNull(registry, "BeanDefinitionRegistry must not be null!");
+    
+    boolean proxyBeanRegistered = false;
+    for (String beanName : PackageAutoProxyCreator.DEFAULT_INTERCEPTORS) {
+      if(registry.containsBeanDefinition(beanName)){
+        proxyBeanRegistered = true;
+        break;
+      }        
+    }
+    
+    if(!proxyBeanRegistered) {
+      XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(registry);
+      xmlReader.loadBeanDefinitions("classpath:com/gradecak/alfresco-mvc/aop.xml");
+    }
 
     // Guard against calls for sub-classes
     if (annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcProxy.class.getName()) == null) {
@@ -61,11 +73,11 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
       registerOrEscalateApcAsRequired(PackageAutoProxyCreator.class, registry, null, basePackage);
     }
 
-    if (!registry.containsBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME)) {
-      RootBeanDefinition beanDefinition = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
-      beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-      registry.registerBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME, beanDefinition);
-    }
+//    if (!registry.containsBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME)) {
+//      RootBeanDefinition beanDefinition = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
+//      beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+//      registry.registerBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME, beanDefinition);
+//    }
 
 //    if (!registry.containsBeanDefinition(CONFIGURATION_PROCESSOR_BEAN_NAME)) {
 //      RootBeanDefinition beanDefinition = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
@@ -97,7 +109,7 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
     return packages;
   }
 
-  private static BeanDefinition registerOrEscalateApcAsRequired(Class<?> cls, BeanDefinitionRegistry registry, Object source, String basePackage) {
+  private static BeanDefinition registerOrEscalateApcAsRequired(Class<PackageAutoProxyCreator> cls, BeanDefinitionRegistry registry, Object source, String basePackage) {
     Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 
     String proxyPackageBeanName = PACKAGE_PROXY_CREATOR_BEAN_NAME + "." + basePackage;

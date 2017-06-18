@@ -33,6 +33,7 @@ import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -43,24 +44,28 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.util.Assert;
 
+/**
+ * 
+ * This class is thread safe and it is advised to use it as singleton.
+ */
 public class QueryTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(QueryTemplate.class);
 
-  private int defaultMaxItems = 100;
-  private int defaultPagesize = 20;
-  private ServiceRegistry serviceRegistry;
+  private final int defaultMaxItems;
+  private final int defaultPagesize;
+  private final ServiceRegistry serviceRegistry;
 
-  public QueryTemplate() {}
-
+  @Autowired
   public QueryTemplate(final ServiceRegistry serviceRegistry) {
-    this.serviceRegistry = serviceRegistry;
+    this(serviceRegistry, 100, 20);
   }
-
-  public QueryTemplate(final ServiceRegistry serviceRegistry, final int maxItems, final int defaultPagesize) {
+  
+  @Autowired
+  public QueryTemplate(final ServiceRegistry serviceRegistry, final int maxItems, final int pagesize) {
     this.serviceRegistry = serviceRegistry;
     this.defaultMaxItems = maxItems;
-    this.defaultPagesize = defaultPagesize;
+    this.defaultPagesize = pagesize;
   }
 
   public <T extends Persistable<NodeRef>> T queryForObject(final NodeRef nodeRef, final NodePropertiesMapper<T> mapper) {
@@ -95,8 +100,8 @@ public class QueryTemplate {
     }
   }
 
-  public <T extends Persistable<NodeRef>> List<T> queryForList(final QueryBuilder query, final NodePropertiesMapper<T> mapper) {
-    return queryForList(query.build(), mapper, defaultMaxItems, 0, defaultPagesize, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, query.getLanguage()).getContent();
+  public <T extends Persistable<NodeRef>> Page<T> queryForList(final QueryBuilder query, final NodePropertiesMapper<T> mapper) {
+    return queryForList(query.build(), mapper, defaultMaxItems, 0, defaultPagesize, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, query.getLanguage());
   }
 
   public <T extends Persistable<NodeRef>> Page<T> queryForList(final String query, final NodePropertiesMapper<T> mapper, final int maxItems, final int page, final int pageSize, final StoreRef store,
@@ -179,17 +184,5 @@ public class QueryTemplate {
     }
 
     return new PageImpl<T>(list, pageable, results.getNumberFound());
-  }
-
-  public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-    this.serviceRegistry = serviceRegistry;
-  }
-
-  public void setDefaultMaxItems(int maxItems) {
-    this.defaultMaxItems = maxItems;
-  }
-
-  public void setDefaultPagesize(int defaultPagesize) {
-    this.defaultPagesize = defaultPagesize;
   }
 }

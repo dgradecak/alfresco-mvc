@@ -30,4 +30,9 @@ public class AlfrescoMvcQueryTemplateController {
   public ResponseEntity<?> sample() throws IOException {
 	return new ResponseEntity<>(service.getCompanyHomeFolder(), HttpStatus.OK);
   }
+  
+  @RequestMapping(value = "search", method = { RequestMethod.GET })
+  public ResponseEntity<?> search() throws IOException {
+    return new ResponseEntity<>(service.search(), HttpStatus.OK);
+  }
 }

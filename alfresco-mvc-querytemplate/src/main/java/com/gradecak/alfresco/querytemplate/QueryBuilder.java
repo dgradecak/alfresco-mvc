@@ -71,8 +71,7 @@ public class QueryBuilder {
 
       String convert = value == null ? null : convert(value);
       if (StringUtils.hasText(convert)) {
-        this.and(); // FIXME
-        this.property(entry.getKey()).exact(value);
+        this.and().property(entry.getKey()).exact(value);
       }
     }
 
@@ -85,8 +84,7 @@ public class QueryBuilder {
 
       String convert = value == null ? null : convert(value);
       if (StringUtils.hasText(convert)) {
-        this.or(); // FIXME
-        this.property(entry.getKey()).exact(value);
+        this.or().property(entry.getKey()).exact(value);
       }
     }
 
@@ -99,8 +97,7 @@ public class QueryBuilder {
 
       String convert = value == null ? null : convert(value);
       if (StringUtils.hasText(convert)) {
-        this.and(); // FIXME
-        this.property(entry.getKey()).like(convert.toLowerCase());
+        this.and().property(entry.getKey()).like(convert.toLowerCase());
       }
     }
 
@@ -113,8 +110,7 @@ public class QueryBuilder {
 
       String convert = value == null ? null : convert(value);
       if (StringUtils.hasText(convert)) {
-        this.or(); // FIXME
-        this.property(entry.getKey()).like(convert.toLowerCase());
+        this.or().property(entry.getKey()).like(convert.toLowerCase());
       }
     }
 
@@ -127,8 +123,7 @@ public class QueryBuilder {
 
       String convert = value == null ? null : convert(value);
       if (StringUtils.hasText(convert)) {
-        this.and(); // FIXME
-        this.property(entry.getKey()).contains(value);
+        this.and().property(entry.getKey()).contains(value);
       }
     }
 

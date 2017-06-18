@@ -4,7 +4,7 @@ Personally I do not like webscripts because of the boilerplate code that comes w
 
 Alfresco @MVC consist of 3 libraries, REST, AOP and QueryTemplate. REST and AOP have no third party dependencies, where QueryTemplate has. 
 
-alfresco-mvc REST
+Alfresco-MVC REST
 ===
 This small library enables the usage of Spring @MVC within Alfresco. Instead of writing webscripts and all the glue configuration that goes with that, you can simply write Springframework Controllers, Services/Components, ... with Spring annotations.
 
@@ -64,11 +64,10 @@ AlfrescoMvcHateoasConfig has to be a spring' @Configuration class and please not
   }
 ```
 
-
 => The library is mainly used on the alfresco repository side, but is also suitable for alfresco share.
 
 
-alfresco-mvc AOP
+Alfresco-MVC AOP
 ===
 Enables a couple of useful annotations on the alfresco repository side.
 
@@ -111,9 +110,10 @@ EnableAlfrescoMvcProxy or PackageAutoProxyCreator will auto create spring's prox
 Some issues while using CMIS were spotted if the services are wired via @ComponentScan therefore for now it is recommended to use the xml config in order to declare the services scanning only.
 There is a spring proxy limitation (spring 3.2.x) in order to use @Autowired on constructors, therefore @Autowired for now should be used on fields
 
-alfresco-mvc QUERY TEMPLATE
-=
-Inspired by spring's jdbc/rest templates this is a very useful way of writing alfresco lucene/solr queries (not canned queries). Has a dependencies on Srring Data Commons
+Alfresco-MVC QUERY TEMPLATE
+===
+Inspired by spring's jdbc/rest templates this is a very useful way of writing alfresco lucene/solr queries (not canned queries). Has a dependencies on Srring Data Commons.
+The QueryTemplate class is thread safe and it is advised to use it as singleton.
  
 ```
 new Query().type(Qname).or().property(Qname).and(...)...
@@ -153,12 +153,15 @@ Supported Alfresco versions
 - Tested with Alfresco Enterprise 5.1 (might work with older version, if not please check previous releases/snapshots)
 
 
-Sample Application
+Sample Applications
 ----
-Alfresco @MVC comes with sample applications
+Alfresco @MVC comes with a couple of sample applications
 
 
 alfresco-mvc-rest-sample => http://localhost:8080/alfresco/service/mvc/rest/sample
+alfresco-mvc-aop-sample => http://localhost:8080/alfresco/service/mvc/aop/sample
+alfresco-mvc-querytemplate-sample => http://localhost:8080/alfresco/service/mvc/querytemplate/sample 
+                                  => http://localhost:8080/alfresco/service/mvc/querytemplate/search (search engine has to be enabled)
 
 
 
