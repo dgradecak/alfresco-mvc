@@ -171,8 +171,9 @@ Alfresco @MVC comes with a couple of sample applications that are located in /al
 - alfresco-mvc-rest-sample 			=> http://localhost:8080/alfresco/service/mvc/rest/sample
 - alfresco-mvc-aop-sample 			=> http://localhost:8080/alfresco/service/mvc/aop/sample
 - alfresco-mvc-querytemplate-sample => http://localhost:8080/alfresco/service/mvc/querytemplate/sample 
-                                    => http://localhost:8080/alfresco/service/mvc/querytemplate/search (search engine has to be enabled)
+                                       http://localhost:8080/alfresco/service/mvc/querytemplate/search (search engine has to be enabled)
 
+alfresco-mvc-querytemplate-sample is the most complete sample that reassemble all the features of Alfresco @mvc 
 
 Maven dependency:
 ----

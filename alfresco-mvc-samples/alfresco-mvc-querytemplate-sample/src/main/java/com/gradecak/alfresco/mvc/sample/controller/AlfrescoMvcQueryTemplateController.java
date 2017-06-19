@@ -3,6 +3,7 @@ package com.gradecak.alfresco.mvc.sample.controller;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,5 +35,10 @@ public class AlfrescoMvcQueryTemplateController {
   @RequestMapping(value = "search", method = { RequestMethod.GET })
   public ResponseEntity<?> search() throws IOException {
     return new ResponseEntity<>(service.search(), HttpStatus.OK);
+  }
+  
+  @RequestMapping(value = "pageable", method = { RequestMethod.GET })
+  public ResponseEntity<?> pageable(final Pageable pageable) throws IOException {
+    return new ResponseEntity<>(pageable, HttpStatus.OK);
   }
 }
