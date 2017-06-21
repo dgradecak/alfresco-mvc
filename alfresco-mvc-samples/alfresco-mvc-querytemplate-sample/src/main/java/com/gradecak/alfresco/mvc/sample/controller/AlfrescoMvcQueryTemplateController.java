@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.gradecak.alfresco.mvc.data.repository.CmDocumentRepository;
+import com.gradecak.alfresco.mvc.sample.domain.CmFolder;
 import com.gradecak.alfresco.mvc.sample.service.QueryTemplateService;
 
 /**
@@ -20,7 +22,10 @@ import com.gradecak.alfresco.mvc.sample.service.QueryTemplateService;
 @RequestMapping("/querytemplate")
 public class AlfrescoMvcQueryTemplateController {
 
-  private final QueryTemplateService service;                            
+  private final QueryTemplateService service;  
+  
+  @Autowired
+  private CmDocumentRepository cmRepository;
   	                                                         
   @Autowired                                                   
   public AlfrescoMvcQueryTemplateController(final QueryTemplateService service) {  
@@ -29,6 +34,8 @@ public class AlfrescoMvcQueryTemplateController {
 
   @RequestMapping(value = "sample", method = { RequestMethod.GET })
   public ResponseEntity<?> sample() throws IOException {
+    CmFolder companyHomeFolder = service.getCompanyHomeFolder();
+    cmRepository.exists(companyHomeFolder.getId());
 	return new ResponseEntity<>(service.getCompanyHomeFolder(), HttpStatus.OK);
   }
   

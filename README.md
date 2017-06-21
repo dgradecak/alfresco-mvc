@@ -116,9 +116,9 @@ EnableAlfrescoMvcProxy or PackageAutoProxyCreator will auto create spring's prox
 
 Notice
 -
-Some issues while using CMIS were spotted if the services are registered via @ComponentScan and used in alfresco behaviors, therefore for now it is recommended to use the xml config for service scanning only.
+Some issues while using CMIS were spotted if the services are registered via @ComponentScan and used in alfresco behaviors, therefore for now it is recommended to use the xml or java (@Bean) config for service scanning only. This is due to the lifecycle of spring's loading of beans.
 
-There is a spring proxy limitation (spring 3.2.x) in order to use @Autowired on constructors, therefore @Autowired for now should be used on fields
+There is a spring proxy limitation (spring 3.2.x) in order to use @Autowired on constructors, therefore @Autowired for now should be used on fields. This is due to how CGLIB creates the proxies (a default constructor is needed)
 
 Alfresco-MVC QUERY TEMPLATE
 ===

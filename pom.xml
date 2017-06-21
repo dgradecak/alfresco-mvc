@@ -24,6 +24,7 @@
 		<module>alfresco-mvc-rest</module>
 		<module>alfresco-mvc-aop</module>
 		<module>alfresco-mvc-querytemplate</module>
+        <module>alfresco-mvc-data</module>
 		<module>alfresco-mvc-dist</module>
 	</modules>
 
@@ -146,6 +147,13 @@
 			<dependency>
 				<groupId>com.gradecak.alfresco-mvc</groupId>
 				<artifactId>alfresco-mvc-querytemplate</artifactId>
+				<version>${project.version}</version>
+				<scope>compile</scope>
+			</dependency>
+            
+            <dependency>
+				<groupId>com.gradecak.alfresco-mvc</groupId>
+				<artifactId>alfresco-mvc-data</artifactId>
 				<version>${project.version}</version>
 				<scope>compile</scope>
 			</dependency>

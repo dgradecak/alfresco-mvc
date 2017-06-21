@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.gradecak.alfresco.mvc.annotation.AlfrescoTransaction;
+import com.gradecak.alfresco.mvc.data.repository.CmDocumentRepository;
 import com.gradecak.alfresco.mvc.sample.domain.CmFolder;
 import com.gradecak.alfresco.mvc.sample.mapper.CmFolderPropertiesMapper;
 import com.gradecak.alfresco.querytemplate.QueryBuilder;
@@ -22,15 +23,20 @@ public class QueryTemplateService {
 
   @Autowired
   private Repository repository;
+  
+  @Autowired
+  private CmDocumentRepository cmRepository;
 
   @AlfrescoTransaction(readOnly = true)
   public NodeRef findRootNodeRef() {
+    
     return repository.getCompanyHome();
   }
 
   @AlfrescoTransaction(readOnly = true)
   public CmFolder getCompanyHomeFolder() {
-    return new QueryTemplate(serviceRegistry).queryForObject(findRootNodeRef(), new CmFolderPropertiesMapper(serviceRegistry));
+    NodeRef findRootNodeRef = findRootNodeRef();
+    return new QueryTemplate(serviceRegistry).queryForObject(findRootNodeRef, new CmFolderPropertiesMapper(serviceRegistry));
   }
 
   @AlfrescoTransaction(readOnly = true)

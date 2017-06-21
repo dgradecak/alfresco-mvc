@@ -21,6 +21,12 @@
 			<artifactId>alfresco-mvc-querytemplate</artifactId>
 			<scope>compile</scope>
 		</dependency>
+    
+    <dependency>
+      <groupId>com.gradecak.alfresco-mvc</groupId>
+      <artifactId>alfresco-mvc-data</artifactId>
+      <scope>compile</scope>
+    </dependency>
 
 		<dependency>
 			<groupId>com.gradecak.alfresco-mvc</groupId>

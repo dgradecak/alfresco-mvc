@@ -57,7 +57,7 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
     
     if(!proxyBeanRegistered) {
       XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(registry);
-      xmlReader.loadBeanDefinitions("classpath:com/gradecak/alfresco-mvc/aop.xml");
+      xmlReader.loadBeanDefinitions("classpath:com/gradecak/alfresco-mvc/alfresco-mvc-aop.xml");
     }
 
     // Guard against calls for sub-classes
@@ -109,7 +109,7 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
     return packages;
   }
 
-  private static BeanDefinition registerOrEscalateApcAsRequired(Class<PackageAutoProxyCreator> cls, BeanDefinitionRegistry registry, Object source, String basePackage) {
+  public static BeanDefinition registerOrEscalateApcAsRequired(Class<PackageAutoProxyCreator> cls, BeanDefinitionRegistry registry, Object source, String basePackage) {
     Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 
     String proxyPackageBeanName = PACKAGE_PROXY_CREATOR_BEAN_NAME + "." + basePackage;
