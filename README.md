@@ -8,7 +8,41 @@ since Alfresco MVC 5.0.0
 
 Personally I do not like webscripts because of the boilerplate code that comes with them (XML, FTL, Java/Javascript). Also I am not a big fan of javascript on the server side as in a medium sized application that becomes unmaintainable. That is why I wrote Alfresco @MVC.
 
-Alfresco @MVC consist of 3 libraries, REST, AOP and QueryTemplate. REST and AOP have no third party dependencies, where QueryTemplate has. 
+Alfresco @MVC consist of several libraries, REST, AOP, QueryTemplate, Spring-DATA. REST and AOP have no third party dependencies, where QueryTemplate and Spring-DATA has. 
+
+Alfresco-MVC QUERY TEMPLATE
+===
+A proof of concept implementation of Spring Data on top of Alfresco. With the combination of Alfresco MVC and Spring Data, developers benefit of a incredible rapid development library.
+
+Define the Alfresco Spring Data repository
+```
+@Repository
+public interface CmDocumentRepository extends AlfrescoNodeRepository<CmDocument> {}
+```
+
+A new annotation helping to identify and describe Alfresco nodes (for now there is a naming convention camel cased QName is the field name, or use a custom mapper as in Alfresco MVC queryTemplate)
+```
+@AlfrescoNode
+public class CmDocument extends AbstractPersistable {
+
+  private String cmVersionLabel;
+  private String cmTitle;
+  private String cmDescription;
+  
+  ...
+}
+
+@AlfrescoNode(entityMapper = CmDocumentPropertiesMapper.class, nodeMapper = CmDocumentPropertiesMapper.class)
+```
+
+Enable the repositories with @EnableAlfrescoRepositories in spring's configuration
+```
+@Configuration
+@EnableAlfrescoRepositories(basePackageClasses = CmDocumentRepository.class)
+public class AlfrescoMvcDataModuleConfig extends AlfrescoMvcDataConfig{
+}
+```
+
 
 Alfresco-MVC REST
 ===
@@ -172,8 +206,11 @@ Alfresco @MVC comes with a couple of sample applications that are located in /al
 - alfresco-mvc-aop-sample 			=> http://localhost:8080/alfresco/service/mvc/aop/sample
 - alfresco-mvc-querytemplate-sample => http://localhost:8080/alfresco/service/mvc/querytemplate/sample 
                                        http://localhost:8080/alfresco/service/mvc/querytemplate/search (search engine has to be enabled)
+                                       
+- alfresco-mvc-data-sample 			=> http://localhost:8080/alfresco/service/mvc/data/document 
+                                       http://localhost:8080/alfresco/service/mvc/folder
 
-alfresco-mvc-querytemplate-sample is the most complete sample that reassemble all the features of Alfresco @mvc 
+alfresco-mvc-querytemplate-sample is the most complete sample that reassemble all the features of Alfresco @MVC
 
 Maven dependency:
 ----
