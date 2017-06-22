@@ -23,6 +23,10 @@ public class BeanEntityMapper<T extends Persistable<NodeRef>> extends BeanProper
     super(serviceRegistry);
   }
   
+  public BeanEntityMapper(final ServiceRegistry serviceRegistry, Class<T> mappedClass) {
+    super(serviceRegistry, mappedClass);
+  }
+  
   public Class<T> getMappedClass() {
     return this.mappedClass;
   }
@@ -59,12 +63,6 @@ public class BeanEntityMapper<T extends Persistable<NodeRef>> extends BeanProper
   final public T mapNodeProperties(final NodeRef nodeRef, final Map<QName, Serializable> properties) {
     return super.mapNodeProperties(nodeRef, properties);
   }
-
+  
   public void configureMappedProperties(T entity, Map<QName, Serializable> properties) {}
-
-  public static <T extends Persistable<NodeRef>> BeanEntityMapper<T> newInstance(Class<T> mappedClass, ServiceRegistry serviceRegistry) {
-    BeanEntityMapper<T> newInstance = new BeanEntityMapper<T>(serviceRegistry);
-    return newInstance;
-  }
-
 }

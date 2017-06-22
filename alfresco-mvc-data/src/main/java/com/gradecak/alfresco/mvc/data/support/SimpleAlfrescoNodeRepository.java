@@ -15,16 +15,16 @@ import com.gradecak.alfresco.mvc.data.annotation.AlfrescoNode.NoCreator;
 import com.gradecak.alfresco.mvc.data.annotation.AlfrescoNodeCreator;
 import com.gradecak.alfresco.mvc.data.mapper.BeanEntityMapper;
 import com.gradecak.alfresco.mvc.data.mapper.EntityPropertiesMapper;
-import com.gradecak.alfresco.mvc.data.service.AlfrescoEntityService;
+import com.gradecak.alfresco.mvc.data.service.AlfrescoDataEntityService;
 
 public class SimpleAlfrescoNodeRepository<T extends Persistable<NodeRef>> implements AlfrescoNodeRepository<T> {
 
-  private final AlfrescoEntityService nodeService;
+  private final AlfrescoDataEntityService nodeService;
   private final BeanEntityMapper<T> nodeMapper;
   private final EntityPropertiesMapper<T, NodeRef> entityMapper;
   private final AlfrescoNodeCreator<T> nodeCreator;
 
-  public SimpleAlfrescoNodeRepository(AlfrescoEntityService nodeService, BeanEntityMapper<T> nodeMapper, EntityPropertiesMapper<T, NodeRef> entityMapper, AlfrescoNodeCreator<T> nodeCreator) {
+  public SimpleAlfrescoNodeRepository(AlfrescoDataEntityService nodeService, BeanEntityMapper<T> nodeMapper, EntityPropertiesMapper<T, NodeRef> entityMapper, AlfrescoNodeCreator<T> nodeCreator) {
     this.nodeService = nodeService;
     this.nodeMapper = nodeMapper;
     this.entityMapper = entityMapper;

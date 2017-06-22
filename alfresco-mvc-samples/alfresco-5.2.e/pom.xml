@@ -34,7 +34,7 @@
 
 		<dependency>
 			<groupId>com.gradecak.alfresco-mvc</groupId>
-			<artifactId>alfresco-mvc-querytemplate-sample</artifactId>
+			<artifactId>alfresco-mvc-data-sample</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>

@@ -9,7 +9,7 @@
 		<relativePath>../</relativePath>
 	</parent>
 
-	<artifactId>alfresco-mvc-querytemplate-sample</artifactId>
+	<artifactId>alfresco-mvc-data-sample</artifactId>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,6 +22,12 @@
 			<scope>compile</scope>
 		</dependency>
     
+        <dependency>
+          <groupId>com.gradecak.alfresco-mvc</groupId>
+          <artifactId>alfresco-mvc-data</artifactId>
+          <scope>compile</scope>
+        </dependency>
+
 		<dependency>
 			<groupId>com.gradecak.alfresco-mvc</groupId>
 			<artifactId>alfresco-mvc-aop</artifactId>

@@ -25,7 +25,7 @@ import com.gradecak.alfresco.querytemplate.QueryBuilder;
 import com.gradecak.alfresco.querytemplate.QueryTemplate;
 
 // TODO think about tx management, not sure it is needed. related to com.gradecak.alfresco.mvc.data.support.AlfrescoRepositoryConfigExtension.registerBeansForRoot
-public class AlfrescoEntityService {
+public class AlfrescoDataEntityService {
 
   private ServiceRegistry serviceRegistry;
   private QueryTemplate queryTemplate;

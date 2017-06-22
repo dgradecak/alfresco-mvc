@@ -1,4 +1,4 @@
-package com.gradecak.alfresco.mvc.data.domain;
+package com.gradecak.alfresco.mvc.sample.domain;
 
 import java.util.Date;
 import java.util.HashMap;

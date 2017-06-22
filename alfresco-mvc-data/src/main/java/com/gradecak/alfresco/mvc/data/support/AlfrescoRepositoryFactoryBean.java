@@ -14,17 +14,17 @@ import org.springframework.data.repository.core.support.DefaultRepositoryMetadat
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 
-import com.gradecak.alfresco.mvc.data.service.AlfrescoEntityService;
+import com.gradecak.alfresco.mvc.data.service.AlfrescoDataEntityService;
 
 public class AlfrescoRepositoryFactoryBean<T extends AlfrescoNodeRepository<S>, S extends Persistable<NodeRef>, ID extends Serializable> extends TransactionalRepositoryFactoryBeanSupport<T, S, NodeRef> {
 
   private final ServiceRegistry serviceRegistry;
-  private final AlfrescoEntityService documentService;
+  private final AlfrescoDataEntityService documentService;
   private final ListableBeanFactory beanFactory;
   private final AlfrescoNodeConfiguration alfrescoNodeConfiguration;
 
   @Autowired
-  public AlfrescoRepositoryFactoryBean(AlfrescoEntityService documentService, ServiceRegistry serviceRegistry, ListableBeanFactory beanFactory, AlfrescoNodeConfiguration alfrescoNodeConfiguration) {
+  public AlfrescoRepositoryFactoryBean(AlfrescoDataEntityService documentService, ServiceRegistry serviceRegistry, ListableBeanFactory beanFactory, AlfrescoNodeConfiguration alfrescoNodeConfiguration) {
     this.serviceRegistry = serviceRegistry;
     this.documentService = documentService;
     this.beanFactory = beanFactory;

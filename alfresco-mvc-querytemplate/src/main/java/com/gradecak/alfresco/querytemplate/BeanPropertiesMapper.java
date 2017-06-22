@@ -30,7 +30,6 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Persistable;
@@ -45,10 +44,14 @@ public class BeanPropertiesMapper<T extends Persistable<NodeRef>> implements Nod
   protected Set<String> mappedProperties;
 
   @SuppressWarnings("unchecked")
-  @Autowired
   public BeanPropertiesMapper(final ServiceRegistry serviceRegistry) {
     this.serviceRegistry = serviceRegistry;
     Class<T> mappedClass = (Class<T>)GenericTypeResolver.resolveTypeArgument(this.getClass(), NodePropertiesMapper.class);
+    setMappedClass(mappedClass);
+  }
+  
+  public BeanPropertiesMapper(final ServiceRegistry serviceRegistry, Class<T> mappedClass) {
+    this.serviceRegistry = serviceRegistry;
     setMappedClass(mappedClass);
   }
 
@@ -93,7 +96,7 @@ public class BeanPropertiesMapper<T extends Persistable<NodeRef>> implements Nod
   /**
    * Set the class that properties should be mapped to.
    */
-  private void setMappedClass(Class<T> mappedClass) {
+  protected void setMappedClass(Class<T> mappedClass) {
     if (this.mappedClass == null) {
       initialize(mappedClass);
     } else {

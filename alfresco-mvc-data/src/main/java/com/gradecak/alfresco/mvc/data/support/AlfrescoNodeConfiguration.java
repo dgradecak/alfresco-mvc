@@ -1,5 +1,6 @@
 package com.gradecak.alfresco.mvc.data.support;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,10 @@ public class AlfrescoNodeConfiguration {
   private final ServiceRegistry serviceRegistry;
 
   public AlfrescoNodeConfiguration(List<BeanEntityMapper<?>> mappers, ServiceRegistry serviceRegistry) {
-    this.mappers = mappers;
+    if (mappers != null) {
+      this.mappers = mappers;
+    } else
+      this.mappers = Collections.emptyList();
     this.serviceRegistry = serviceRegistry;
   }
 

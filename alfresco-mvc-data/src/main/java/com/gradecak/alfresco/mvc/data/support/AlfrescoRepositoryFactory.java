@@ -11,6 +11,7 @@ import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
+import org.springframework.util.Assert;
 
 import com.gradecak.alfresco.mvc.data.annotation.AlfrescoNode;
 import com.gradecak.alfresco.mvc.data.annotation.AlfrescoNode.NoCreator;
@@ -18,18 +19,18 @@ import com.gradecak.alfresco.mvc.data.annotation.AlfrescoNode.UseBeanPropertiesM
 import com.gradecak.alfresco.mvc.data.annotation.AlfrescoNodeCreator;
 import com.gradecak.alfresco.mvc.data.mapper.BeanEntityMapper;
 import com.gradecak.alfresco.mvc.data.mapper.EntityPropertiesMapper;
-import com.gradecak.alfresco.mvc.data.service.AlfrescoEntityService;
+import com.gradecak.alfresco.mvc.data.service.AlfrescoDataEntityService;
 import com.gradecak.alfresco.mvc.data.util.RepositoriesUtils;
 import com.gradecak.alfresco.querytemplate.NodePropertiesMapper;
 
 public class AlfrescoRepositoryFactory<T extends Persistable<NodeRef>> extends RepositoryFactorySupport {
 
   private final ServiceRegistry serviceRegistry;
-  private final AlfrescoEntityService documentService;
+  private final AlfrescoDataEntityService documentService;
   private final ListableBeanFactory beanFactory;
   private final AlfrescoNodeConfiguration alfrescoNodeConfiguration;
 
-  public AlfrescoRepositoryFactory(AlfrescoEntityService documentService, ServiceRegistry serviceRegistry, ListableBeanFactory beanFactory, AlfrescoNodeConfiguration alfrescoNodeConfiguration) {
+  public AlfrescoRepositoryFactory(AlfrescoDataEntityService documentService, ServiceRegistry serviceRegistry, ListableBeanFactory beanFactory, AlfrescoNodeConfiguration alfrescoNodeConfiguration) {
     this.serviceRegistry = serviceRegistry;
     this.documentService = documentService;
     this.beanFactory = beanFactory;
@@ -43,6 +44,9 @@ public class AlfrescoRepositoryFactory<T extends Persistable<NodeRef>> extends R
     getEntityInformation((Class<T>)metadata.getDomainType());
     Class<T> domainClass = (Class<T>) metadata.getDomainType();
     AlfrescoNode annotation = domainClass.getAnnotation(AlfrescoNode.class);
+    if(annotation == null){
+      throw new IllegalStateException("Is the domain class annotated with @AlfrescoNode? class: "+domainClass);
+    }
 
     String mapping = RepositoriesUtils.getDefaultPathFor(domainClass);
     alfrescoNodeConfiguration.addDomainMapper(mapping, domainClass);
@@ -50,7 +54,7 @@ public class AlfrescoRepositoryFactory<T extends Persistable<NodeRef>> extends R
     Class<? extends NodePropertiesMapper<? extends Persistable<NodeRef>>> nodeMapperClass = annotation.nodeMapper();
     BeanEntityMapper<T> nodeMapperInstance = null;
     if (UseBeanPropertiesMapper.class.equals(nodeMapperClass)) {
-      nodeMapperInstance = new BeanEntityMapper<T>(serviceRegistry);
+      nodeMapperInstance = new BeanEntityMapper<>(serviceRegistry, domainClass);
     } else {
       nodeMapperInstance = (BeanEntityMapper<T>) beanFactory.getBean(nodeMapperClass);
     }
@@ -61,7 +65,7 @@ public class AlfrescoRepositoryFactory<T extends Persistable<NodeRef>> extends R
     Class<? extends EntityPropertiesMapper<?, ?>> entityMapperClass = annotation.entityMapper();
     EntityPropertiesMapper<?, ?> entityMapperInstance = null;
     if (UseBeanPropertiesMapper.class.equals(entityMapperClass)) {
-      entityMapperInstance = new BeanEntityMapper<T>(serviceRegistry);
+      entityMapperInstance =  new BeanEntityMapper<>(serviceRegistry, domainClass);
     } else {
       entityMapperInstance = beanFactory.getBean(entityMapperClass);
     }

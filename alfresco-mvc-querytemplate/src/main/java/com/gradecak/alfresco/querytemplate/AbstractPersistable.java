@@ -4,6 +4,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Persistable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public abstract class AbstractPersistable implements Persistable<NodeRef> {
 
 	private static final long serialVersionUID = -5554308939380869754L;
@@ -36,6 +38,7 @@ public abstract class AbstractPersistable implements Persistable<NodeRef> {
 	 * 
 	 * @see org.springframework.data.domain.Persistable#isNew()
 	 */
+	@JsonIgnore
 	public boolean isNew() {
 
 		return null == getId();

@@ -1,9 +1,8 @@
-package com.gradecak.alfresco.mvc.data.domain;
+package com.gradecak.alfresco.mvc.sample.domain;
 
 import com.gradecak.alfresco.mvc.data.annotation.AlfrescoNode;
-import com.gradecak.alfresco.mvc.data.mapper.CmFolderPropertiesMapper;
 
-@AlfrescoNode(entityMapper = CmFolderPropertiesMapper.class, nodeMapper = CmFolderPropertiesMapper.class)
+@AlfrescoNode
 public class CmFolder extends CoreNode {
 
   private String cmTitle;

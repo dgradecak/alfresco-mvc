@@ -1,9 +1,8 @@
-package com.gradecak.alfresco.mvc.data.domain;
+package com.gradecak.alfresco.mvc.sample.domain;
 
 import com.gradecak.alfresco.mvc.data.annotation.AlfrescoNode;
-import com.gradecak.alfresco.mvc.data.mapper.CmDocumentPropertiesMapper;
 
-@AlfrescoNode(entityMapper = CmDocumentPropertiesMapper.class, nodeMapper = CmDocumentPropertiesMapper.class)
+@AlfrescoNode
 public class CmDocument extends CoreNode {
 
   private String cmVersionLabel;
@@ -71,11 +70,11 @@ public class CmDocument extends CoreNode {
   public void setDownload(String download) {
     this.download = download;
   }
-  
+
   public String getThumbnail() {
     return thumbnail;
   }
-  
+
   public void setThumbnail(String thumbnail) {
     this.thumbnail = thumbnail;
   }

@@ -8,7 +8,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationSource;
 
 import com.gradecak.alfresco.mvc.aop.AlfrescoProxyRegistrar;
 import com.gradecak.alfresco.mvc.aop.PackageAutoProxyCreator;
-import com.gradecak.alfresco.mvc.data.service.AlfrescoEntityService;
+import com.gradecak.alfresco.mvc.data.service.AlfrescoDataEntityService;
 
 public class AlfrescoRepositoryConfigExtension extends RepositoryConfigurationExtensionSupport {
 
@@ -60,7 +60,7 @@ public class AlfrescoRepositoryConfigExtension extends RepositoryConfigurationEx
   // // TODO think about tx management, not sure it is needed. related to AlfrescoEntityService
   @Override
   public void registerBeansForRoot(BeanDefinitionRegistry registry, RepositoryConfigurationSource config) {
-    AlfrescoProxyRegistrar.registerOrEscalateApcAsRequired(PackageAutoProxyCreator.class, registry, null, AlfrescoEntityService.class.getPackage().getName());
+    AlfrescoProxyRegistrar.registerOrEscalateApcAsRequired(PackageAutoProxyCreator.class, registry, null, AlfrescoDataEntityService.class.getPackage().getName());
   }
 
 }
