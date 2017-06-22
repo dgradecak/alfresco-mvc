@@ -11,3 +11,4 @@ local
 .idea
 *iml
 *.log
+*.log.*

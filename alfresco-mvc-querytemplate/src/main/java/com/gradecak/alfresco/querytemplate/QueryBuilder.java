@@ -136,8 +136,7 @@ public class QueryBuilder {
 
       String convert = value == null ? null : convert(value);
       if (StringUtils.hasText(convert)) {
-        this.or(); // FIXME
-        this.property(entry.getKey()).contains(value);
+        this.or().property(entry.getKey()).contains(value);
       }
     }
 

@@ -59,7 +59,7 @@ public class PackageAutoProxyCreator extends AbstractAutoProxyCreator implements
   }
 
   @Override
-  public void setInterceptorNames(final String[] interceptorNames) {
+  public void setInterceptorNames(final String... interceptorNames) {
     super.setInterceptorNames(withDefaultInterceptorNames(interceptorNames));
   }
 

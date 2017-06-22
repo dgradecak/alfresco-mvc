@@ -37,7 +37,6 @@ public class AlfrescoRepositoryFactoryBean<T extends AlfrescoNodeRepository<S>, 
 
   @Override
   protected RepositoryFactorySupport doCreateRepositoryFactory() {
-    // TODO Auto-generated method stub
     return new AlfrescoRepositoryFactory<S>(documentService, serviceRegistry, beanFactory, alfrescoNodeConfiguration);
   }
 }

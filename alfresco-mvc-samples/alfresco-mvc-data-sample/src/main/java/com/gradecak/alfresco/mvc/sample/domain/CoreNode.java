@@ -1,15 +1,7 @@
 package com.gradecak.alfresco.mvc.sample.domain;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.domain.Persistable;
-
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.google.common.collect.ImmutableMap;
 import com.gradecak.alfresco.querytemplate.AbstractPersistable;
 
 public class CoreNode extends AbstractPersistable {
