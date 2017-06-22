@@ -10,7 +10,7 @@ Personally I do not like webscripts because of the boilerplate code that comes w
 
 Alfresco @MVC consist of several libraries, REST, AOP, QueryTemplate, Spring-DATA. REST and AOP have no third party dependencies, where QueryTemplate and Spring-DATA has. 
 
-Alfresco-MVC QUERY TEMPLATE
+Alfresco-MVC DATA
 ===
 A proof of concept implementation of Spring Data on top of Alfresco. With the combination of Alfresco MVC and Spring Data, developers benefit of a incredible rapid development library.
 
