@@ -208,7 +208,7 @@ Alfresco @MVC comes with a couple of sample applications that are located in /al
                                        http://localhost:8080/alfresco/service/mvc/querytemplate/search (search engine has to be enabled)
                                        
 - alfresco-mvc-data-sample 			=> http://localhost:8080/alfresco/service/mvc/data/document 
-                                       http://localhost:8080/alfresco/service/mvc/folder
+                                       http://localhost:8080/alfresco/service/mvc/data/folder
 
 alfresco-mvc-querytemplate-sample is the most complete sample that reassemble all the features of Alfresco @MVC
 
