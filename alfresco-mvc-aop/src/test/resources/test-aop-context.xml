@@ -15,7 +15,7 @@
     <constructor-arg value="org.alfresco.service.ServiceRegistry" />
   </bean>
   
-  <import resource="classpath:com/gradecak/alfresco-mvc/aop.xml" />
+  <import resource="classpath:com/gradecak/alfresco-mvc/alfresco-mvc-aop.xml" />
 
   <bean id="test.autowiredProcessor" class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
 
