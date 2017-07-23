@@ -8,18 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.support.Repositories;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.gradecak.alfresco.mvc.config.AlfrescoMvcRestConfig;
 import com.gradecak.alfresco.mvc.data.mapper.BeanEntityMapper;
 import com.gradecak.alfresco.mvc.data.service.AlfrescoDataEntityService;
 import com.gradecak.alfresco.mvc.data.support.AlfrescoNodeConfiguration;
 
 @Configuration
-public class AlfrescoMvcDataConfig extends WebMvcConfigurerAdapter {
-    
-  @Autowired(required=false)
+public abstract class AlfrescoMvcDataConfig extends AlfrescoMvcRestConfig {
+
+  @Autowired(required = false)
   List<BeanEntityMapper<?>> mappers;
-  
+
   @Bean
   public AlfrescoNodeConfiguration alfrescoNodeConfiguration(ServiceRegistry serviceRegistry) {
     return new AlfrescoNodeConfiguration(mappers, serviceRegistry);
@@ -29,7 +29,7 @@ public class AlfrescoMvcDataConfig extends WebMvcConfigurerAdapter {
   public Repositories repositories(ListableBeanFactory beanFactory) {
     return new Repositories(beanFactory);
   }
-  
+
   @Bean
   public AlfrescoDataEntityService alfrescoEntityService(ServiceRegistry serviceRegistry) {
     AlfrescoDataEntityService alfrescoEntityService = new AlfrescoDataEntityService();
