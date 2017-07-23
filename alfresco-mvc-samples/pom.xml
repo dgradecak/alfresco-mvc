@@ -1,70 +1,78 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.gradecak.alfresco-mvc</groupId>
-	<version>5.0.0-SNAPSHOT</version>
-	<artifactId>alfresco-mvc-samples-bom</artifactId>
-	<packaging>pom</packaging>
+  <groupId>com.gradecak.alfresco-mvc</groupId>
+  <version>5.0.0-SNAPSHOT</version>
+  <artifactId>alfresco-mvc-samples-bom</artifactId>
+  <packaging>pom</packaging>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<alfresco.groupId>org.alfresco</alfresco.groupId>
-		<alfresco.version>5.2.f</alfresco.version>
-	</properties>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <alfresco.groupId>org.alfresco</alfresco.groupId>
+    <alfresco.version>5.2.f</alfresco.version>
+  </properties>
 
-	<modules>
-		<module>alfresco-mvc-aop-sample</module>
-		<module>alfresco-mvc-rest-sample</module>
-        <module>alfresco-mvc-querytemplate-sample</module>
-        <module>alfresco-mvc-data-sample</module>
-	</modules>
+  <modules>
+    <module>alfresco-mvc-aop-sample</module>
+    <module>alfresco-mvc-rest-sample</module>
+    <module>alfresco-mvc-rest-sample-docs</module>
+    <module>alfresco-mvc-querytemplate-sample</module>
+    <module>alfresco-mvc-data-sample</module>
+    <module>alfresco-mvc-data-rest-sample</module>
+  </modules>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>${alfresco.groupId}</groupId>
-				<artifactId>alfresco-platform-distribution</artifactId>
-				<version>${alfresco.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.gradecak.alfresco-mvc</groupId>
-				<artifactId>alfresco-mvc-bom</artifactId>
-				<version>${project.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>${alfresco.groupId}</groupId>
+        <artifactId>alfresco-platform-distribution</artifactId>
+        <version>${alfresco.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.gradecak.alfresco-mvc</groupId>
+        <artifactId>alfresco-mvc-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
 
-			<dependency>
-				<groupId>com.gradecak.alfresco-mvc</groupId>
-				<artifactId>alfresco-mvc-rest-sample</artifactId>
-				<version>${project.version}</version>
-				<scope>runtime</scope>
-			</dependency>
+      <dependency>
+        <groupId>com.gradecak.alfresco-mvc</groupId>
+        <artifactId>alfresco-mvc-rest-sample</artifactId>
+        <version>${project.version}</version>
+        <scope>runtime</scope>
+      </dependency>
 
-			<dependency>
-				<groupId>com.gradecak.alfresco-mvc</groupId>
-				<artifactId>alfresco-mvc-aop-sample</artifactId>
-				<version>${project.version}</version>
-				<scope>runtime</scope>
-			</dependency>
-			
-			<dependency>
-				<groupId>com.gradecak.alfresco-mvc</groupId>
-				<artifactId>alfresco-mvc-querytemplate-sample</artifactId>
-				<version>${project.version}</version>
-				<scope>runtime</scope>
-			</dependency>
-            
-            <dependency>
-				<groupId>com.gradecak.alfresco-mvc</groupId>
-				<artifactId>alfresco-mvc-data-sample</artifactId>
-				<version>${project.version}</version>
-				<scope>runtime</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+      <dependency>
+        <groupId>com.gradecak.alfresco-mvc</groupId>
+        <artifactId>alfresco-mvc-aop-sample</artifactId>
+        <version>${project.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.gradecak.alfresco-mvc</groupId>
+        <artifactId>alfresco-mvc-querytemplate-sample</artifactId>
+        <version>${project.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.gradecak.alfresco-mvc</groupId>
+        <artifactId>alfresco-mvc-data-sample</artifactId>
+        <version>${project.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.gradecak.alfresco-mvc</groupId>
+        <artifactId>alfresco-mvc-data-rest-sample</artifactId>
+        <version>${project.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
 </project>
