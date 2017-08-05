@@ -13,7 +13,7 @@ pipelines:
           - maven
         script:
           - bash configure-maven.sh
-          - mvn -V B -s settings.xml deploy -DaltDeploymentRepository=Gradecak-Repo::default::ftp://ftp.gradecak.com:23131/snapshots
+          - mvn -V B deploy -DaltDeploymentRepository=Gradecak-Repo::default::ftp://ftp.gradecak.com:23131/snapshots
           
    dev:
      - step:
@@ -21,7 +21,7 @@ pipelines:
           - maven
         script:
           - bash configure-maven.sh
-          - mvn -V B -s settings.xml deploy -DaltDeploymentRepository=Gradecak-Repo::default::ftp://ftp.gradecak.com:23131/snapshots
+          - mvn -V B deploy -DaltDeploymentRepository=Gradecak-Repo::default::ftp://ftp.gradecak.com:23131/snapshots
     
    master:
     - step:
@@ -29,7 +29,7 @@ pipelines:
           - maven
         script:
           - bash configure-maven.sh
-          - mvn -V B -s settings.xml deploy -DaltDeploymentRepository=Gradecak-Repo::default::ftp://ftp.gradecak.com:23131/releases
+          - mvn -V B deploy -DaltDeploymentRepository=Gradecak-Repo::default::ftp://ftp.gradecak.com:23131/releases
           
   default:
     - step:
