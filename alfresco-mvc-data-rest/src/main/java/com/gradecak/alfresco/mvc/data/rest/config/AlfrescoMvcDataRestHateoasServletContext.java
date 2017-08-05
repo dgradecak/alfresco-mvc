@@ -73,7 +73,8 @@ public class AlfrescoMvcDataRestHateoasServletContext extends AlfrescoMvcDataSer
     HalHandlerInstantiator instantiator = new HalHandlerInstantiator(getDefaultedRelProvider(), curieProvider);
 
     ObjectMapper mapper = objectMapper();
-    mapper.registerModule(new Jackson2HalModule());
+    //mapper.registerModule(new Jackson2HalModule()); 
+    // hal module cannot be used for now with older spring versions https://github.com/spring-projects/spring-boot/issues/6168 https://github.com/spring-projects/spring-boot/issues/5758
     mapper.setHandlerInstantiator(instantiator);
 
     configureJacksonObjectMapper(mapper);

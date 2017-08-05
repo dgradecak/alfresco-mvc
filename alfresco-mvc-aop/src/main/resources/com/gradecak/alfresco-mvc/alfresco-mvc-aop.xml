@@ -29,7 +29,8 @@
     <property name="order" value="${mvc.aop.alfrescoRunAsAdvisor.order:100}" />
   </bean>
 
-  <bean id="mvc.aop.runAsPointcutAnnotation" class="org.springframework.aop.support.annotation.AnnotationMatchingPointcut" factory-method="forMethodAnnotation">
+  <bean id="mvc.aop.runAsPointcutAnnotation" class="org.springframework.aop.support.annotation.AnnotationMatchingPointcut"
+    factory-method="forMethodAnnotation">
     <constructor-arg value="com.gradecak.alfresco.mvc.annotation.AlfrescoRunAs" />
   </bean>
   <bean id="mvc.aop.runAsAdvice" class="com.gradecak.alfresco.mvc.aop.RunAsAdvice" />
