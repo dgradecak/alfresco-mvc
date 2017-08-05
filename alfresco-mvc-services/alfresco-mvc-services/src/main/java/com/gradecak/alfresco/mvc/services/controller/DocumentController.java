@@ -29,9 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import com.gradecak.alfresco.mvc.HateaosUtils;
 import com.gradecak.alfresco.mvc.data.domain.CoreVersion;
 import com.gradecak.alfresco.mvc.data.mapper.MapEntityMapper;
+import com.gradecak.alfresco.mvc.data.rest.controller.AbstractController;
+import com.gradecak.alfresco.mvc.data.rest.controller.HateaosUtils;
 import com.gradecak.alfresco.mvc.services.domain.ContainerDocument;
 import com.gradecak.alfresco.mvc.services.domain.CoreTask;
 import com.gradecak.alfresco.mvc.services.domain.CoreWorkflow;
@@ -40,8 +41,8 @@ import com.gradecak.alfresco.mvc.services.mapper.ContainerDocumentPropertiesMapp
 import com.gradecak.alfresco.mvc.services.service.TenantDocumentService;
 
 @Controller
-@RequestMapping("/document")
-public class DocumentController {
+@RequestMapping(DocumentController.BASE_REQUEST_MAPPING)
+public class DocumentController extends AbstractController {
   private final TenantDocumentService documentService;
   private final ServiceRegistry serviceRegistry;
   private final ContainerDocumentPropertiesMapper mapper;
@@ -57,28 +58,6 @@ public class DocumentController {
     this.mapper = mapper;
   }
 
-  @RequestMapping(value = "{documentId}", method = { RequestMethod.GET })
-  @ResponseBody
-  public ResponseEntity<?> get(@PathVariable String documentId) {
-    try {
-      ContainerDocument document = documentService.get(new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, documentId), mapper);
-      return ControllerUtils.toResponseEntity(document);
-    } catch (AccessDeniedException e) {
-      return ControllerUtils.toEmptyResponseEntity(HttpStatus.NOT_FOUND);
-    }
-  }
-
-  @RequestMapping(value = "/history/{documentId}", method = { RequestMethod.GET })
-  @ResponseBody
-  public ResponseEntity<?> version(@PathVariable String documentId) {
-    try {
-      ContainerDocument document = documentService.get(new NodeRef(StoreRef.PROTOCOL_WORKSPACE, Version2Model.STORE_ID, documentId), mapper);
-      return ControllerUtils.toResponseEntity(document);
-    } catch (AccessDeniedException e) {
-      return ControllerUtils.toEmptyResponseEntity(HttpStatus.NOT_FOUND);
-    }
-  }
-
   @RequestMapping(value = "{documentId}/versions", method = { RequestMethod.GET })
   @ResponseBody
   public ResponseEntity<?> versions(@PathVariable String documentId) {
@@ -90,42 +69,20 @@ public class DocumentController {
     }
   }
 
-  @RequestMapping(value = "{documentId}/{version}/v", method = { RequestMethod.GET })
-  @ResponseBody
-  public ResponseEntity<?> history(@PathVariable String documentId, @PathVariable String version) {
-    try {
-      CoreVersion snapshot = documentService.getVersion(new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, documentId), mapper, version);
-      return ControllerUtils.toResponseEntity(snapshot);
-    } catch (AccessDeniedException e) {
-      return ControllerUtils.toEmptyResponseEntity(HttpStatus.NOT_FOUND);
-    }
-  }
-
-  @RequestMapping(value = "{documentId}", method = { RequestMethod.DELETE })
-  @ResponseBody
-  public ResponseEntity<?> delete(@PathVariable String documentId) {
-    try {
-      documentService.delete(new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, documentId));
-      return ControllerUtils.toEmptyResponseEntity();
-    } catch (AccessDeniedException e) {
-      return ControllerUtils.toEmptyResponseEntity(HttpStatus.NOT_FOUND);
-    }
-  }
-
-  @RequestMapping(value = "{documentId}", method = { RequestMethod.PUT, RequestMethod.POST })
-  @ResponseBody
-  public ResponseEntity<?> update(@PathVariable String documentId, @RequestParam("data") String data, @RequestParam(value = "filedata", required = false) final MultipartFile file) {
-    try {
-      MapEntityMapper mapper = new MapEntityMapper(serviceRegistry);
-      Map<QName, Serializable> entityProperties = mapper.mapEntity(null, new ObjectMapper().readValue(data, new TypeReference<HashMap<String, Object>>() {}));
-      documentService.update(new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, documentId), entityProperties, file != null ? file.getInputStream() : null);
-      return ControllerUtils.toEmptyResponseEntity();
-    } catch (AccessDeniedException e) {
-      return ControllerUtils.toEmptyResponseEntity(HttpStatus.NOT_FOUND);
-    } catch (Exception e) {
-      return ControllerUtils.toEmptyResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+//  @RequestMapping(value = "{documentId}", method = { RequestMethod.PUT, RequestMethod.POST })
+//  @ResponseBody
+//  public ResponseEntity<?> update(@PathVariable String documentId, @RequestParam("data") String data, @RequestParam(value = "filedata", required = false) final MultipartFile file) {
+//    try {
+//      MapEntityMapper mapper = new MapEntityMapper(serviceRegistry);
+//      Map<QName, Serializable> entityProperties = mapper.mapEntity(null, new ObjectMapper().readValue(data, new TypeReference<HashMap<String, Object>>() {}));
+//      documentService.update(new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, documentId), entityProperties, file != null ? file.getInputStream() : null);
+//      return ControllerUtils.toEmptyResponseEntity();
+//    } catch (AccessDeniedException e) {
+//      return ControllerUtils.toEmptyResponseEntity(HttpStatus.NOT_FOUND);
+//    } catch (Exception e) {
+//      return ControllerUtils.toEmptyResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
+//  }
 
   @RequestMapping(value = "{documentId}/notes", method = { RequestMethod.GET })
   @ResponseBody

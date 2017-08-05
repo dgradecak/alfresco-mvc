@@ -35,7 +35,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Persistable;
 import org.springframework.util.Assert;
 
-public class BeanPropertiesMapper<T extends Persistable<NodeRef>> implements NodePropertiesMapper<T> {
+public abstract class BeanPropertiesMapper<T extends Persistable<NodeRef>> implements NodePropertiesMapper<T> {
 
   protected final ServiceRegistry serviceRegistry;
   protected Class<T> mappedClass;
@@ -170,5 +170,9 @@ public class BeanPropertiesMapper<T extends Persistable<NodeRef>> implements Nod
       }
     }
     return result.toString();
+  }
+  
+  public ServiceRegistry getServiceRegistry() {
+    return serviceRegistry;
   }
 }

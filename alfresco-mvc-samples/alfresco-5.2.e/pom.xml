@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>org.alfresco</groupId>
 			<artifactId>alfresco</artifactId>
-			<version>5.2.e</version>
+			<version>5.2.d</version>
 			<type>war</type>
 			<scope>runtime</scope>
 		</dependency>
