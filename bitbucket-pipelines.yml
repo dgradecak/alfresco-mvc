@@ -1,4 +1,4 @@
-# This is a sample build configuration for Java – Maven.
+# This is a sample build configuration for Java â€“ Maven.
 # Check our guides at https://confluence.atlassian.com/x/zd-5Mw for more examples.
 # Only use spaces to indent your .yml configuration.
 # -----
@@ -7,24 +7,24 @@ image: maven:3.3.9
 
 pipelines:
   branches:
-   *-SNAPSHOT:
-      - step:
+   5.0.0-SNAPSHOT:
+    - step:
         caches:
           - maven
         script:
           - bash configure-maven.sh
           - mvn -V B -s settings.xml deploy -DaltDeploymentRepository=Gradecak-Repo::default::ftp://ftp.gradecak.com:23131/snapshots
           
-    dev:
-      - step:
+   dev:
+     - step:
         caches:
           - maven
         script:
           - bash configure-maven.sh
           - mvn -V B -s settings.xml deploy -DaltDeploymentRepository=Gradecak-Repo::default::ftp://ftp.gradecak.com:23131/snapshots
     
-    master:
-      - step:
+   master:
+    - step:
         caches:
           - maven
         script:
