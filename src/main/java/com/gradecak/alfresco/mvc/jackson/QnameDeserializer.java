@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.converter;
+package com.gradecak.alfresco.mvc.jackson;
 
 import java.io.IOException;
 
@@ -26,6 +26,9 @@ import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.springframework.util.StringUtils;
 
+/**
+ * @deprecated
+ */
 public class QnameDeserializer extends JsonDeserializer<QName> {
 
   private ServiceRegistry serviceRegistry;

@@ -6,14 +6,17 @@ as in a medium sized application that becomes unmaintainable. That is why I wrot
 This small library enables the usage of Spring @MVC within Alfresco. Instead of writing webscripts and all the glue configuration that goes with that, you can simply write Springframework 
 Controllers, Services/Components, ... with Spring annotations.
 
-This library is deployed as an alfresco module (jar packaged) and offers some out of the box configurations for webscript bindings. The entry endpoint is bydefault /mvc only if the DispatcherWebscript
-is configured as follows.
+This library is deployed as an alfresco module (jar packaged) and offers some out of the box configurations for webscript bindings. The entry endpoint is bydefault /mvc if the library is bootstrap
+in the following way:
 
 
 ```
-<bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript" parent="webscript">
-    <property name="contextConfigLocation" value="classpath:alfresco/module/YOUR-MODULE/context/servlet-context.xml" />
-</bean>
+ <bean id="alfrescoMvcBean" class="com.gradecak.alfresco.mvc.bootstrap.MVCBootstrapper" parent="repositoryEndBootstrapBean">
+    <property name="contextConfigLocation" value="classpath:alfresco/module/efiles-common-repo/context/servlet-context.xml" />
+  </bean>
+
+ <alias name="mvc.dispatcherWebscript" alias="webscript.alfresco-mvc.mvc.get"/>
+
 ```
 
 Surely, you can configure any other webscript descriptor.
@@ -125,7 +128,7 @@ There is more things to add, so TBC ...
 Alfresco versions
 ----
 - Works on Enterprise as well as on community.
-- Tested with Alfresco Community 3.4.d, 4.0.x, 4.2.x, 5.0.a, 5.0.d, 5.1.e, 5.2.f
+- Tested with Alfresco Community 3.4.d, 4.0.x, 4.2.x, 5.0.a, 5.0.d, 5.1.e, 5.2.f, 5.2.g
 - Tested with Alfresco Enterprise 3.4.5, 4.1.5, 4.2.1, 5.1.x, 5.2.x
 
 Distribution (TODO as it is not yet inline with the latests @MVC library)

@@ -25,22 +25,20 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 import org.springframework.extensions.webscripts.WrappingWebScriptResponse;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletRequest;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletResponse;
-import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.util.JavaScriptUtils;
@@ -48,13 +46,11 @@ import org.springframework.web.util.NestedServletException;
 
 import com.gradecak.alfresco.mvc.ResponseMapBuilder;
 
-public class DispatcherWebscript extends AbstractWebScript implements ServletContextAware, ApplicationContextAware, InitializingBean {
+public class DispatcherWebscript extends AbstractWebScript {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
 
   private DispatcherServlet s;
-  private String contextConfigLocation;
-  private ApplicationContext applicationContext;
   private ServletContext servletContext;
 
   public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -75,7 +71,6 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     try {
       s.service(wrapper, sr);
     } catch (Throwable e) {
-      LOGGER.error("MVC could not proceed", e);
       convertExceptionToJson(e, sr);
     }
 
@@ -101,7 +96,9 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     objectMapper.writeValue(res.getOutputStream(), builder.build());
   }
 
-  public void afterPropertiesSet() throws Exception {
+  public void initialize(final ApplicationContext applicationContext, ServletContext servletContext, String contextConfigLocation) throws ServletException {
+
+    setServletContext(servletContext);
 
     s = new DispatcherServlet() {
 
@@ -120,14 +117,6 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
     s.setContextConfigLocation(contextConfigLocation);
     s.init(new DelegatingServletConfig());
-  }
-
-  public void setContextConfigLocation(String contextConfigLocation) {
-    this.contextConfigLocation = contextConfigLocation;
-  }
-
-  public void setApplicationContext(ApplicationContext applicationContext) {
-    this.applicationContext = applicationContext;
   }
 
   public void setServletContext(ServletContext servletContext) {
