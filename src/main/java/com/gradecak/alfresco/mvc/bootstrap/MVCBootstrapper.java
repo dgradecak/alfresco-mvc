@@ -14,7 +14,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 /**
- * Created by pereirat on 11/10/2017.
+ * Created by mauro1855 on 11/10/2017.
  */
 public class MVCBootstrapper extends RepositoryEndBootstrapBean implements ServletContextAware {
 
