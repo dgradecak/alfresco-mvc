@@ -52,4 +52,6 @@
     <property name="serviceRegistry" ref="ServiceRegistry" />
   </bean>
 
+  <bean id="mvc.dispatcherWebscript" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript" parent="webscript"/>
+
 </beans>
