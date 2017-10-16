@@ -16,6 +16,7 @@
 
 package com.gradecak.alfresco.mvc.webscript;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
@@ -57,6 +58,20 @@ public class DispatcherWebscriptTest {
     Assert.assertTrue(res.getStatus() == 200);
     Assert.assertEquals("{\"data\":\"testId\",\"total\":1,\"success\":true}", res.getContentAsString());
   }
+  
+  @Test
+  public void requestGet_withHeaders_responseOk() throws Exception {
+    MockHttpServletResponse res = mockWebscript.withHeaders(ImmutableMap.of("header-key", (Object)"header-value")).withControllerMapping("test/getHeaders").execute();
+    Assert.assertTrue(res.getStatus() == 200);
+    Assert.assertEquals("{\"data\":{\"Content-Type\":\"application/json\",\"header-key\":\"header-value\"},\"total\":1,\"success\":true}", res.getContentAsString());
+  }
+  
+  @Test
+  public void requestGet_withCookies_responseOk() throws Exception {
+    MockHttpServletResponse res = mockWebscript.withCookies(new Cookie("cookie-key","cookie-value")).withControllerMapping("test/getCookies").execute();
+    Assert.assertTrue(res.getStatus() == 200);
+    Assert.assertEquals("{\"data\":[{\"name\":\"cookie-key\",\"value\":\"cookie-value\",\"comment\":null,\"domain\":null,\"maxAge\":-1,\"path\":null,\"secure\":false,\"version\":0,\"httpOnly\":false}],\"total\":1,\"success\":true}", res.getContentAsString());
+  }
 
   @Test
   public void requestPost_withParams_responseOk() throws Exception {
@@ -64,7 +79,7 @@ public class DispatcherWebscriptTest {
     Assert.assertTrue(res.getStatus() == 200);
     Assert.assertEquals("{\"data\":\"testId\",\"total\":1,\"success\":true}", res.getContentAsString());
   }
-  
+
   @Test
   public void requestPost_responseOk() throws Exception {
     MockHttpServletResponse res = mockWebscript.withPostRequest().withControllerMapping("test/post2").execute();
@@ -97,21 +112,21 @@ public class DispatcherWebscriptTest {
     Assert.assertTrue(res.getStatus() == 405);
     Assert.assertEquals("Request method 'POST' not supported", res.getErrorMessage());
   }
-  
+
   @Test
   public void requestDelete_responseOk() throws Exception {
     MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.DELETE).withControllerMapping("test/delete").execute();
     Assert.assertTrue(res.getStatus() == 200);
     Assert.assertEquals("{\"success\":true}", res.getContentAsString());
   }
-  
+
   @Test
   public void requestPut_responseOk() throws Exception {
     MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.PUT).withControllerMapping("test/delete").execute();
     Assert.assertTrue(res.getStatus() == 200);
     Assert.assertEquals("{\"success\":true}", res.getContentAsString());
   }
-  
+
   @Test
   public void requestHead_response405() throws Exception {
     MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.HEAD).withControllerMapping("test/delete").execute();
