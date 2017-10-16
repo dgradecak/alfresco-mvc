@@ -19,6 +19,9 @@ package com.gradecak.alfresco.mvc.webscript.mock;
 import static org.mockito.Mockito.mock;
 
 import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.servlet.http.Cookie;
 
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Match;
@@ -41,7 +44,7 @@ public class MockWebscriptServletRequest extends WebScriptServletRequest {
   }
 
   static public MockWebscriptServletRequest createMockWebscriptServletRequest(AbstractWebScript webScript, String method, String webscriptUrl, String controllerMapping,
-      final Map<String, String> parameters, final Map<String, String> body) {
+      final Map<String, String> parameters, final Map<String, String> body, final Cookie[] cookies, final Map<String, Object> headers) {
     Match match = new Match(null, ImmutableMap.of("", ""), webscriptUrl, webScript);
     MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest(method, "http://localhost/alfresco" + webscriptUrl + controllerMapping);
     mockHttpServletRequest.setServletPath("alfresco");
@@ -49,6 +52,14 @@ public class MockWebscriptServletRequest extends WebScriptServletRequest {
     mockHttpServletRequest.setContentType("application/json");
     if (parameters != null) {
       mockHttpServletRequest.setParameters(parameters);
+    }
+    if (cookies != null) {
+      mockHttpServletRequest.setCookies(cookies);
+    }
+    if (headers != null && !headers.isEmpty()) {
+      for (Entry<String, Object> headerEntry : headers.entrySet()) {
+        mockHttpServletRequest.addHeader(headerEntry.getKey(), headerEntry.getValue());
+      }
     }
     try {
       if (HttpMethod.POST.name().equals(method) && body != null) {

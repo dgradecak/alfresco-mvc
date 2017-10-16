@@ -23,6 +23,8 @@ import static org.mockito.Mockito.mock;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Container;
 import org.springframework.extensions.webscripts.Description;
@@ -44,6 +46,8 @@ public class MockWebscript {
   private String controllerMapping;
   private Container container = getMockedContainer();
   private Description description = getMockedDescription();
+  private Cookie[] cookies;
+  private Map<String, Object> headers;
 
   public MockWebscript(final AbstractWebScript webScript) {
     this.webScript = webScript;
@@ -66,7 +70,7 @@ public class MockWebscript {
     this.parameters = parameters;
     return this;
   }
-  
+
   public MockWebscript withBody(final Map<String, String> body) {
     this.body = body;
     return this;
@@ -97,17 +101,27 @@ public class MockWebscript {
   // return this;
   // }
 
-  public MockHttpServletResponse execute() {
-    return doRequest(webScript, container, description, method.name(), parameters, body, webscriptUrl, controllerMapping);
+  public MockWebscript withCookies(Cookie... cookies) {
+    this.cookies = cookies;
+    return this;
   }
 
-  private MockHttpServletResponse doRequest(AbstractWebScript webScript, Container container, Description description, String method, Map<String, String> parameters, Map<String, String> body, String webscriptUrl,
-      String controllerMapping) {
+  public MockWebscript withHeaders(Map<String, Object> headers) {
+    this.headers = headers;
+    return this;
+  }
+
+  public MockHttpServletResponse execute() {
+    return doRequest(webScript, container, description, method.name(), parameters, body, webscriptUrl, controllerMapping, cookies, headers);
+  }
+
+  private MockHttpServletResponse doRequest(AbstractWebScript webScript, Container container, Description description, String method, Map<String, String> parameters, Map<String, String> body,
+      String webscriptUrl, String controllerMapping, Cookie[] cookies, Map<String, Object> headers) {
     webScript.init(container, description);
 
     MockWebScriptResponse mockedResponse = MockWebScriptResponse.createMockWebScriptResponse();
     try {
-      webScript.execute(MockWebscriptServletRequest.createMockWebscriptServletRequest(webScript, method, webscriptUrl, controllerMapping, parameters, body), mockedResponse);
+      webScript.execute(MockWebscriptServletRequest.createMockWebscriptServletRequest(webScript, method, webscriptUrl, controllerMapping, parameters, body, cookies, headers), mockedResponse);
     } catch (IOException e) {
       Throwables.propagate(e);
     }

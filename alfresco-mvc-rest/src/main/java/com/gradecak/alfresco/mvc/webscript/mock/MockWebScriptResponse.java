@@ -22,15 +22,15 @@ import org.springframework.extensions.webscripts.Runtime;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletResponse;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class MockWebScriptResponse extends WebScriptServletResponse{
-  
+public class MockWebScriptResponse extends WebScriptServletResponse {
+
   private MockHttpServletResponse mockHttpServletResponse;
-  
+
   private MockWebScriptResponse(Runtime mockedRuntime, MockHttpServletResponse mockHttpServletResponse) {
     super(mockedRuntime, mockHttpServletResponse);
     this.mockHttpServletResponse = mockHttpServletResponse;
   }
-  
+
   public MockHttpServletResponse getMockHttpServletResponse() {
     return mockHttpServletResponse;
   }
