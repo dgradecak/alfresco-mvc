@@ -37,7 +37,7 @@ import com.gradecak.alfresco.mvc.webscript.mock.MockWebscript;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DispatcherWebscriptTest {
+public class DispatcherWebscriptMockitoRunnerTest {
 
   private @Spy DispatcherWebscript webScript;
 
@@ -51,7 +51,7 @@ public class DispatcherWebscriptTest {
     webScript.setContextConfigLocation("test-webscriptdispatcher-context.xml");
     
     ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext();
-    applicationContext.setConfigLocation("test-context.xml");
+    applicationContext.setConfigLocation("web-context-test.xml");
     applicationContext.refresh();
     webScript.setApplicationContext(applicationContext);
     webScript.onApplicationEvent(new ContextRefreshedEvent(applicationContext));

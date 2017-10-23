@@ -16,4 +16,16 @@
     <constructor-arg value="org.alfresco.service.ServiceRegistry" />
   </bean>
 
+  <bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript">
+    <property name="contextConfigLocation" value="classpath:test-webscriptdispatcher-context.xml" />
+  </bean>
+  <alias name="webscript.alfresco-mvc.mvc.post" alias="webscript.alfresco-mvc.mvc.get" />
+  <alias name="webscript.alfresco-mvc.mvc.post" alias="webscript.alfresco-mvc.mvc.delete" />
+
+  <bean class="org.springframework.mock.web.MockServletContext" id="mockServletContext" />
+
+  <bean class="org.springframework.web.context.support.ServletContextAwareProcessor">
+    <constructor-arg ref="mockServletContext" />
+  </bean>
+
 </beans>
