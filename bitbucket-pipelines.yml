@@ -7,7 +7,7 @@ image: maven:3.3.9
 
 pipelines:
   branches:
-   5.0.0-SNAPSHOT:
+   feature/*:
     - step:
         caches:
           - maven
