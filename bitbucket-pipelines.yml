@@ -8,7 +8,7 @@ image: maven:3.3.9
 pipelines:
   branches:
    feature/*:
-    - step:
+     - step:
         caches:
           - maven
         script:
