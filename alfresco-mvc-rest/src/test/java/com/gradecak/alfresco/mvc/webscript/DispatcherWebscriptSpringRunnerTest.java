@@ -26,8 +26,11 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -49,6 +52,13 @@ public class DispatcherWebscriptSpringRunnerTest {
   public void before() throws Exception {
     MockitoAnnotations.initMocks(this);
 
+    webScript.setServletContext(new MockServletContext());
+    webScript.setContextConfigLocation("test-webscriptdispatcher-context.xml");
+    ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext();
+    applicationContext.refresh();
+    webScript.setApplicationContext(applicationContext);
+    webScript.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
+
     mockWebscript = MockWebscriptBuilder.singleWebscript(webScript);
   }
 
@@ -58,19 +68,21 @@ public class DispatcherWebscriptSpringRunnerTest {
     Assert.assertTrue(res.getStatus() == 200);
     Assert.assertEquals("{\"data\":\"testId\",\"total\":1,\"success\":true}", res.getContentAsString());
   }
-  
+
   @Test
   public void requestGet_withHeaders_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withHeaders(ImmutableMap.of("header-key", (Object)"header-value")).withControllerMapping("test/getHeaders").execute();
+    MockHttpServletResponse res = mockWebscript.withHeaders(ImmutableMap.of("header-key", (Object) "header-value")).withControllerMapping("test/getHeaders").execute();
     Assert.assertTrue(res.getStatus() == 200);
     Assert.assertEquals("{\"data\":{\"Content-Type\":\"application/json\",\"header-key\":\"header-value\"},\"total\":1,\"success\":true}", res.getContentAsString());
   }
-  
+
   @Test
   public void requestGet_withCookies_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withCookies(new Cookie("cookie-key","cookie-value")).withControllerMapping("test/getCookies").execute();
+    MockHttpServletResponse res = mockWebscript.withCookies(new Cookie("cookie-key", "cookie-value")).withControllerMapping("test/getCookies").execute();
     Assert.assertTrue(res.getStatus() == 200);
-    Assert.assertEquals("{\"data\":[{\"name\":\"cookie-key\",\"value\":\"cookie-value\",\"comment\":null,\"domain\":null,\"maxAge\":-1,\"path\":null,\"secure\":false,\"version\":0,\"httpOnly\":false}],\"total\":1,\"success\":true}", res.getContentAsString());
+    Assert.assertEquals(
+        "{\"data\":[{\"name\":\"cookie-key\",\"value\":\"cookie-value\",\"comment\":null,\"domain\":null,\"maxAge\":-1,\"path\":null,\"secure\":false,\"version\":0,\"httpOnly\":false}],\"total\":1,\"success\":true}",
+        res.getContentAsString());
   }
 
   @Test

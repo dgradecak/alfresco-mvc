@@ -49,7 +49,7 @@ public class DispatcherWebscriptMockitoRunnerTest {
 
     webScript.setServletContext(new MockServletContext());
     webScript.setContextConfigLocation("test-webscriptdispatcher-context.xml");
-    
+
     ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext();
     applicationContext.setConfigLocation("web-context-test.xml");
     applicationContext.refresh();
@@ -65,19 +65,21 @@ public class DispatcherWebscriptMockitoRunnerTest {
     Assert.assertTrue(res.getStatus() == 200);
     Assert.assertEquals("{\"data\":\"testId\",\"total\":1,\"success\":true}", res.getContentAsString());
   }
-  
+
   @Test
   public void requestGet_withHeaders_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withHeaders(ImmutableMap.of("header-key", (Object)"header-value")).withControllerMapping("test/getHeaders").execute();
+    MockHttpServletResponse res = mockWebscript.withHeaders(ImmutableMap.of("header-key", (Object) "header-value")).withControllerMapping("test/getHeaders").execute();
     Assert.assertTrue(res.getStatus() == 200);
     Assert.assertEquals("{\"data\":{\"Content-Type\":\"application/json\",\"header-key\":\"header-value\"},\"total\":1,\"success\":true}", res.getContentAsString());
   }
-  
+
   @Test
   public void requestGet_withCookies_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withCookies(new Cookie("cookie-key","cookie-value")).withControllerMapping("test/getCookies").execute();
+    MockHttpServletResponse res = mockWebscript.withCookies(new Cookie("cookie-key", "cookie-value")).withControllerMapping("test/getCookies").execute();
     Assert.assertTrue(res.getStatus() == 200);
-    Assert.assertEquals("{\"data\":[{\"name\":\"cookie-key\",\"value\":\"cookie-value\",\"comment\":null,\"domain\":null,\"maxAge\":-1,\"path\":null,\"secure\":false,\"version\":0,\"httpOnly\":false}],\"total\":1,\"success\":true}", res.getContentAsString());
+    Assert.assertEquals(
+        "{\"data\":[{\"name\":\"cookie-key\",\"value\":\"cookie-value\",\"comment\":null,\"domain\":null,\"maxAge\":-1,\"path\":null,\"secure\":false,\"version\":0,\"httpOnly\":false}],\"total\":1,\"success\":true}",
+        res.getContentAsString());
   }
 
   @Test

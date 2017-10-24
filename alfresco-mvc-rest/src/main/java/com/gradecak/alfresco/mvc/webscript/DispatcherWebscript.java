@@ -157,7 +157,7 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
   public void onApplicationEvent(ContextRefreshedEvent event) {
     ApplicationContext refreshContext = event.getApplicationContext();
     if (refreshContext != null && refreshContext.equals(applicationContext)) {
-      
+
       s = new DispatcherServlet() {
 
         private static final long serialVersionUID = -7492692694742840997L;
@@ -186,8 +186,6 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
       }
     }
   }
-
-
 
   public void configureDispatcherServlet(DispatcherServlet dispatcherServlet) {}
 

@@ -248,11 +248,11 @@ Latest snapshot version comes with a BOM:
 
 Latest release version:
 ```
-  <dependency>
-    <groupId>com.gradecak.alfresco</groupId>
-    <artifactId>alfresco-mvc</artifactId>
-    <version>4.0.1-RELEASE</version>
-  </dependency>
+<dependency>
+  <groupId>com.gradecak.alfresco</groupId>
+  <artifactId>alfresco-mvc</artifactId>
+  <version>4.5.0-RELEASE</version>
+</dependency>
 ```
 
 Maven repositories:
