@@ -187,8 +187,8 @@ There is more things to add, so TBC ...
 Alfresco versions
 ----
 - Works on Enterprise as well as on community.
-- Tested with Alfresco Community 3.4.d, 4.0.x, 4.2.x, 5.0.a, 5.0.d
-- Tested with Alfresco Enterprise 3.4.5, 4.1.5, 4.2.1, 5.1
+- Tested with Alfresco Community 3.4.d, 4.0.x, 4.2.x, 5.0.a, 5.0.d, 5.1.e, 5.2.f
+- Tested with Alfresco Enterprise 3.4.5, 4.1.5, 4.2.1, 5.1.x, 5.2.x
 
 Distribution (TODO as it is not yet inline with the latests @MVC library)
 ----
