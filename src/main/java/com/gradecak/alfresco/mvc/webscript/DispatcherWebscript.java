@@ -27,14 +27,16 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.dao.DataAccessException;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.WebScriptRequest;
@@ -51,25 +53,26 @@ import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.NestedServletException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Throwables;
 import com.gradecak.alfresco.mvc.LocalHttpServletResponse;
 import com.gradecak.alfresco.mvc.ResponseMapBuilder;
 
-public class DispatcherWebscript extends AbstractWebScript implements ServletContextAware, ApplicationContextAware, InitializingBean {
+public class DispatcherWebscript extends AbstractWebScript implements ApplicationListener<ContextRefreshedEvent>, ServletContextAware, ApplicationContextAware {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
 
-  protected DispatcherServlet s;  
+  protected DispatcherServlet s;
   private String contextConfigLocation;
   private Class<?> contextClass;
   private ApplicationContext applicationContext;
   private ServletContext servletContext;
-  
+
   private final String servletName;
-  
+
   public DispatcherWebscript() {
     this.servletName = "Alfresco @MVC Dispatcher Webscript";
   }
-  
+
   public DispatcherWebscript(final String servletName) {
     Assert.hasText(servletName);
     this.servletName = servletName;
@@ -110,7 +113,7 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
 
     wsr.setStatus(mockHttpServletResponse.getStatus());
     String contentType = mockHttpServletResponse.getContentType();
-    if(StringUtils.hasText(contentType)) {
+    if (StringUtils.hasText(contentType)) {
       wsr.setContentType(contentType);
     }
 
@@ -152,30 +155,37 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
     writeResponseToWebscript(wsr, mockHttpServletResponse);
   }
 
-  public void afterPropertiesSet() throws Exception {
+  public void onApplicationEvent(ContextRefreshedEvent event) {
+    ApplicationContext refreshContext = event.getApplicationContext();
+    if (refreshContext != null && refreshContext.equals(applicationContext)) {
 
-    s = new DispatcherServlet() {
+      s = new DispatcherServlet() {
 
-      private static final long serialVersionUID = -7492692694742840997L;
+        private static final long serialVersionUID = -7492692694742840997L;
 
-      @Override
-      protected WebApplicationContext initWebApplicationContext() {
-        WebApplicationContext wac = createWebApplicationContext(applicationContext);
-        if (wac == null) {
-          wac = super.initWebApplicationContext();
+        @Override
+        protected WebApplicationContext initWebApplicationContext() {
+          WebApplicationContext wac = createWebApplicationContext(applicationContext);
+          if (wac == null) {
+            wac = super.initWebApplicationContext();
+          }
+          return wac;
         }
-        return wac;
+
+      };
+
+      if (contextClass != null) {
+        s.setContextClass(contextClass);
       }
+      s.setContextConfigLocation(contextConfigLocation);
+      configureDispatcherServlet(s);
 
-    };
-
-    if(contextClass != null) {
-      s.setContextClass(contextClass);
+      try {
+        s.init(new DelegatingServletConfig(servletName));
+      } catch (ServletException e) {
+        Throwables.propagate(e);
+      }
     }
-    s.setContextConfigLocation(contextConfigLocation);
-    configureDispatcherServlet(s);
-
-    s.init(new DelegatingServletConfig(servletName));
   }
 
   public void configureDispatcherServlet(DispatcherServlet dispatcherServlet) {}
@@ -216,8 +226,9 @@ public class DispatcherWebscript extends AbstractWebScript implements ServletCon
    * Internal implementation of the {@link ServletConfig} interface, to be passed to the servlet adapter.
    */
   public class DelegatingServletConfig implements ServletConfig {
-    
+
     final private String name;
+
     public DelegatingServletConfig(final String name) {
       Assert.hasText(name);
       this.name = name;
