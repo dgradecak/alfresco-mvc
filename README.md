@@ -193,14 +193,13 @@ List<Document> documentList = new QueryTemplate(serviceRegistry).queryForList(ne
 
 Supported Alfresco versions
 ----
-- Tested with Alfresco Community 5.0.d, 5.2.f (might work with older version, if not please check previous releases/snapshots)
-- Tested with Alfresco Enterprise 5.1 (might work with older version, if not please check previous releases/snapshots)
-
+- Works on Enterprise as well as on community.
+- Tested with Alfresco Community 3.4.d, 4.0.x, 4.2.x, 5.0.a, 5.0.d, 5.1.e, 5.2.f, 5.2.g (might work with older version, if not please check previous releases/snapshots)
+- Tested with Alfresco Enterprise 3.4.5, 4.1.5, 4.2.1, 5.1.x, 5.2.x (might work with older version, if not please check previous releases/snapshots)
 
 Sample Applications
 ----
 Alfresco @MVC comes with a couple of sample applications that are located in /alfresco-mvc-samples-bom
-
 
 - alfresco-mvc-rest-sample 			=> http://localhost:8080/alfresco/service/mvc/rest/sample
 - alfresco-mvc-aop-sample 			=> http://localhost:8080/alfresco/service/mvc/aop/sample
@@ -209,7 +208,7 @@ Alfresco @MVC comes with a couple of sample applications that are located in /al
                                        
 - alfresco-mvc-data-sample 			=> http://localhost:8080/alfresco/service/mvc/data/document 
                                        http://localhost:8080/alfresco/service/mvc/data/folder
-
+                                       
 alfresco-mvc-querytemplate-sample is the most complete sample that reassemble all the features of Alfresco @MVC
 
 Maven dependency:
@@ -252,7 +251,7 @@ Latest release version:
   <dependency>
     <groupId>com.gradecak.alfresco</groupId>
     <artifactId>alfresco-mvc</artifactId>
-    <version>4.5.0-RELEASE</version>
+    <version>4.0.1-RELEASE</version>
   </dependency>
 ```
 
