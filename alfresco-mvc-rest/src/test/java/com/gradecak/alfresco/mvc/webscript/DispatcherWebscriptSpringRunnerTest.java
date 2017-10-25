@@ -26,8 +26,6 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -54,10 +52,6 @@ public class DispatcherWebscriptSpringRunnerTest {
 
     webScript.setServletContext(new MockServletContext());
     webScript.setContextConfigLocation("test-webscriptdispatcher-context.xml");
-    ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext();
-    applicationContext.refresh();
-    webScript.setApplicationContext(applicationContext);
-    webScript.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
 
     mockWebscript = MockWebscriptBuilder.singleWebscript(webScript);
   }
