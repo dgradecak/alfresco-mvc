@@ -45,7 +45,7 @@ public class MockWebscript {
   private String webscriptUrl = "/service/mvc/";
   private String controllerMapping;
   private Container container = getMockedContainer();
-  private Description description = getMockedDescription();
+  private Description description = mock(Description.class);
   private Cookie[] cookies;
   private Map<String, Object> headers;
 
@@ -130,9 +130,6 @@ public class MockWebscript {
   }
 
   static private Container getMockedContainer() {
-    ScriptProcessorRegistry mockedScriptProcessorRegistry = mock(ScriptProcessorRegistry.class);
-    doReturn(null).when(mockedScriptProcessorRegistry).findValidScriptPath(anyString());
-
     Container mockedContainer = mock(Container.class);
     SearchPath mockedSearchPath = mock(SearchPath.class);
     try {
@@ -143,11 +140,5 @@ public class MockWebscript {
     doReturn(mockedSearchPath).when(mockedContainer).getSearchPath();
 
     return mockedContainer;
-  }
-
-  static private Description getMockedDescription() {
-    Description mockedDescription = mock(Description.class);
-    doReturn(mock(RequiredCache.class)).when(mockedDescription).getRequiredCache();
-    return mockedDescription;
   }
 }
