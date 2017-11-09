@@ -4,11 +4,9 @@ import java.util.Date;
 
 import com.gradecak.alfresco.querytemplate.AbstractPersistable;
 
-
-public class CmFolder extends AbstractPersistable{
+public class CmFolder extends AbstractPersistable {
 
   private String cmTitle;
-  
   private String cmDescription;
   private String cmName;
   private Date cmModified;
@@ -17,6 +15,7 @@ public class CmFolder extends AbstractPersistable{
   private String cmCreator;
   private String appIcon;
   private String sysLocale;
+  private String sysStoreProtocol;
 
   public String getCmTitle() {
     return cmTitle;
@@ -88,5 +87,13 @@ public class CmFolder extends AbstractPersistable{
 
   public void setSysLocale(String sysLocale) {
     this.sysLocale = sysLocale;
+  }
+
+  public String getSysStoreProtocol() {
+    return sysStoreProtocol;
+  }
+
+  public void setSysStoreProtocol(String sysStoreProtocol) {
+    this.sysStoreProtocol = sysStoreProtocol;
   }
 }

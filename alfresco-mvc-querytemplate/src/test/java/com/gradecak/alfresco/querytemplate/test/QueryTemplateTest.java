@@ -23,6 +23,7 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
@@ -102,15 +103,27 @@ public class QueryTemplateTest {
     }
   }
 
+  @Test
+  @Ignore
+  public void queryForObject_shouldReturnCmFolderObjectWithSysNodeDbId() {
+    NodeRef mockNodeRef = new NodeRef("Mock", "Mock", "Mock");
+    Date createdDate = new Date();
+    Map<QName, Serializable> propertiesMap = sampleFolderPropertiesMap(createdDate, 0);
+    when(nodeService.getProperties(mockNodeRef)).thenReturn(propertiesMap);
+    CmFolder folder = queryTemplate.queryForObject(mockNodeRef, propertiesMapper);
+    assertEquals("store-protocol0", folder.getSysStoreProtocol());
+    assertFolderProperties(folder, createdDate, 0);
+  }
+
   private void assertFolderProperties(CmFolder folder, Date date, int i) {
     assertNotNull(folder);
-    assertEquals(folder.getAppIcon(), "icon" + i);
-    assertEquals(folder.getCmCreated(), date);
-    assertEquals(folder.getCmCreator(), "creator" + i);
-    assertEquals(folder.getCmDescription(), "desription" + i);
-    assertEquals(folder.getCmModified(), date);
-    assertEquals(folder.getCmModifier(), "modifier" + i);
-    assertEquals(folder.getSysLocale(), "locale" + i);
+    assertEquals("icon" + i, folder.getAppIcon());
+    assertEquals(date, folder.getCmCreated());
+    assertEquals("creator" + i, folder.getCmCreator());
+    assertEquals("desription" + i, folder.getCmDescription());
+    assertEquals(date, folder.getCmModified());
+    assertEquals("modifier" + i, folder.getCmModifier());
+    assertEquals("locale" + i, folder.getSysLocale());
   }
 
   private Map<String, Serializable> createResultSetValuesMap(Date date, int i) {
@@ -123,6 +136,7 @@ public class QueryTemplateTest {
     resultSetValues.put(String.format(QNAME_PATTERN, NamespaceService.CONTENT_MODEL_1_0_URI, "title"), "title" + i);
     resultSetValues.put(String.format(QNAME_PATTERN, NamespaceService.CONTENT_MODEL_1_0_URI, "description"), "desription" + i);
     resultSetValues.put(String.format(QNAME_PATTERN, NamespaceService.SYSTEM_MODEL_1_0_URI, "locale"), "locale" + i);
+    resultSetValues.put(String.format(QNAME_PATTERN, NamespaceService.SYSTEM_MODEL_1_0_URI, "store-protocol"), "locale" + i);
     resultSetValues.put(String.format(QNAME_PATTERN, NamespaceService.APP_MODEL_1_0_URI, "icon"), "icon" + i);
     return resultSetValues;
   }
@@ -137,6 +151,7 @@ public class QueryTemplateTest {
     folderProperties.put(QName.createQName(NamespaceService.CONTENT_MODEL_PREFIX, "title", namespaceService), "title" + i);
     folderProperties.put(QName.createQName(NamespaceService.CONTENT_MODEL_PREFIX, "description", namespaceService), "desription" + i);
     folderProperties.put(QName.createQName(NamespaceService.SYSTEM_MODEL_PREFIX, "locale", namespaceService), "locale" + i);
+    folderProperties.put(QName.createQName(NamespaceService.SYSTEM_MODEL_PREFIX, "store-protocol", namespaceService), "store-protocol" + i);
     folderProperties.put(QName.createQName(NamespaceService.APP_MODEL_PREFIX, "icon", namespaceService), "icon" + i);
     return folderProperties;
   }
