@@ -32,18 +32,6 @@
       <artifactId>alfresco-mvc-querytemplate</artifactId>
       <scope>runtime</scope>
     </dependency>
-
-    <dependency>
-      <groupId>com.gradecak.alfresco-mvc</groupId>
-      <artifactId>alfresco-mvc-data</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>com.gradecak.alfresco-mvc</groupId>
-      <artifactId>alfresco-mvc-data-rest</artifactId>
-      <scope>runtime</scope>
-    </dependency>
   </dependencies>
 
   <build>

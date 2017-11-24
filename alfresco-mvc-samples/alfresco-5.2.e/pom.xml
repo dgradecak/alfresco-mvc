@@ -32,11 +32,11 @@
 		<!-- <dependency> <groupId>com.gradecak.alfresco-mvc</groupId> <artifactId>alfresco-mvc-aop-sample</artifactId> 
 			<scope>runtime</scope> </dependency> -->
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>com.gradecak.alfresco-mvc</groupId>
 			<artifactId>alfresco-mvc-data-rest-sample</artifactId>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 
 
