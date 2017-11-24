@@ -1,0 +1,34 @@
+image: maven:3.3.9
+
+pipelines:
+  branches:
+   feature/*:
+     - step:
+        caches:
+          - maven
+        script:
+          - bash configure-maven.sh
+          - mvn -V -B deploy -DaltDeploymentRepository=Gradecak-Repo::default::ftp://ftp.gradecak.com:23131/snapshots
+          
+   dev:
+     - step:
+        caches:
+          - maven
+        script:
+          - bash configure-maven.sh
+          - mvn -V -B deploy -DaltDeploymentRepository=Gradecak-Repo::default::ftp://ftp.gradecak.com:23131/snapshots
+    
+   master:
+    - step:
+        caches:
+          - maven
+        script:
+          - bash configure-maven.sh
+          - mvn -V -B deploy -DaltDeploymentRepository=Gradecak-Repo::default::ftp://ftp.gradecak.com:23131/releases
+          
+  default:
+    - step:
+        caches:
+          - maven
+        script: # Modify the commands below to build your repository.
+          - mvn -B verify # -B batch mode makes Maven less verbose
