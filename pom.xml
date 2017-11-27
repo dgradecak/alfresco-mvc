@@ -129,28 +129,28 @@
 
 
       <dependency>
-        <groupId>com.gradecak.alfresco-mvc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>alfresco-mvc-rest</artifactId>
         <version>${project.version}</version>
         <scope>compile</scope>
       </dependency>
 
       <dependency>
-        <groupId>com.gradecak.alfresco-mvc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>alfresco-mvc-aop</artifactId>
         <version>${project.version}</version>
         <scope>compile</scope>
       </dependency>
 
       <dependency>
-        <groupId>com.gradecak.alfresco-mvc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>alfresco-mvc-querytemplate</artifactId>
         <version>${project.version}</version>
         <scope>compile</scope>
       </dependency>
       
       <dependency>
-        <groupId>com.gradecak.alfresco-mvc</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>alfresco-mvc-test</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
