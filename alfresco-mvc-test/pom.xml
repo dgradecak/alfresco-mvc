@@ -10,7 +10,7 @@
     <relativePath>../</relativePath>
   </parent>
 
-  <artifactId>alfresco-mvc-rest</artifactId>
+  <artifactId>alfresco-test</artifactId>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -78,8 +78,9 @@
     </dependency>
 
     <dependency>
-      <groupId>com.pleosoft.alfresco</groupId>
-      <artifactId>alfresco-test</artifactId>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

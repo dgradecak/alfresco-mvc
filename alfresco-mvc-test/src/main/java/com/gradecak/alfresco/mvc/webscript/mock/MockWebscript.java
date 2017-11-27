@@ -28,8 +28,6 @@ import javax.servlet.http.Cookie;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Container;
 import org.springframework.extensions.webscripts.Description;
-import org.springframework.extensions.webscripts.Description.RequiredCache;
-import org.springframework.extensions.webscripts.ScriptProcessorRegistry;
 import org.springframework.extensions.webscripts.SearchPath;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletResponse;

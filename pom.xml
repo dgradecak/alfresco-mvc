@@ -3,9 +3,9 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.gradecak.alfresco-mvc</groupId>
+  <groupId>com.pleosoft.alfresco</groupId>
   <version>5.0.1-SNAPSHOT</version>
-  <artifactId>alfresco-mvc-bom</artifactId>
+  <artifactId>alfresco-bom</artifactId>
   <packaging>pom</packaging>
 
   <properties>
@@ -19,6 +19,7 @@
   </properties>
 
   <modules>
+    <module>alfresco-mvc-test</module>
     <module>alfresco-mvc-rest</module>
     <module>alfresco-mvc-aop</module>
     <module>alfresco-mvc-querytemplate</module>
@@ -146,6 +147,13 @@
         <artifactId>alfresco-mvc-querytemplate</artifactId>
         <version>${project.version}</version>
         <scope>compile</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>com.gradecak.alfresco-mvc</groupId>
+        <artifactId>alfresco-mvc-test</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.gradecak.alfresco-mvc</groupId>
+		<groupId>com.pleosoft.alfresco</groupId>
 		<version>5.0.1-SNAPSHOT</version>
 		<artifactId>alfresco-mvc-bom</artifactId>
 		<relativePath>../</relativePath>
