@@ -64,4 +64,8 @@ public class ResponseMapBuilder {
   static public ResponseMapBuilder createResponseMap(final Object data, final boolean success) {
     return new ResponseMapBuilder().withData(data).withSuccess(success);
   }
+  
+  static public ResponseMapBuilder createResponseMap(final String key, final Object value) {
+    return new ResponseMapBuilder().withEntry(key, value);
+  } 
 }
