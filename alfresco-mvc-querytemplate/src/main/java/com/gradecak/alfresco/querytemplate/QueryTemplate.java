@@ -56,12 +56,10 @@ public class QueryTemplate {
   private final int defaultPagesize;
   private final ServiceRegistry serviceRegistry;
 
-  @Autowired
   public QueryTemplate(final ServiceRegistry serviceRegistry) {
     this(serviceRegistry, 100, 20);
   }
   
-  @Autowired
   public QueryTemplate(final ServiceRegistry serviceRegistry, final int maxItems, final int pagesize) {
     this.serviceRegistry = serviceRegistry;
     this.defaultMaxItems = maxItems;
