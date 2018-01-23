@@ -53,7 +53,6 @@ import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.NestedServletException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 import com.gradecak.alfresco.mvc.ResponseMapBuilder;
 
 public class DispatcherWebscript extends AbstractWebScript implements ApplicationListener<ContextRefreshedEvent>, ServletContextAware, ApplicationContextAware {
@@ -133,7 +132,6 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
       status = HttpServletResponse.SC_BAD_REQUEST;
     }
 
-    // String errorMessage = ex.getLocalizedMessage();
     if (ex instanceof NestedServletException) {
       NestedServletException nestedServletException = (NestedServletException) ex;
       if (nestedServletException.getCause() != null) {
@@ -147,7 +145,6 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
       }
     }
 
-    // mockHttpServletResponse.sendError(status, errorMessage);
     mockHttpServletResponse.setStatus(status);
     mockHttpServletResponse.setContentType("application/json");
     objectMapper.writeValue(mockHttpServletResponse.getOutputStream(), builder.build());
@@ -182,7 +179,7 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
       try {
         s.init(new DelegatingServletConfig(servletName));
       } catch (ServletException e) {
-        Throwables.propagate(e);
+        new IllegalStateException(e);
       }
     }
   }
