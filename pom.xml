@@ -22,7 +22,6 @@
     <module>alfresco-mvc-rest</module>
     <module>alfresco-mvc-aop</module>
     <module>alfresco-mvc-querytemplate</module>
-    <module>alfresco-mvc-dist</module>
   </modules>
 
   <dependencyManagement>
@@ -192,7 +191,7 @@
       <!-- Enabling the use of FTP -->
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
-         <artifactId>wagon-ftp</artifactId>
+        <artifactId>wagon-ftp</artifactId>
       </extension>
     </extensions>
   </build>
