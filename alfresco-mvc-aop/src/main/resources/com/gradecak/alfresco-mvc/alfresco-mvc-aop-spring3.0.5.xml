@@ -12,7 +12,7 @@
   <bean id="mvc.aop.alfrescoAuthenticationAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
     <property name="pointcut" ref="mvc.aop.authenticationPointcutAnnotation" />
     <property name="advice" ref="mvc.aop.authenticationAdvice" />
-    <property name="order" value="1" />
+    <property name="order" value="${mvc.aop.alfrescoAuthenticationAdvisor.order}" />
   </bean>
 
   <bean id="mvc.aop.authenticationPointcutAnnotation" class="org.springframework.aop.support.annotation.AnnotationMatchingPointcut"
@@ -26,7 +26,7 @@
   <bean id="mvc.aop.alfrescoRunAsAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
     <property name="pointcut" ref="mvc.aop.runAsPointcutAnnotation" />
     <property name="advice" ref="mvc.aop.runAsAdvice" />
-    <property name="order" value="100" />
+    <property name="order" value="${mvc.aop.alfrescoRunAsAdvisor.order}" />
   </bean>
 
   <bean id="mvc.aop.runAsPointcutAnnotation" class="org.springframework.aop.support.annotation.AnnotationMatchingPointcut"
@@ -39,7 +39,7 @@
   <bean id="mvc.aop.alfrescoTransactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
     <property name="pointcut" ref="mvc.aop.transactionPointcutAnnotation" />
     <property name="advice" ref="mvc.aop.transactionAdvice" />
-    <property name="order" value="50" />
+    <property name="order" value="${mvc.aop.alfrescoTransactionAdvisor.order}" />
   </bean>
 
   <bean id="mvc.aop.transactionPointcutAnnotation" class="org.springframework.aop.support.annotation.AnnotationMatchingPointcut"
