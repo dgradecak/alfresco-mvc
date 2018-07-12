@@ -149,6 +149,8 @@ public class DispatcherWebscriptMockitoRunnerTest {
     Assert.assertEquals("{\"success\":false,\"event\":\"exception\",\"exception\":\"org.springframework.web.util.NestedServletException\","
         + "\"message\":\"Request processing failed; nested exception is java.lang.RuntimeException: test exception\","
         + "\"cause\":\"java.lang.RuntimeException\",\"causeMessage\":\"test exception\"}", res.getContentAsString());
+    Assert.assertNotNull(res.getHeader("error"));
+    Assert.assertEquals(res.getHeaderValue("error"),"java.lang.RuntimeException");
   }
 
   // TODO add file upload test
