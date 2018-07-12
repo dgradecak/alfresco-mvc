@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+  <!-- Authentication -->
+  <bean id="mvc.aop.alfrescoAuthenticationAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+    <property name="pointcut" ref="mvc.aop.authenticationPointcutAnnotation" />
+    <property name="advice" ref="mvc.aop.authenticationAdvice" />
+    <property name="order" value="1" />
+  </bean>
+
+  <bean id="mvc.aop.authenticationPointcutAnnotation" class="org.springframework.aop.support.annotation.AnnotationMatchingPointcut"
+    factory-method="forMethodAnnotation">
+    <constructor-arg value="com.gradecak.alfresco.mvc.annotation.AlfrescoAuthentication" />
+  </bean>
+
+  <bean id="mvc.aop.authenticationAdvice" class="com.gradecak.alfresco.mvc.aop.AuthenticationAdvice" />
+
+  <!-- RunAs -->
+  <bean id="mvc.aop.alfrescoRunAsAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+    <property name="pointcut" ref="mvc.aop.runAsPointcutAnnotation" />
+    <property name="advice" ref="mvc.aop.runAsAdvice" />
+    <property name="order" value="100" />
+  </bean>
+
+  <bean id="mvc.aop.runAsPointcutAnnotation" class="org.springframework.aop.support.annotation.AnnotationMatchingPointcut"
+    factory-method="forMethodAnnotation">
+    <constructor-arg value="com.gradecak.alfresco.mvc.annotation.AlfrescoRunAs" />
+  </bean>
+  <bean id="mvc.aop.runAsAdvice" class="com.gradecak.alfresco.mvc.aop.RunAsAdvice" />
+
+  <!-- Transaction -->
+  <bean id="mvc.aop.alfrescoTransactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+    <property name="pointcut" ref="mvc.aop.transactionPointcutAnnotation" />
+    <property name="advice" ref="mvc.aop.transactionAdvice" />
+    <property name="order" value="50" />
+  </bean>
+
+  <bean id="mvc.aop.transactionPointcutAnnotation" class="org.springframework.aop.support.annotation.AnnotationMatchingPointcut"
+    factory-method="forMethodAnnotation">
+    <constructor-arg value="com.gradecak.alfresco.mvc.annotation.AlfrescoTransaction" />
+  </bean>
+
+  <bean id="mvc.aop.transactionAdvice" class="com.gradecak.alfresco.mvc.aop.TransactionalAdvice" />
+</beans>
