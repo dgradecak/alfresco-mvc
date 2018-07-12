@@ -31,6 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -52,9 +53,9 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.NestedServletException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 import com.gradecak.alfresco.mvc.ResponseMapBuilder;
+import com.gradecak.alfresco.mvc.util.JsonUtils;
 
 public class DispatcherWebscript extends AbstractWebScript implements ApplicationListener<ContextRefreshedEvent>, ServletContextAware, ApplicationContextAware {
 
@@ -124,33 +125,33 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
   }
 
   private void convertExceptionToJson(Throwable ex, WebScriptServletResponse wsr, final HttpServletResponse sr, LocalHttpServletResponse mockHttpServletResponse) throws IOException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    ResponseMapBuilder builder = ResponseMapBuilder.createFailResponseMap().withEntry("event", "exception").withEntry("exception", ex.getClass()).withEntry("message",
+    ResponseMapBuilder builder = ResponseMapBuilder.createFailResponseMap().withEntry("event", "exception").withEntry("exception", ex.getClass().getCanonicalName()).withEntry("message",
         JavaScriptUtils.javaScriptEscape(ex.getMessage()));
-
     int status = mockHttpServletResponse.getStatus();
     if (HttpServletResponse.SC_OK == status) {
       status = HttpServletResponse.SC_BAD_REQUEST;
     }
-
+    
     // String errorMessage = ex.getLocalizedMessage();
     if (ex instanceof NestedServletException) {
       NestedServletException nestedServletException = (NestedServletException) ex;
       if (nestedServletException.getCause() != null) {
-        builder.withEntry("cause", nestedServletException.getCause().getClass());
+        builder.withEntry("cause", nestedServletException.getCause().getClass().getCanonicalName());
         builder.withEntry("causeMessage", nestedServletException.getCause().getMessage());
         if (nestedServletException.getCause() instanceof DataAccessException) {
           if (HttpServletResponse.SC_OK == mockHttpServletResponse.getStatus()) {
             status = HttpServletResponse.SC_NOT_ACCEPTABLE;
           }
         }
+        mockHttpServletResponse.addHeader("error", nestedServletException.getCause().getClass().getCanonicalName());
       }
+    } else {
+      mockHttpServletResponse.addHeader("error", ex.getClass().getCanonicalName());
     }
-
     // mockHttpServletResponse.sendError(status, errorMessage);
     mockHttpServletResponse.setStatus(status);
     mockHttpServletResponse.setContentType("application/json");
-    objectMapper.writeValue(mockHttpServletResponse.getOutputStream(), builder.build());
+    IOUtils.write(JsonUtils.mapToJsonString(builder.build()), mockHttpServletResponse.getOutputStream());
     writeResponseToWebscript(wsr, mockHttpServletResponse);
   }
 
