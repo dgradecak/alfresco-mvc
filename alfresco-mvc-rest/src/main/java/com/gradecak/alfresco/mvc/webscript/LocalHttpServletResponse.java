@@ -43,9 +43,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.web.util.WebUtils;
 
-/**
- * this is a copy of the srpingframework {@link MockHttpServletRequest}
- */
+
 public class LocalHttpServletResponse implements HttpServletResponse {
 
   private static final String CHARSET_PREFIX = "charset=";
@@ -112,43 +110,27 @@ public class LocalHttpServletResponse implements HttpServletResponse {
   // ServletResponse interface
   // ---------------------------------------------------------------------
 
-  /**
-   * Set whether {@link #getOutputStream()} access is allowed.
-   * <p>
-   * Default is {@code true}.
-   */
+
   public void setOutputStreamAccessAllowed(boolean outputStreamAccessAllowed) {
     this.outputStreamAccessAllowed = outputStreamAccessAllowed;
   }
 
-  /**
-   * Return whether {@link #getOutputStream()} access is allowed.
-   */
+
   public boolean isOutputStreamAccessAllowed() {
     return this.outputStreamAccessAllowed;
   }
 
-  /**
-   * Set whether {@link #getWriter()} access is allowed.
-   * <p>
-   * Default is {@code true}.
-   */
+
   public void setWriterAccessAllowed(boolean writerAccessAllowed) {
     this.writerAccessAllowed = writerAccessAllowed;
   }
 
-  /**
-   * Return whether {@link #getOutputStream()} access is allowed.
-   */
+
   public boolean isWriterAccessAllowed() {
     return this.writerAccessAllowed;
   }
 
-  /**
-   * Return whether the character encoding has been set.
-   * <p>
-   * If {@code false}, {@link #getCharacterEncoding()} will return a default encoding value.
-   */
+
   public boolean isCharset() {
     return this.charset;
   }

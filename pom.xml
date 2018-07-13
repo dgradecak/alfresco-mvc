@@ -8,6 +8,44 @@
   <artifactId>alfresco-mvc-bom</artifactId>
   <packaging>pom</packaging>
 
+  <name>Alfresco MVC bom</name>
+  <description>Bom for Alfresco @MVC project</description>
+  <url>https://github.com/dgradecak/alfresco-mvc</url>
+  
+  <licenses>
+	<license>
+		<name>The Apache License, Version 2.0</name>
+		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+	</license>
+  </licenses>
+
+  <developers>
+	<developer>
+		<name>Daniel Gradečak</name>
+		<email>daniel@pleosoft.com</email>
+		<organization>PleoSoft</organization>
+		<organizationUrl>http://pleosoft.com/</organizationUrl>
+	</developer>
+	<developer>
+		<name>Luka Orelj</name>
+		<email>luka@pleosoft.com</email>
+		<organization>PleoSoft</organization>
+		<organizationUrl>http://pleosoft.com/</organizationUrl>
+	</developer>
+	<developer>
+		<name>Antonio Jedvaj</name>
+		<email>antonio@pleosoft.com</email>
+		<organization>PleoSoft</organization>
+		<organizationUrl>http://pleosoft.com/</organizationUrl>
+	</developer>
+  </developers>
+  
+  <scm>
+	<connection>scm:git:git://github.com/dgradecak/alfresco-mvc.git</connection>
+	<developerConnection>scm:git:ssh://github.com/dgradecak/alfresco-mvc.git</developerConnection>
+	<url>https://github.com/dgradecak/alfresco-mvc/tree/master</url>
+  </scm>
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <alfresco.groupId>org.alfresco</alfresco.groupId>
@@ -180,6 +218,19 @@
         </executions>
       </plugin>
       <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-javadoc-plugin</artifactId>
+		<version>2.9.1</version>
+		<executions>
+			<execution>
+				<id>attach-javadocs</id>
+				<goals>
+					<goal>jar</goal>
+				</goals>
+			</execution>
+		</executions>
+	  </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
@@ -187,14 +238,21 @@
           <target>1.7</target>
         </configuration>
       </plugin>
+	  <plugin>
+		  <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-gpg-plugin</artifactId>
+		  <version>1.5</version>
+		  <executions>
+			<execution>
+			  <id>sign-artifacts</id>
+			  <phase>verify</phase>
+			  <goals>
+				<goal>sign</goal>
+			  </goals>
+			</execution>
+		  </executions>
+		</plugin>
     </plugins>
-    <extensions>
-      <!-- Enabling the use of FTP -->
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-         <artifactId>wagon-ftp</artifactId>
-      </extension>
-    </extensions>
   </build>
 
 </project>
