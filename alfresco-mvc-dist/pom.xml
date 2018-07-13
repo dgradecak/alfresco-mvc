@@ -10,6 +10,9 @@
 
   <artifactId>alfresco-mvc-dist</artifactId>
 
+  <name>Alfresco MVC dist</name>
+  <description>Alfresco @MVC amp deployer</description>
+	
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>

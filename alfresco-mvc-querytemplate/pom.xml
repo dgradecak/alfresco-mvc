@@ -14,6 +14,9 @@
 
 	<artifactId>alfresco-mvc-querytemplate</artifactId>
 
+	<name>Alfresco MVC querytemplate</name>
+	<description>Spring jdbc like library for Alfresco queries.</description>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
