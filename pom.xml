@@ -61,9 +61,7 @@
     <spring.hateoas.version>0.16.0.RELEASE</spring.hateoas.version>
     <spring.plugin-core.version>1.1.0.RELEASE</spring.plugin-core.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-
     <mockito-all.version>1.10.19</mockito-all.version>
-
   </properties>
 
   <modules>
