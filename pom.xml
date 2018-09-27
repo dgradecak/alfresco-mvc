@@ -4,56 +4,66 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.gradecak.alfresco-mvc</groupId>
-  <version>5.0.2-SNAPSHOT</version>
+  <version>6.0.0-SNAPSHOT</version>
   <artifactId>alfresco-mvc-bom</artifactId>
-  <packaging>pom</packaging> 
+  <packaging>pom</packaging>
 
   <name>Alfresco MVC bom</name>
   <description>Bom for Alfresco @MVC project</description>
   <url>https://github.com/dgradecak/alfresco-mvc</url>
-  
+
   <licenses>
-	<license>
-		<name>The Apache License, Version 2.0</name>
-		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-	</license>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
   </licenses>
 
   <developers>
-	<developer>
-		<name>Daniel Gradečak</name>
-		<email>daniel@pleosoft.com</email>
-		<organization>PleoSoft</organization>
-		<organizationUrl>http://pleosoft.com/</organizationUrl>
-	</developer>
-	<developer>
-		<name>Luka Orelj</name>
-		<email>luka@pleosoft.com</email>
-		<organization>PleoSoft</organization>
-		<organizationUrl>http://pleosoft.com/</organizationUrl>
-	</developer>
-	<developer>
-		<name>Antonio Jedvaj</name>
-		<email>antonio@pleosoft.com</email>
-		<organization>PleoSoft</organization>
-		<organizationUrl>http://pleosoft.com/</organizationUrl>
-	</developer>
+    <developer>
+      <name>Daniel Gradečak</name>
+      <email>daniel@pleosoft.com</email>
+      <organization>PleoSoft</organization>
+      <organizationUrl>http://pleosoft.com/</organizationUrl>
+    </developer>
+    <developer>
+      <name>Luka Orelj</name>
+      <email>luka@pleosoft.com</email>
+      <organization>PleoSoft</organization>
+      <organizationUrl>http://pleosoft.com/</organizationUrl>
+    </developer>
+    <developer>
+      <name>Antonio Jedvaj</name>
+      <email>antonio@pleosoft.com</email>
+      <organization>PleoSoft</organization>
+      <organizationUrl>http://pleosoft.com/</organizationUrl>
+    </developer>
   </developers>
-  
+
   <scm>
-	<connection>scm:git:git://github.com/dgradecak/alfresco-mvc.git</connection>
-	<developerConnection>scm:git:ssh://github.com/dgradecak/alfresco-mvc.git</developerConnection>
-	<url>https://github.com/dgradecak/alfresco-mvc/tree/master</url>
+    <connection>scm:git:git://github.com/dgradecak/alfresco-mvc.git</connection>
+    <developerConnection>scm:git:ssh://github.com/dgradecak/alfresco-mvc.git</developerConnection>
+    <url>https://github.com/dgradecak/alfresco-mvc/tree/master</url>
   </scm>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <alfresco.groupId>org.alfresco</alfresco.groupId>
-    <alfresco.version>5.2.f</alfresco.version>
+    <alfresco.version>6.0.7-ga</alfresco.version>
+    <alfresco-repository.version>1.1.0.RELEASE</alfresco-repository.version>
+    <alfresco-spring-webscripts.version>1.1.0.RELEASE</alfresco-spring-webscripts.version>
+    <alfresco-remote-api.version>1.1.0.RELEASE</alfresco-remote-api.version>
+    <alfresco-repository.version>6.55</alfresco-repository.version>
+    <alfresco-remote-api.version>6.38</alfresco-remote-api.version>
+    <alfresco-spring-webscripts.version>6.19</alfresco-spring-webscripts.version>
     <spring.version>3.2.17.RELEASE</spring.version>
     <spring.data.version>1.8.6.RELEASE</spring.data.version>
     <spring.hateoas.version>0.16.0.RELEASE</spring.hateoas.version>
     <spring.plugin-core.version>1.1.0.RELEASE</spring.plugin-core.version>
+    <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
+
+    <mockito-all.version>1.10.19</mockito-all.version>
+
   </properties>
 
   <modules>
@@ -67,10 +77,48 @@
     <dependencies>
       <dependency>
         <groupId>${alfresco.groupId}</groupId>
-        <artifactId>alfresco-platform-distribution</artifactId>
+        <artifactId>acs-community-packaging</artifactId>
         <version>${alfresco.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${javax.servlet-api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>${mockito-all.version}</version>
+      </dependency>
+
+
+      <dependency>
+        <groupId>${alfresco.groupId}</groupId>
+        <artifactId>alfresco-repository</artifactId>
+        <version>${alfresco-repository.version}</version>
+        <classifier>tests</classifier>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.alfresco.surf</groupId>
+        <artifactId>spring-webscripts</artifactId>
+        <classifier>tests</classifier>
+        <scope>test</scope>
+        <version>${alfresco-spring-webscripts.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.alfresco</groupId>
+        <artifactId>alfresco-remote-api</artifactId>
+        <version>${alfresco-remote-api.version}</version>
+        <classifier>tests</classifier>
+        <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -218,18 +266,18 @@
         </executions>
       </plugin>
       <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-javadoc-plugin</artifactId>
-		<version>2.9.1</version>
-		<executions>
-			<execution>
-				<id>attach-javadocs</id>
-				<goals>
-					<goal>jar</goal>
-				</goals>
-			</execution>
-		</executions>
-	  </plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -238,20 +286,20 @@
           <target>1.7</target>
         </configuration>
       </plugin>
-	  <plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-gpg-plugin</artifactId>
-		  <version>1.5</version>
-		  <executions>
-			<execution>
-			  <id>sign-artifacts</id>
-			  <phase>verify</phase>
-			  <goals>
-				<goal>sign</goal>
-			  </goals>
-			</execution>
-		  </executions>
-		</plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 

@@ -208,8 +208,8 @@ public class LocalHttpServletResponse implements HttpServletResponse {
     if (contentType != null) {
       try {
         MediaType mediaType = MediaType.parseMediaType(contentType);
-        if (mediaType.getCharSet() != null) {
-          this.characterEncoding = mediaType.getCharSet().name();
+        if (mediaType.getCharset() != null) {
+          this.characterEncoding = mediaType.getCharset().name();
           this.charset = true;
         }
       } catch (Exception ex) {
