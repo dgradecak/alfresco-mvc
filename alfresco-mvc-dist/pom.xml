@@ -3,13 +3,13 @@
 
   <parent>
     <groupId>com.gradecak.alfresco-mvc</groupId>
-    <version>6.0.0-SNAPSHOT</version>
+    <version>6.0.0-RELEASE</version>
     <artifactId>alfresco-mvc-bom</artifactId>
     <relativePath>../</relativePath>
   </parent>
 
   <artifactId>alfresco-mvc-dist</artifactId>
-
+ 
   <name>Alfresco MVC dist</name>
   <description>Alfresco @MVC amp deployer</description>
 
