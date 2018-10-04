@@ -37,7 +37,7 @@ public class RunAsService {
     Assert.assertEquals("user", AuthenticationUtil.getRunAsUser());
     return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
   }
-  
+
   @AlfrescoRunAs(AuthenticationUtil.SYSTEM_USER_NAME)
   public String getNamePropertyAsSystem(final NodeRef nodeRef) {
     Assert.assertEquals(AuthenticationUtil.SYSTEM_USER_NAME, AuthenticationUtil.getRunAsUser());

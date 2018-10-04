@@ -33,14 +33,14 @@ import com.gradecak.alfresco.mvc.aop.AlfrescoProxyRegistrar;
 @Documented
 @Inherited
 @Import(AlfrescoProxyRegistrar.class)
-public @interface EnableAlfrescoMvcProxy {
-  String[]value() default {};
+public @interface EnableAlfrescoMvcAop {
+  String[] value() default {};
 
   boolean proxyTargetClass() default true;
 
   AdviceMode mode() default AdviceMode.PROXY;
 
-  String[]basePackages() default {};
+  String[] basePackages() default {};
 
-  Class<?>[]basePackageClasses() default {};
+  Class<?>[] basePackageClasses() default {};
 }

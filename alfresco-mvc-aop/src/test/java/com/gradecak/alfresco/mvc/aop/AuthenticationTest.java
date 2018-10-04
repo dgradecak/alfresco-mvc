@@ -81,7 +81,7 @@ public class AuthenticationTest {
     util.afterPropertiesSet();
 
     assertTrue(AopUtils.isAopProxy(service));
-    
+
     AuthenticationUtil.clearCurrentSecurityContext();
   }
 
@@ -96,14 +96,13 @@ public class AuthenticationTest {
     exception.expect(AuthenticationException.class);
     service.getNamePropertyAsUser(nodeRef);
   }
-  
+
   @Test
   public void authentifiedAsGuest_atLeastDefaultUserAuthenticationRequired() {
 
     exception.expect(AuthenticationException.class);
     service.getNamePropertyAsDefault(nodeRef);
   }
-
 
   @Test
   public void authentifiedAsUser_atLeastUserAuthenticationRequired() {

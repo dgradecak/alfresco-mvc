@@ -65,7 +65,7 @@ public class TransactionalTest {
 
     assertTrue(AopUtils.isAopProxy(service));
   }
-  
+
   @Test
   @SuppressWarnings("unchecked")
   public void txRWriteWithPropagationRequired() throws SystemException {

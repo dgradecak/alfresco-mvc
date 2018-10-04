@@ -53,9 +53,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.NestedServletException;
 
-import com.google.common.base.Throwables;
-import com.gradecak.alfresco.mvc.ResponseMapBuilder;
-import com.gradecak.alfresco.mvc.util.JsonUtils;
+import com.gradecak.alfresco.mvc.rest.ResponseMapBuilder;
+import com.gradecak.alfresco.mvc.rest.util.JsonUtils;
 
 public class DispatcherWebscript extends AbstractWebScript implements ApplicationListener<ContextRefreshedEvent>, ServletContextAware, ApplicationContextAware {
 
@@ -74,8 +73,8 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
   }
 
   public DispatcherWebscript(final String servletName) {
-    Assert.hasText(servletName);
-    this.servletName = servletName;
+    Assert.hasText(servletName, "[Assertion failed] - this String servletName must have text; it must not be null, empty, or blank");
+    this.servletName = "Alfresco @MVC Dispatcher Webscript: " + servletName;
   }
 
   public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -93,7 +92,7 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
     res.setHeader("Cache-Control", "no-cache");
 
     WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
-    LocalHttpServletResponse mockHttpServletResponse = new LocalHttpServletResponse();
+    LocalHttpServletResponse mockHttpServletResponse = new LocalHttpServletResponse(wrapper);
     try {
       s.service(wrapper, mockHttpServletResponse);
 
@@ -131,7 +130,7 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
     if (HttpServletResponse.SC_OK == status) {
       status = HttpServletResponse.SC_BAD_REQUEST;
     }
-    
+
     // String errorMessage = ex.getLocalizedMessage();
     if (ex instanceof NestedServletException) {
       NestedServletException nestedServletException = (NestedServletException) ex;
@@ -183,12 +182,12 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
       try {
         s.init(new DelegatingServletConfig(servletName));
       } catch (ServletException e) {
-        Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
     }
   }
 
-  public void configureDispatcherServlet(DispatcherServlet dispatcherServlet) {}
+  protected void configureDispatcherServlet(DispatcherServlet dispatcherServlet) {}
 
   public String getContextConfigLocation() {
     return contextConfigLocation;
@@ -230,7 +229,7 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
     final private String name;
 
     public DelegatingServletConfig(final String name) {
-      Assert.hasText(name);
+      Assert.hasText(name, "[Assertion failed] - this String name must have text; it must not be null, empty, or blank");
       this.name = name;
     }
 

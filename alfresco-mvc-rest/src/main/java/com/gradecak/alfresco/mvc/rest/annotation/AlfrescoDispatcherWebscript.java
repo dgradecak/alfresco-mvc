@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.webscript.mock;
+package com.gradecak.alfresco.mvc.rest.annotation;
 
-import org.springframework.extensions.webscripts.AbstractWebScript;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-public class MockWebscriptBuilder {
+import org.springframework.http.HttpMethod;
 
-  static public MockWebscript singleWebscript(final AbstractWebScript webScript) {
-    return new MockWebscript(webScript);
-  }
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+public @interface AlfrescoDispatcherWebscript {
+  String name() default "alfresco-mvc.mvc";
+
+  HttpMethod[] htpMethods() default { HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PUT };
+
+  Class<?> servletContext();
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.jackson;
+package com.gradecak.alfresco.mvc.rest.jackson;
 
 import java.io.IOException;
 
@@ -22,14 +22,12 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-public class Jackson2QnameDeserializer extends JsonDeserializer<QName>implements Converter<String, QName> {
+public class Jackson2QnameDeserializer extends JsonDeserializer<QName> implements Converter<String, QName> {
 
   private ServiceRegistry serviceRegistry;
 
@@ -39,21 +37,13 @@ public class Jackson2QnameDeserializer extends JsonDeserializer<QName>implements
   }
 
   @Override
-  public QName deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-
+  public QName deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
     String qname = jp.getText();
-    if (StringUtils.hasText(qname)) {
-      return QName.createQName(qname, serviceRegistry.getNamespaceService());
-    }
-
-    throw ctxt.mappingException("Expected a valid QName string representation");
+    return QName.createQName(qname, serviceRegistry.getNamespaceService());
   }
 
   @Override
   public QName convert(String qname) {
-    if(!StringUtils.hasText(qname)) {
-      return null;
-    }
     return QName.createQName(qname, serviceRegistry.getNamespaceService());
   }
 

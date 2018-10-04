@@ -36,13 +36,13 @@ public class TransactionalService {
   public String transactionWriteWithoutPropagation() {
     return (String) serviceRegistry.getNodeService().getProperty(null, ContentModel.PROP_NAME);
   }
-  
-  @AlfrescoTransaction(readOnly=true)
+
+  @AlfrescoTransaction(readOnly = true)
   public String transactioReadOnlyWithPropagationRequired() throws SystemException {
     return (String) serviceRegistry.getNodeService().getProperty(null, ContentModel.PROP_NAME);
   }
-  
-  @AlfrescoTransaction(readOnly=true, propagation=Propagation.REQUIRES_NEW)
+
+  @AlfrescoTransaction(readOnly = true, propagation = Propagation.REQUIRES_NEW)
   public String transactioReadOnlyWithPropagationRequiresNew() throws SystemException {
     return (String) serviceRegistry.getNodeService().getProperty(null, ContentModel.PROP_NAME);
   }

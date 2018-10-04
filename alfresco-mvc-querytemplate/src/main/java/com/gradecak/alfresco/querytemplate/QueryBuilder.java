@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package com.gradecak.alfresco.querytemplate;
 
 import java.io.Serializable;
@@ -29,15 +28,14 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.util.StringUtils;
 
-
 /**
- * supports only lucene/solr and fts_alfresco languages. Other languages have not been tested, might be that it works for
- * some of them.
+ * supports only lucene/solr and fts_alfresco languages. Other languages have not been tested, might be that it works
+ * for some of them.
  * 
  * @author dgradecak
  */
 public class QueryBuilder {
-  
+
   private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
   private final StringBuilder queryStringBuilder = new StringBuilder();
 
@@ -50,18 +48,18 @@ public class QueryBuilder {
   public QueryBuilder(final String language) {
     withLanguage(language);
   }
-  
+
   public String getLanguage() {
     return language;
   }
-  
+
   public QueryBuilder withLanguage(final String language) {
     if (!SearchService.LANGUAGE_LUCENE.equals(language) && !SearchService.LANGUAGE_FTS_ALFRESCO.equals(language)) {
       // TODO add logger
     }
 
     this.language = language;
-    
+
     return this;
   }
 
@@ -290,7 +288,7 @@ public class QueryBuilder {
   public String toString() {
     return queryStringBuilder.toString();
   }
-  
+
   public String build() {
     return queryStringBuilder.toString();
   }
@@ -318,5 +316,5 @@ public class QueryBuilder {
     }
     return builder.toString();
   }
-  
+
 }

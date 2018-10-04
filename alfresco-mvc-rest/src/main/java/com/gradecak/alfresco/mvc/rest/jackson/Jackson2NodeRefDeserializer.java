@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.jackson;
+package com.gradecak.alfresco.mvc.rest.jackson;
 
 import java.io.IOException;
 
@@ -24,29 +24,30 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-public class Jackson2NodeRefDeserializer extends JsonDeserializer<NodeRef>implements Converter<String, NodeRef> {
+public class Jackson2NodeRefDeserializer extends JsonDeserializer<NodeRef> implements Converter<String, NodeRef> {
 
   public Jackson2NodeRefDeserializer() {}
 
   @Override
-  public NodeRef deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+  public NodeRef deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 
     String id = jp.getText();
-    if (StringUtils.hasText(id)) {
-      return new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, id);
+    if (NodeRef.isNodeRef(id)) {
+      return new NodeRef(id);
     }
-
-    throw ctxt.mappingException("Expected a valid NodeRef string representation");
+    return new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, id);
   }
 
   @Override
   public NodeRef convert(String id) {
     if (!StringUtils.hasText(id)) {
       return null;
+    }
+    if (NodeRef.isNodeRef(id)) {
+      return new NodeRef(id);
     }
     return new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, id);
   }

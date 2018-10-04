@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.gradecak.alfresco-mvc</groupId>
-  <version>6.0.0-RELEASE</version>
+  <version>6.0.0-SNAPSHOT</version>
   <artifactId>alfresco-mvc-bom</artifactId>
   <packaging>pom</packaging>
 
@@ -80,6 +80,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      
+      <dependency>
+		<groupId>org.alfresco</groupId>
+		<artifactId>alfresco-remote-api</artifactId>
+		<version>6.38</version>
+		<scope>provided</scope>
+	  </dependency>
 
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -143,73 +150,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
-      <dependency>
-        <groupId>org.springframework.data</groupId>
-        <artifactId>spring-data-commons</artifactId>
-        <version>${spring.data.version}</version>
-        <scope>compile</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>spring-beans</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>slf4j-api</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-core</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework.hateoas</groupId>
-        <artifactId>spring-hateoas</artifactId>
-        <version>${spring.hateoas.version}</version>
-        <scope>compile</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>spring-context</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-beans</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>slf4j-api</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-aop</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-core</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>objenesis</artifactId>
-            <groupId>org.objenesis</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-webmvc</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-web</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
 
       <dependency>
         <groupId>com.gradecak.alfresco-mvc</groupId>
@@ -284,7 +224,7 @@
           <target>1.7</target>
         </configuration>
       </plugin>
-      <plugin>
+     <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
         <version>1.5</version>

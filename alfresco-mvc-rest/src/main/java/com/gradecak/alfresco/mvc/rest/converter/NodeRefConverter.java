@@ -1,4 +1,4 @@
-package com.gradecak.alfresco.mvc.converter;
+package com.gradecak.alfresco.mvc.rest.converter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +41,7 @@ public class NodeRefConverter implements ConditionalGenericConverter, Converter<
       return source.toString();
     }
   }
-  
+
   @Override
   public NodeRef convert(String source) {
     return new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, source);

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.webscript.mock;
+package com.gradecak.alfresco.querytemplate;
 
-import org.springframework.extensions.webscripts.AbstractWebScript;
+import org.alfresco.service.cmr.repository.NodeRef;
 
-public class MockWebscriptBuilder {
+public interface BeanPropertiesMapperConfigurer<T> {
 
-  static public MockWebscript singleWebscript(final AbstractWebScript webScript) {
-    return new MockWebscript(webScript);
-  }
+  void configure(NodeRef nodeRef, T mappedObject);
+
 }

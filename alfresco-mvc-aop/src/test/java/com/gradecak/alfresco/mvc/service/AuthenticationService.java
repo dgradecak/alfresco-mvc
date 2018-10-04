@@ -35,17 +35,17 @@ public class AuthenticationService {
   public String getNamePropertyAsDefault(final NodeRef nodeRef) {
     return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
   }
-  
+
   @AlfrescoAuthentication(AuthenticationType.USER)
   public String getNamePropertyAsUser(final NodeRef nodeRef) {
     return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
   }
-  
+
   @AlfrescoAuthentication(AuthenticationType.ADMIN)
   public String getNamePropertyAsAdmin(final NodeRef nodeRef) {
     return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
   }
-  
+
   @AlfrescoAuthentication(AuthenticationType.NONE)
   public String getNamePropertyAsNone(final NodeRef nodeRef) {
     return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);

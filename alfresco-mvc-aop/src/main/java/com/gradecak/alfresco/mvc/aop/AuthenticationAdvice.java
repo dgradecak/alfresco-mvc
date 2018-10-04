@@ -37,10 +37,10 @@ import com.gradecak.alfresco.mvc.annotation.AuthenticationType;
 public class AuthenticationAdvice implements MethodInterceptor {
 
   private final ServiceRegistry serviceRegistry;
-  
+
   @Autowired
   public AuthenticationAdvice(final ServiceRegistry serviceRegistry) {
-	this.serviceRegistry = serviceRegistry;
+    this.serviceRegistry = serviceRegistry;
   }
 
   public Object invoke(final MethodInvocation invocation) throws Throwable {
@@ -72,9 +72,9 @@ public class AuthenticationAdvice implements MethodInterceptor {
         } else if (AuthenticationType.GUEST.equals(authenticationType) && authenticationService.guestUserAuthenticationAllowed()) {
           authenticationService.authenticateAsGuest();
         } else {
-          throw new AuthenticationException("\nUnable to authenticate due to one of the following reasons:\n"
-              + "Credentials are not provided in HTTP request where at least named user or admin authentication is required.\n"
-              + "Guest user authentication is not allowed where at least guest authentication is required.\n");
+          throw new AuthenticationException(
+              "\nUnable to authenticate due to one of the following reasons:\n" + "Credentials are not provided in HTTP request where at least named user or admin authentication is required.\n"
+                  + "Guest user authentication is not allowed where at least guest authentication is required.\n");
         }
       }
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.jackson;
+package com.gradecak.alfresco.mvc.rest.jackson;
 
 import java.io.IOException;
 
@@ -22,20 +22,20 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-public class Jackson2QnameSerializer extends JsonSerializer<QName> {
+public class Jackson2QnameSerializer extends StdSerializer<QName> {
 
   private ServiceRegistry serviceRegistry;
 
   public Jackson2QnameSerializer(ServiceRegistry serviceRegistry) {
+    super(QName.class);
     this.serviceRegistry = serviceRegistry;
   }
 
   @Override
-  public void serialize(QName value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+  public void serialize(QName value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
     String prefixString = value.toPrefixString(serviceRegistry.getNamespaceService());
     jgen.writeString(prefixString);
   }

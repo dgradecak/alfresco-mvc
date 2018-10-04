@@ -18,12 +18,14 @@ package com.gradecak.alfresco.querytemplate;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
-import org.springframework.data.domain.Persistable;
 
-public interface NodePropertiesMapper<T extends Persistable<NodeRef>> {
+public interface NodePropertiesMapper<T> {
 
-  public T mapNodeProperties(NodeRef nodeRef, Map<QName, Serializable> properties);
+  T mapNodeProperties(NodeRef nodeRef, Map<QName, Serializable> properties);
+
+  Set<QName> getMappedQnames();
 }

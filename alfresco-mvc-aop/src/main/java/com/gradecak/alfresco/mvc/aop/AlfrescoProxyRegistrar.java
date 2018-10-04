@@ -32,12 +32,13 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
-import com.gradecak.alfresco.mvc.annotation.EnableAlfrescoMvcProxy;
+import com.gradecak.alfresco.mvc.annotation.EnableAlfrescoMvcAop;
 
 public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 
   public static final String PACKAGE_PROXY_CREATOR_BEAN_NAME = "com.gradecak.alfresco.mvc.aop.alfrescoMvcPackageAutoProxyCreator";
-//  public static final String AUTOWIRED_PROCESSOR_BEAN_NAME = "org.springframework.beans.factory.annotation.alfrescoMvcAutowiredAnnotationBeanPostProcessor";
+  // public static final String AUTOWIRED_PROCESSOR_BEAN_NAME =
+  // "org.springframework.beans.factory.annotation.alfrescoMvcAutowiredAnnotationBeanPostProcessor";
 
   private AnnotationAttributes attributes;
   private AnnotationMetadata metadata;
@@ -46,26 +47,26 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 
     Assert.notNull(annotationMetadata, "AnnotationMetadata must not be null!");
     Assert.notNull(registry, "BeanDefinitionRegistry must not be null!");
-    
+
     boolean proxyBeanRegistered = false;
     for (String beanName : PackageAutoProxyCreator.DEFAULT_INTERCEPTORS) {
-      if(registry.containsBeanDefinition(beanName)){
+      if (registry.containsBeanDefinition(beanName)) {
         proxyBeanRegistered = true;
         break;
-      }        
+      }
     }
-    
-    if(!proxyBeanRegistered) {
+
+    if (!proxyBeanRegistered) {
       XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(registry);
       xmlReader.loadBeanDefinitions("classpath:com/gradecak/alfresco-mvc/alfresco-mvc-aop.xml");
     }
 
     // Guard against calls for sub-classes
-    if (annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcProxy.class.getName()) == null) {
+    if (annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcAop.class.getName()) == null) {
       return;
     }
 
-    this.attributes = new AnnotationAttributes(annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcProxy.class.getName()));
+    this.attributes = new AnnotationAttributes(annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcAop.class.getName()));
     this.metadata = annotationMetadata;
 
     Iterable<String> basePackages = getBasePackages();
@@ -73,17 +74,17 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
       registerOrEscalateApcAsRequired(PackageAutoProxyCreator.class, registry, null, basePackage);
     }
 
-//    if (!registry.containsBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME)) {
-//      RootBeanDefinition beanDefinition = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
-//      beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-//      registry.registerBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME, beanDefinition);
-//    }
+    // if (!registry.containsBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME)) {
+    // RootBeanDefinition beanDefinition = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
+    // beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+    // registry.registerBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME, beanDefinition);
+    // }
 
-//    if (!registry.containsBeanDefinition(CONFIGURATION_PROCESSOR_BEAN_NAME)) {
-//      RootBeanDefinition beanDefinition = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
-//      beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-//      registry.registerBeanDefinition(CONFIGURATION_PROCESSOR_BEAN_NAME, beanDefinition);
-//    }
+    // if (!registry.containsBeanDefinition(CONFIGURATION_PROCESSOR_BEAN_NAME)) {
+    // RootBeanDefinition beanDefinition = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
+    // beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+    // registry.registerBeanDefinition(CONFIGURATION_PROCESSOR_BEAN_NAME, beanDefinition);
+    // }
   }
 
   public Iterable<String> getBasePackages() {

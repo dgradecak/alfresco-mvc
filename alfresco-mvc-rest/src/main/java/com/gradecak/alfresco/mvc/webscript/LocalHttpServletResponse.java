@@ -43,6 +43,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.web.util.WebUtils;
 
+import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.WebscriptRequestWrapper;
 
 public class LocalHttpServletResponse implements HttpServletResponse {
 
@@ -98,38 +99,41 @@ public class LocalHttpServletResponse implements HttpServletResponse {
 
   private final List<String> includedUrls = new ArrayList<>();
 
-  public LocalHttpServletResponse() {
+  private final WebscriptRequestWrapper requestWrapper;
+
+  public LocalHttpServletResponse(WebscriptRequestWrapper requestWrapper) {
     this.outputStream = new ResponseServletOutputStream(this.content);
+    this.requestWrapper = requestWrapper;
   }
 
-  public LocalHttpServletResponse(OutputStream outputStream) {
+  public LocalHttpServletResponse(WebscriptRequestWrapper requestWrapper, OutputStream outputStream) {
     this.outputStream = new ResponseServletOutputStream(outputStream);
+    this.requestWrapper = requestWrapper;
+  }
+
+  public WebscriptRequestWrapper getRequestWrapper() {
+    return requestWrapper;
   }
 
   // ---------------------------------------------------------------------
   // ServletResponse interface
   // ---------------------------------------------------------------------
 
-
   public void setOutputStreamAccessAllowed(boolean outputStreamAccessAllowed) {
     this.outputStreamAccessAllowed = outputStreamAccessAllowed;
   }
-
 
   public boolean isOutputStreamAccessAllowed() {
     return this.outputStreamAccessAllowed;
   }
 
-
   public void setWriterAccessAllowed(boolean writerAccessAllowed) {
     this.writerAccessAllowed = writerAccessAllowed;
   }
 
-
   public boolean isWriterAccessAllowed() {
     return this.writerAccessAllowed;
   }
-
 
   public boolean isCharset() {
     return this.charset;

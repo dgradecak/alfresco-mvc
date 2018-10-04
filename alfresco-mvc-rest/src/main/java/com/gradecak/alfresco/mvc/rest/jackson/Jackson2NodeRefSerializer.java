@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.jackson;
+package com.gradecak.alfresco.mvc.rest.jackson;
 
 import java.io.IOException;
 
@@ -22,12 +22,14 @@ import org.alfresco.service.cmr.repository.NodeRef;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-public class Jackson2NodeRefSerializer extends JsonSerializer<NodeRef> {
+public class Jackson2NodeRefSerializer extends StdSerializer<NodeRef> {
 
-  public Jackson2NodeRefSerializer() {}
+  public Jackson2NodeRefSerializer() {
+    super(NodeRef.class);
+  }
 
   @Override
   public void serialize(NodeRef value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
