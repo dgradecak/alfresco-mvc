@@ -58,13 +58,12 @@
     <module>alfresco-mvc-rest</module>
     <module>alfresco-mvc-aop</module>
     <module>alfresco-mvc-querytemplate</module>
-    <module>alfresco-mvc-dist</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.alfresco</groupId>        
+        <groupId>org.alfresco</groupId>
         <artifactId>alfresco-content-services-community-distribution</artifactId>
         <version>${alfresco.version}</version>
         <type>pom</type>
