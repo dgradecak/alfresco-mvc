@@ -23,66 +23,108 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceException;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.Persistable;
 import org.springframework.util.Assert;
 
-public abstract class BeanPropertiesMapper<T extends Persistable<NodeRef>> implements NodePropertiesMapper<T> {
+public class BeanPropertiesMapper<T> implements NodePropertiesMapper<T> {
 
-  protected final ServiceRegistry serviceRegistry;
-  protected Class<T> mappedClass;
-  protected Map<String, PropertyDescriptor> mappedFields;
-  protected Map<QName, PropertyDescriptor> mappedQNames;
-  protected Set<String> mappedProperties;
+  private static final Logger LOGGER = LoggerFactory.getLogger(BeanPropertiesMapper.class);
+
+  private final BeanPropertiesMapperConfigurer<T> configurer;
+  private final NamespaceService namespaceService;
+  private final DictionaryService dictionaryService;
+  private final boolean reportNamespaceException;
+
+  private Class<T> mappedClass;
+  private Map<String, PropertyDescriptor> mappedFields;
+  private Map<QName, PropertyDescriptor> mappedQNames;
+  private Set<String> mappedProperties;
+
+  protected BeanPropertiesMapper(final NamespaceService namespaceService, final DictionaryService dictionaryService) {
+    this(namespaceService, dictionaryService, false);
+  }
+
+  protected BeanPropertiesMapper(final NamespaceService namespaceService, final DictionaryService dictionaryService, final boolean reportNamespaceException, Class<T> mappedClass) {
+    this(namespaceService, dictionaryService, reportNamespaceException);
+    if (this.mappedClass == null) {
+      setMappedClass(mappedClass);
+    }
+  }
+
+  protected BeanPropertiesMapper(final NamespaceService namespaceService, final DictionaryService dictionaryService, final boolean reportNamespaceException) {
+    this(namespaceService, dictionaryService, null, reportNamespaceException);
+  }
 
   @SuppressWarnings("unchecked")
-  public BeanPropertiesMapper(final ServiceRegistry serviceRegistry) {
-    this.serviceRegistry = serviceRegistry;
-    Class<T> mappedClass = (Class<T>)GenericTypeResolver.resolveTypeArgument(this.getClass(), NodePropertiesMapper.class);
-    setMappedClass(mappedClass);
+  protected BeanPropertiesMapper(final NamespaceService namespaceService, final DictionaryService dictionaryService, final BeanPropertiesMapperConfigurer<T> configurer,
+      final boolean reportNamespaceException) {
+    Assert.notNull(namespaceService, "[Assertion failed] - the namespaceService argument must be null");
+    Assert.notNull(dictionaryService, "[Assertion failed] - the dictionaryService argument must be null");
+
+    this.namespaceService = namespaceService;
+    this.dictionaryService = dictionaryService;
+    this.reportNamespaceException = reportNamespaceException;
+
+    Class<T> mappedClass = (Class<T>) GenericTypeResolver.resolveTypeArgument(getClass(), NodePropertiesMapper.class);
+    if (mappedClass != null) {
+      setMappedClass(mappedClass);
+    }
+
+    BeanPropertiesMapperConfigurer<T> confTmp = configurer;
+    if (configurer == null) {
+      if (this instanceof BeanPropertiesMapperConfigurer) {
+        confTmp = ((BeanPropertiesMapperConfigurer<T>) this);
+      }
+    }
+
+    this.configurer = confTmp;
   }
-  
-  public BeanPropertiesMapper(final ServiceRegistry serviceRegistry, Class<T> mappedClass) {
-    this.serviceRegistry = serviceRegistry;
-    setMappedClass(mappedClass);
+
+  public BeanPropertiesMapperConfigurer<T> getConfigurer() {
+    return configurer;
   }
 
   public T mapNodeProperties(final NodeRef nodeRef, final Map<QName, Serializable> properties) {
-    Assert.state(this.mappedClass != null, "Mapped class was not specified");
-    T mappedObject = BeanUtils.instantiate(this.mappedClass);
-    BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(mappedObject);
-    initBeanWrapper(bw);
+    try {
+      T mappedObject = this.mappedClass.newInstance();
 
-    for (Map.Entry<QName, PropertyDescriptor> entry : mappedQNames.entrySet()) {
-      QName qName = entry.getKey();
+      BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(mappedObject);
+      afterBeanWrapperInitialized(bw);
 
-      PropertyDescriptor pd = entry.getValue();
-      if (pd != null) {
-        bw.setPropertyValue(pd.getName(), properties.get(qName));
+      for (Map.Entry<QName, PropertyDescriptor> entry : mappedQNames.entrySet()) {
+        QName qName = entry.getKey();
+
+        PropertyDescriptor pd = entry.getValue();
+        if (pd != null) {
+          bw.setPropertyValue(pd.getName(), properties.get(qName));
+        }
       }
-    }
-   
-    if(bw.isWritableProperty("id")) {
-      PropertyDescriptor idProperty = bw.getPropertyDescriptor("id");
-      if (idProperty != null) {
-        bw.setPropertyValue(idProperty.getName(), nodeRef);
+
+      if (configurer != null) {
+        configurer.configure(nodeRef, mappedObject);
       }
+
+      return mappedObject;
+    } catch (Throwable e) {
+      throw new RuntimeException(e);
     }
-
-    configureMappedObject(mappedObject);
-
-    return mappedObject;
   }
 
-  protected void configureMappedObject(T mappedObject) {}
+  @Override
+  public Set<QName> getMappedQnames() {
+    return mappedQNames.keySet();
+  }
 
   /**
    * Initialize the given BeanWrapper to be used for row mapping. To be called for each row.
@@ -91,7 +133,7 @@ public abstract class BeanPropertiesMapper<T extends Persistable<NodeRef>> imple
    * 
    * @param bw the BeanWrapper to initialize
    */
-  protected void initBeanWrapper(BeanWrapper bw) {}
+  protected void afterBeanWrapperInitialized(BeanWrapper bw) {}
 
   /**
    * Set the class that properties should be mapped to.
@@ -104,6 +146,12 @@ public abstract class BeanPropertiesMapper<T extends Persistable<NodeRef>> imple
         throw new InvalidDataAccessApiUsageException("The mapped class can not be reassigned to map to " + mappedClass + " since it is already providing mapping for " + this.mappedClass);
       }
     }
+
+    Assert.notNull(this.mappedClass, "[Assertion failed] - the mappedClass argument must be null");
+  }
+
+  public Class<T> getMappedClass() {
+    return mappedClass;
   }
 
   /**
@@ -130,17 +178,24 @@ public abstract class BeanPropertiesMapper<T extends Persistable<NodeRef>> imple
 
         if (prefixedString.contains(":")) {
           try {
-            QName qName = QName.createQName(prefixedString, serviceRegistry.getNamespaceService());
-            if (serviceRegistry.getDictionaryService().getProperty(qName) != null) {
+            QName qName = QName.createQName(prefixedString, namespaceService);
+            if (dictionaryService.getProperty(qName) != null) {
               this.mappedQNames.put(qName, pd);
             }
           } catch (NamespaceException e) {
-            // ; noop
+            LOGGER.warn("the property is not configured for this namespace", e);
+            if (reportNamespaceException) {
+              throw e;
+            }
           }
         }
       }
     }
+
+    afterInitialize();
   }
+
+  protected void afterInitialize() {}
 
   /**
    * Convert a name in camelCase to an underscored name in lower case. Any upper case letters are converted to lower
@@ -170,9 +225,5 @@ public abstract class BeanPropertiesMapper<T extends Persistable<NodeRef>> imple
       }
     }
     return result.toString();
-  }
-  
-  public ServiceRegistry getServiceRegistry() {
-    return serviceRegistry;
   }
 }

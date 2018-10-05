@@ -19,7 +19,7 @@ package com.gradecak.alfresco.mvc.webscript.mock;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 
 public class MockWebscriptBuilder {
-  
+
   static public MockWebscript singleWebscript(final AbstractWebScript webScript) {
     return new MockWebscript(webScript);
   }

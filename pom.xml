@@ -4,56 +4,54 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.gradecak.alfresco-mvc</groupId>
-  <version>5.0.1-RELEASE</version>
+  <version>6.0.0-RELEASE</version>
   <artifactId>alfresco-mvc-bom</artifactId>
   <packaging>pom</packaging>
 
   <name>Alfresco MVC bom</name>
   <description>Bom for Alfresco @MVC project</description>
   <url>https://github.com/dgradecak/alfresco-mvc</url>
-  
+
   <licenses>
-	<license>
-		<name>The Apache License, Version 2.0</name>
-		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-	</license>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
   </licenses>
 
   <developers>
-	<developer>
-		<name>Daniel Gradečak</name>
-		<email>daniel@pleosoft.com</email>
-		<organization>PleoSoft</organization>
-		<organizationUrl>http://pleosoft.com/</organizationUrl>
-	</developer>
-	<developer>
-		<name>Luka Orelj</name>
-		<email>luka@pleosoft.com</email>
-		<organization>PleoSoft</organization>
-		<organizationUrl>http://pleosoft.com/</organizationUrl>
-	</developer>
-	<developer>
-		<name>Antonio Jedvaj</name>
-		<email>antonio@pleosoft.com</email>
-		<organization>PleoSoft</organization>
-		<organizationUrl>http://pleosoft.com/</organizationUrl>
-	</developer>
+    <developer>
+      <name>Daniel Gradečak</name>
+      <email>daniel@pleosoft.com</email>
+      <organization>PleoSoft</organization>
+      <organizationUrl>http://pleosoft.com/</organizationUrl>
+    </developer>
+    <developer>
+      <name>Luka Orelj</name>
+      <email>luka@pleosoft.com</email>
+      <organization>PleoSoft</organization>
+      <organizationUrl>http://pleosoft.com/</organizationUrl>
+    </developer>
+    <developer>
+      <name>Antonio Jedvaj</name>
+      <email>antonio@pleosoft.com</email>
+      <organization>PleoSoft</organization>
+      <organizationUrl>http://pleosoft.com/</organizationUrl>
+    </developer>
   </developers>
-  
+
   <scm>
-	<connection>scm:git:git://github.com/dgradecak/alfresco-mvc.git</connection>
-	<developerConnection>scm:git:ssh://github.com/dgradecak/alfresco-mvc.git</developerConnection>
-	<url>https://github.com/dgradecak/alfresco-mvc/tree/master</url>
+    <connection>scm:git:git://github.com/dgradecak/alfresco-mvc.git</connection>
+    <developerConnection>scm:git:ssh://github.com/dgradecak/alfresco-mvc.git</developerConnection>
+    <url>https://github.com/dgradecak/alfresco-mvc/tree/master</url>
   </scm>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <alfresco.groupId>org.alfresco</alfresco.groupId>
-    <alfresco.version>5.2.f</alfresco.version>
-    <spring.version>3.2.17.RELEASE</spring.version>
-    <spring.data.version>1.8.6.RELEASE</spring.data.version>
-    <spring.hateoas.version>0.16.0.RELEASE</spring.hateoas.version>
-    <spring.plugin-core.version>1.1.0.RELEASE</spring.plugin-core.version>
+    <alfresco.version>6.0.7-ga</alfresco.version>
+    <spring.version>5.0.4.RELEASE</spring.version>
+    <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
+    <mockito-all.version>1.10.19</mockito-all.version>
   </properties>
 
   <modules>
@@ -66,104 +64,33 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>${alfresco.groupId}</groupId>
-        <artifactId>alfresco-platform-distribution</artifactId>
+        <groupId>org.alfresco</groupId>        
+        <artifactId>alfresco-content-services-community-distribution</artifactId>
         <version>${alfresco.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
 
       <dependency>
-        <groupId>org.springframework.plugin</groupId>
-        <artifactId>spring-plugin-core</artifactId>
-        <version>${spring.plugin-core.version}</version>
-        <scope>runtime</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>spring-context</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-beans</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>slf4j-api</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-aop</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-        </exclusions>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${javax.servlet-api.version}</version>
+        <scope>provided</scope>
       </dependency>
 
       <dependency>
-        <groupId>org.springframework.data</groupId>
-        <artifactId>spring-data-commons</artifactId>
-        <version>${spring.data.version}</version>
-        <scope>compile</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>spring-beans</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>slf4j-api</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-core</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-        </exclusions>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>${mockito-all.version}</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>
-        <groupId>org.springframework.hateoas</groupId>
-        <artifactId>spring-hateoas</artifactId>
-        <version>${spring.hateoas.version}</version>
-        <scope>compile</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>spring-context</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-beans</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>slf4j-api</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-aop</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-core</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>objenesis</artifactId>
-            <groupId>org.objenesis</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-webmvc</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-web</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-        </exclusions>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.version}</version>
+        <scope>test</scope>
       </dependency>
-
 
       <dependency>
         <groupId>com.gradecak.alfresco-mvc</groupId>
@@ -218,40 +145,40 @@
         </executions>
       </plugin>
       <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-javadoc-plugin</artifactId>
-		<version>2.9.1</version>
-		<executions>
-			<execution>
-				<id>attach-javadocs</id>
-				<goals>
-					<goal>jar</goal>
-				</goals>
-			</execution>
-		</executions>
-	  </plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
-	  <plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-gpg-plugin</artifactId>
-		  <version>1.5</version>
-		  <executions>
-			<execution>
-			  <id>sign-artifacts</id>
-			  <phase>verify</phase>
-			  <goals>
-				<goal>sign</goal>
-			  </goals>
-			</execution>
-		  </executions>
-		</plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 

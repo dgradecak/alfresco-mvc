@@ -3,16 +3,16 @@
 
   <parent>
     <groupId>com.gradecak.alfresco-mvc</groupId>
-    <version>5.0.1-RELEASE</version>
+    <version>6.0.0-RELEASE</version>
     <artifactId>alfresco-mvc-bom</artifactId>
     <relativePath>../</relativePath>
   </parent>
 
   <artifactId>alfresco-mvc-dist</artifactId>
-
+ 
   <name>Alfresco MVC dist</name>
   <description>Alfresco @MVC amp deployer</description>
-	
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -56,8 +56,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
 

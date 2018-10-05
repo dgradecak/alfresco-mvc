@@ -33,8 +33,7 @@ public class PackageAutoProxyCreator extends AbstractAutoProxyCreator implements
 
   private static final long serialVersionUID = -1219238254256448615L;
 
-  public static final String[] DEFAULT_INTERCEPTORS = { "mvc.aop.alfrescoAuthenticationAdvisor", "mvc.aop.alfrescoRunAsAdvisor",
-      "mvc.aop.alfrescoTransactionAdvisor" };
+  public static final String[] DEFAULT_INTERCEPTORS = { "mvc.aop.alfrescoAuthenticationAdvisor", "mvc.aop.alfrescoRunAsAdvisor", "mvc.aop.alfrescoTransactionAdvisor" };
 
   private String basePackage;
   private boolean skipDefaultInterceptos = false;

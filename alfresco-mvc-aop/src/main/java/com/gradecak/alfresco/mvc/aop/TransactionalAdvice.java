@@ -34,10 +34,10 @@ import com.gradecak.alfresco.mvc.annotation.AlfrescoTransaction;
 public class TransactionalAdvice implements MethodInterceptor {
 
   private final ServiceRegistry serviceRegistry;
-	  
+
   @Autowired
   public TransactionalAdvice(final ServiceRegistry serviceRegistry) {
-	this.serviceRegistry = serviceRegistry;
+    this.serviceRegistry = serviceRegistry;
   }
 
   public Object invoke(final MethodInvocation invocation) throws Throwable {

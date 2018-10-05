@@ -85,13 +85,13 @@ public class RunAsTest {
   }
 
   @Test
-  public void noAutehntication_runAsSystem() {    
+  public void noAutehntication_runAsSystem() {
     service.getNamePropertyAsSystem(nodeRef);
-    
+
     Assert.assertNull(AuthenticationUtil.getRunAsUser());
     Assert.assertNull(AuthenticationUtil.getFullyAuthenticatedUser());
   }
-  
+
   @Test
   public void authentifiedAsTest_runAsUser() {
 
