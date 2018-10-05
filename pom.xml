@@ -48,15 +48,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <alfresco.groupId>org.alfresco</alfresco.groupId>
     <alfresco.version>6.0.7-ga</alfresco.version>
-    <alfresco-repository.version>1.1.0.RELEASE</alfresco-repository.version>
-    <alfresco-spring-webscripts.version>1.1.0.RELEASE</alfresco-spring-webscripts.version>
-    <alfresco-remote-api.version>1.1.0.RELEASE</alfresco-remote-api.version>
-    <alfresco-repository.version>6.55</alfresco-repository.version>
-    <alfresco-remote-api.version>6.38</alfresco-remote-api.version>
-    <alfresco-spring-webscripts.version>6.19</alfresco-spring-webscripts.version>
-    <spring.version>3.2.17.RELEASE</spring.version>
+    <spring.version>5.0.4.RELEASE</spring.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
     <mockito-all.version>1.10.19</mockito-all.version>
   </properties>
@@ -71,18 +64,11 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>${alfresco.groupId}</groupId>
-        <artifactId>acs-community-packaging</artifactId>
+        <groupId>org.alfresco</groupId>        
+        <artifactId>alfresco-content-services-community-distribution</artifactId>
         <version>${alfresco.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.alfresco</groupId>
-        <artifactId>alfresco-remote-api</artifactId>
-        <version>6.38</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -99,35 +85,10 @@
         <scope>test</scope>
       </dependency>
 
-
-      <dependency>
-        <groupId>${alfresco.groupId}</groupId>
-        <artifactId>alfresco-repository</artifactId>
-        <version>${alfresco-repository.version}</version>
-        <classifier>tests</classifier>
-        <scope>test</scope>
-      </dependency>
-
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
         <version>${spring.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.alfresco.surf</groupId>
-        <artifactId>spring-webscripts</artifactId>
-        <classifier>tests</classifier>
-        <scope>test</scope>
-        <version>${alfresco-spring-webscripts.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.alfresco</groupId>
-        <artifactId>alfresco-remote-api</artifactId>
-        <version>${alfresco-remote-api.version}</version>
-        <classifier>tests</classifier>
         <scope>test</scope>
       </dependency>
 

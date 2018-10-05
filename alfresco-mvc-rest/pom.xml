@@ -27,13 +27,13 @@
     </dependency>
 
     <dependency>
-      <groupId>${alfresco.groupId}</groupId>
+      <groupId>org.alfresco</groupId>
       <artifactId>alfresco-data-model</artifactId>
       <scope>provided</scope>
     </dependency>
     
     <dependency>
-	  <groupId>${alfresco.groupId}</groupId>
+	  <groupId>org.alfresco</groupId>
 	  <artifactId>alfresco-remote-api</artifactId>
 	  <scope>provided</scope>
 	</dependency>
@@ -45,16 +45,9 @@
     </dependency>
 
     <dependency>
-      <groupId>${alfresco.groupId}</groupId>
+      <groupId>org.alfresco</groupId>
       <artifactId>alfresco-repository</artifactId>
       <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.alfresco</groupId>
-      <artifactId>alfresco-remote-api</artifactId>
-      <classifier>tests</classifier>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -64,30 +57,9 @@
     </dependency>
 
     <dependency>
-      <groupId>${alfresco.groupId}</groupId>
-      <artifactId>alfresco-repository</artifactId>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.alfresco.surf</groupId>
-      <artifactId>spring-webscripts</artifactId>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>${spring.version}</version>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

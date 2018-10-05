@@ -21,33 +21,20 @@
 
   <dependencies>
     <dependency>
-      <groupId>${alfresco.groupId}</groupId>
+      <groupId>org.alfresco</groupId>
       <artifactId>alfresco-data-model</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>${alfresco.groupId}</groupId>
+      <groupId>org.alfresco</groupId>
       <artifactId>alfresco-repository</artifactId>
       <scope>provided</scope>
     </dependency>
     
     <dependency>
-	  <groupId>${alfresco.groupId}</groupId>
-	  <artifactId>alfresco-remote-api</artifactId>
-	  <scope>provided</scope>
-	</dependency>
-
-    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>${alfresco.groupId}</groupId>
-      <artifactId>alfresco-repository</artifactId>
-      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
 
