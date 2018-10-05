@@ -57,9 +57,6 @@
     <alfresco-remote-api.version>6.38</alfresco-remote-api.version>
     <alfresco-spring-webscripts.version>6.19</alfresco-spring-webscripts.version>
     <spring.version>3.2.17.RELEASE</spring.version>
-    <spring.data.version>1.8.6.RELEASE</spring.data.version>
-    <spring.hateoas.version>0.16.0.RELEASE</spring.hateoas.version>
-    <spring.plugin-core.version>1.1.0.RELEASE</spring.plugin-core.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
     <mockito-all.version>1.10.19</mockito-all.version>
   </properties>
@@ -80,13 +77,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      
+
       <dependency>
-		<groupId>org.alfresco</groupId>
-		<artifactId>alfresco-remote-api</artifactId>
-		<version>6.38</version>
-		<scope>provided</scope>
-	  </dependency>
+        <groupId>org.alfresco</groupId>
+        <artifactId>alfresco-remote-api</artifactId>
+        <version>6.38</version>
+        <scope>provided</scope>
+      </dependency>
 
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -99,6 +96,7 @@
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
         <version>${mockito-all.version}</version>
+        <scope>test</scope>
       </dependency>
 
 
@@ -107,6 +105,13 @@
         <artifactId>alfresco-repository</artifactId>
         <version>${alfresco-repository.version}</version>
         <classifier>tests</classifier>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.version}</version>
         <scope>test</scope>
       </dependency>
 
@@ -124,31 +129,6 @@
         <version>${alfresco-remote-api.version}</version>
         <classifier>tests</classifier>
         <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework.plugin</groupId>
-        <artifactId>spring-plugin-core</artifactId>
-        <version>${spring.plugin-core.version}</version>
-        <scope>runtime</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>spring-context</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-beans</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>slf4j-api</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-aop</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
@@ -224,7 +204,7 @@
           <target>1.8</target>
         </configuration>
       </plugin>
-     <plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
         <version>1.5</version>
