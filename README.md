@@ -2,6 +2,8 @@ The missing glue between Alfresco and Spring MVC
 ===
 Works on Enterprise as well as on Community and it ruses a widely accepted REST framework
 
+[The docs are on the wiki page](https://github.com/dgradecak/alfresco-mvc/wiki)
+
 You should use it when
 -
 - You need custom APIs
