@@ -56,7 +56,7 @@ public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
     Assert.notNull(webscript, "Webscript name cannot be empty!");
 
     Class<?> servletContext = webscriptAttributes.getClass("servletContext");
-    HttpMethod[] htpMethods = (HttpMethod[]) webscriptAttributes.get("htpMethods");
+    HttpMethod[] httpMethods = (HttpMethod[]) webscriptAttributes.get("httpMethods");
 
     // DispatcherWebscript dispatcherWebscript = dispatcherWebscript(servletContext);
 
@@ -67,11 +67,11 @@ public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
     beanDefinition.getPropertyValues().add("contextConfigLocation", servletContext.getName());
     beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 
-    List<HttpMethod> methodsIteable = new ArrayList<>(Arrays.asList(htpMethods));
+    List<HttpMethod> methodsIteable = new ArrayList<>(Arrays.asList(httpMethods));
     String beanName = getWebscriptName(webscript, methodsIteable.remove(0));
     registry.registerBeanDefinition(beanName, beanDefinition);
 
-    for (HttpMethod httpMethod : htpMethods) {
+    for (HttpMethod httpMethod : httpMethods) {
       registry.registerAlias(beanName, getWebscriptName(webscript, httpMethod));
     }
   }

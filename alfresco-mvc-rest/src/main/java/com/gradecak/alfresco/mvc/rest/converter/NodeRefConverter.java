@@ -44,6 +44,12 @@ public class NodeRefConverter implements ConditionalGenericConverter, Converter<
 
   @Override
   public NodeRef convert(String source) {
-    return new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, source);
+	NodeRef nodeRef = null;
+	if(!NodeRef.isNodeRef(source)){
+      nodeRef = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, source);
+    } else {
+      nodeRef = new NodeRef(source);
+    }
+    return nodeRef;
   }
 }

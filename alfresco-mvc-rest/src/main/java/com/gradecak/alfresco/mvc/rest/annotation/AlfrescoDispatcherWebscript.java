@@ -29,7 +29,7 @@ import org.springframework.http.HttpMethod;
 public @interface AlfrescoDispatcherWebscript {
   String name() default "alfresco-mvc.mvc";
 
-  HttpMethod[] htpMethods() default { HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PUT };
+  HttpMethod[] httpMethods() default { HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PUT };
 
   Class<?> servletContext();
 }

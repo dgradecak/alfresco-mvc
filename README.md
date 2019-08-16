@@ -20,7 +20,8 @@ Supported Alfresco versions
 ----
 v6
 -
-- Tested on Alfresco Community 6.0.7-GA
+- Tested on Alfresco Community 6.0.7-GA, 6.1.x, 6.2.0-A2
+- Tested on Alfresco Enterprise 6.0.1
 
 v5
 -

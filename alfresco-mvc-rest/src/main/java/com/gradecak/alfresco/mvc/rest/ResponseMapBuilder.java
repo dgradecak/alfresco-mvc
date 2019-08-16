@@ -22,6 +22,10 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
+/**
+ * 
+ * @deprecated Use a java.util.Map
+ */
 public class ResponseMapBuilder {
 
   private final Builder<String, Object> variables = ImmutableMap.builder();
