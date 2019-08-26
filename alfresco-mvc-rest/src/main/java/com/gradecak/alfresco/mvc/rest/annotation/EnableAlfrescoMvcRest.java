@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
 import com.gradecak.alfresco.mvc.rest.config.AlfrescoRestRegistrar;
-import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextConfig;
+import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextConfiguration;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -34,5 +34,5 @@ import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextCon
 @Inherited
 @Import(AlfrescoRestRegistrar.class)
 public @interface EnableAlfrescoMvcRest {
-	AlfrescoDispatcherWebscript[] value() default @AlfrescoDispatcherWebscript(servletContext = DefaultAlfrescoMvcServletContextConfig.class);
+	AlfrescoDispatcherWebscript[] value() default @AlfrescoDispatcherWebscript(servletContext = DefaultAlfrescoMvcServletContextConfiguration.class);
 }

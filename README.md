@@ -22,7 +22,8 @@ v7
 -
 - the querytemplate module has been deprecated and will be removed in the next major release (Alfresco 5.2+ include a REST API and we recommend using classes from the package org.alfresco.rest.api)
 - @AlfrescoRestResponse can be used to annotate a controller or a controller method in order to use Alfresco Rest API response processing
-- clearer isolation of Spring MVC Web and specific Jackson processors have been removed since spring has been updated to 5.1.x in Alfresco ACS and Alfresco introduced org.alfresco.rest.framework.jacksonextensions.RestJsonModule which we are reusing now
+- clearer isolation of Spring MVC Web and specific Jackson processors have been removed by default, since spring has been updated to 5.1.x in Alfresco ACS and Alfresco introduced org.alfresco.rest.framework.jacksonextensions.RestJsonModule which we are reusing now. 
+  Therefore if you want to continue using any of the serializers/deserializers or converters/formatters you need to manually include them in your WebMvcConfigurer implementation   
 - use @EnableWebAlfrescoMvc which enables @EnableWebMvc and reuses com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextConfig otherwise just use @EnableWebMvc and customize your servlet context as needed
 - ResponseMapBuilder has been deprecated use a Map instead
 - Tested on Alfresco Community 6.0.7-GA, 6.1.x, 6.2.0-A2

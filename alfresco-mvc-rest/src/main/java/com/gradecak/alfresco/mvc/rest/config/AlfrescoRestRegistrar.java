@@ -18,7 +18,9 @@ package com.gradecak.alfresco.mvc.rest.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -29,6 +31,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
 
+import com.gradecak.alfresco.mvc.rest.annotation.AlfrescoDispatcherWebscript;
 import com.gradecak.alfresco.mvc.rest.annotation.EnableAlfrescoMvcRest;
 import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript;
 
@@ -41,8 +44,23 @@ public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
 		Assert.notNull(annotationMetadata, "AnnotationMetadata must not be null!");
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null!");
 
-		this.attributes = new AnnotationAttributes(
-				annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcRest.class.getName()));
+		Map<String, Object> annotationAttributes = annotationMetadata
+				.getAnnotationAttributes(EnableAlfrescoMvcRest.class.getName());
+		if (annotationAttributes == null) {
+			Map<String, Object> annotationAttributes2 = annotationMetadata
+					.getAnnotationAttributes(AlfrescoDispatcherWebscript.class.getName());
+
+			if (annotationAttributes2 != null) {
+				annotationAttributes = new AnnotationAttributes();
+				annotationAttributes.put("value", Collections.singleton(new AnnotationAttributes(annotationAttributes2))
+						.toArray(new AnnotationAttributes[0]));
+			}
+
+			this.attributes = new AnnotationAttributes(annotationAttributes);
+
+		} else {
+			this.attributes = new AnnotationAttributes(annotationAttributes);
+		}
 
 		AnnotationAttributes[] dispatcherWebscripts = (AnnotationAttributes[]) attributes.get("value");
 
@@ -58,9 +76,6 @@ public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
 
 		Class<?> servletContext = webscriptAttributes.getClass("servletContext");
 		HttpMethod[] httpMethods = (HttpMethod[]) webscriptAttributes.get("httpMethods");
-
-		// DispatcherWebscript dispatcherWebscript =
-		// dispatcherWebscript(servletContext);
 
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(DispatcherWebscript.class);
 		beanDefinition.setSource(null);

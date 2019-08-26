@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.gradecak.alfresco.mvc.rest.AlfrescoApiResponseInterceptor;
 
 @Configuration
-public class DefaultAlfrescoMvcServletContextConfig implements WebMvcConfigurer {
+public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConfigurer {
 
 	@Autowired
 	private RestJsonModule alfrescoRestJsonModule;

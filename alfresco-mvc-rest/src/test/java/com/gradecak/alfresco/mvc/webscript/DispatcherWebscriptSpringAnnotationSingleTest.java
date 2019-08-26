@@ -33,9 +33,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = { "/test-webscriptdispatcher-annotation-context.xml" })
+@ContextConfiguration(locations = { "/test-webscriptdispatcher-annotation-single-context.xml" })
 @TestInstance(Lifecycle.PER_CLASS)
-public class DispatcherWebscriptSpringAnnotationTest extends AbstractAlfrescoMvcTest {
+public class DispatcherWebscriptSpringAnnotationSingleTest extends AbstractAlfrescoMvcTest {
 
 	@Autowired
 	private DispatcherWebscript webScript;

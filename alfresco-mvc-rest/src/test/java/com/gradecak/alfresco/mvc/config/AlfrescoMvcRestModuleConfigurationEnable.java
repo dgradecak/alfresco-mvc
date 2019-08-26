@@ -7,5 +7,5 @@ import com.gradecak.alfresco.mvc.rest.annotation.EnableAlfrescoMvcRest;
 
 @Configuration
 @EnableAlfrescoMvcRest(@AlfrescoDispatcherWebscript(servletContext = AlfrescoMvcRestServletContext.class))
-public class AlfrescoMvcRestModuleConfig {
+public class AlfrescoMvcRestModuleConfigurationEnable {
 }

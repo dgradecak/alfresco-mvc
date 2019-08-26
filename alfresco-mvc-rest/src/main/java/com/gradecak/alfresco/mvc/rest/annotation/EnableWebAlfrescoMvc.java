@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextConfig;
+import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextConfiguration;
 
 /**
  * use this class in order to import
@@ -41,6 +41,6 @@ import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextCon
 @Documented
 @Inherited
 @EnableWebMvc
-@Import(DefaultAlfrescoMvcServletContextConfig.class)
+@Import(DefaultAlfrescoMvcServletContextConfiguration.class)
 public @interface EnableWebAlfrescoMvc {
 }
