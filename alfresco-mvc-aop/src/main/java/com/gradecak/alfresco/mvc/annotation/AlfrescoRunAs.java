@@ -27,6 +27,6 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface AlfrescoRunAs {
 
-  String value();
+	String value();
 
 }

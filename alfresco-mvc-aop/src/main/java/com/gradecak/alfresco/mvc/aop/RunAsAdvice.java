@@ -32,54 +32,54 @@ import com.gradecak.alfresco.mvc.annotation.AlfrescoRunAs;
 
 public class RunAsAdvice implements MethodInterceptor {
 
-  public Object invoke(final MethodInvocation invocation) throws Throwable {
+	public Object invoke(final MethodInvocation invocation) throws Throwable {
 
-    Class<?> targetClass = invocation.getThis() != null ? invocation.getThis().getClass() : null;
+		Class<?> targetClass = invocation.getThis() != null ? invocation.getThis().getClass() : null;
 
-    Method specificMethod = ClassUtils.getMostSpecificMethod(invocation.getMethod(), targetClass);
-    // If we are dealing with method with generic parameters, find the original
-    // method.
-    specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
-    AlfrescoRunAs alfrescounRunAs = parseRunAsAnnotation(specificMethod);
-    if (alfrescounRunAs != null) {
-      String runAs = alfrescounRunAs.value();
-      if (StringUtils.hasText(runAs)) {
-        RunAsWork<Object> getUserNameRunAsWork = new RunAsWork<Object>() {
-          public Object doWork() throws Exception {
-            try {
-              return invocation.proceed();
-            } catch (Throwable e) {
-              throw new Exception(e.getMessage(), e);
-            }
-          }
-        };
-        return AuthenticationUtil.runAs(getUserNameRunAsWork, runAs);
-      }
-    }
+		Method specificMethod = ClassUtils.getMostSpecificMethod(invocation.getMethod(), targetClass);
+		// If we are dealing with method with generic parameters, find the original
+		// method.
+		specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
+		AlfrescoRunAs alfrescounRunAs = parseRunAsAnnotation(specificMethod);
+		if (alfrescounRunAs != null) {
+			String runAs = alfrescounRunAs.value();
+			if (StringUtils.hasText(runAs)) {
+				RunAsWork<Object> getUserNameRunAsWork = new RunAsWork<Object>() {
+					public Object doWork() throws Exception {
+						try {
+							return invocation.proceed();
+						} catch (Throwable e) {
+							throw new Exception(e.getMessage(), e);
+						}
+					}
+				};
+				return AuthenticationUtil.runAs(getUserNameRunAsWork, runAs);
+			}
+		}
 
-    return invocation.proceed();
-  }
+		return invocation.proceed();
+	}
 
-  private AlfrescoRunAs parseRunAsAnnotation(AnnotatedElement ae) {
-    AlfrescoRunAs ann = ae.getAnnotation(AlfrescoRunAs.class);
-    if (ann == null) {
-      for (Annotation metaAnn : ae.getAnnotations()) {
-        ann = metaAnn.annotationType().getAnnotation(AlfrescoRunAs.class);
-        if (ann != null) {
-          break;
-        }
-      }
-    }
-    if (ann != null) {
-      return parseAnnotation(ann);
-    } else {
-      return null;
-    }
-  }
+	private AlfrescoRunAs parseRunAsAnnotation(AnnotatedElement ae) {
+		AlfrescoRunAs ann = ae.getAnnotation(AlfrescoRunAs.class);
+		if (ann == null) {
+			for (Annotation metaAnn : ae.getAnnotations()) {
+				ann = metaAnn.annotationType().getAnnotation(AlfrescoRunAs.class);
+				if (ann != null) {
+					break;
+				}
+			}
+		}
+		if (ann != null) {
+			return parseAnnotation(ann);
+		} else {
+			return null;
+		}
+	}
 
-  private AlfrescoRunAs parseAnnotation(AlfrescoRunAs ann) {
-    // parse if needed something else
-    return ann;
-  }
+	private AlfrescoRunAs parseAnnotation(AlfrescoRunAs ann) {
+		// parse if needed something else
+		return ann;
+	}
 
 }

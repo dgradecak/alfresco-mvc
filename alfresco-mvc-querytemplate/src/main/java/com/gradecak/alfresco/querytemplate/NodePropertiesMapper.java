@@ -25,7 +25,7 @@ import org.alfresco.service.namespace.QName;
 
 public interface NodePropertiesMapper<T> {
 
-  T mapNodeProperties(NodeRef nodeRef, Map<QName, Serializable> properties);
+	T mapNodeProperties(NodeRef nodeRef, Map<QName, Serializable> properties);
 
-  Set<QName> getMappedQnames();
+	Set<QName> getMappedQnames();
 }

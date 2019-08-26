@@ -29,22 +29,22 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 public class Jackson2QnameDeserializer extends JsonDeserializer<QName> implements Converter<String, QName> {
 
-  private ServiceRegistry serviceRegistry;
+	private ServiceRegistry serviceRegistry;
 
-  @Autowired
-  public Jackson2QnameDeserializer(ServiceRegistry serviceRegistry) {
-    this.serviceRegistry = serviceRegistry;
-  }
+	@Autowired
+	public Jackson2QnameDeserializer(ServiceRegistry serviceRegistry) {
+		this.serviceRegistry = serviceRegistry;
+	}
 
-  @Override
-  public QName deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-    String qname = jp.getText();
-    return QName.createQName(qname, serviceRegistry.getNamespaceService());
-  }
+	@Override
+	public QName deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+		String qname = jp.getText();
+		return QName.createQName(qname, serviceRegistry.getNamespaceService());
+	}
 
-  @Override
-  public QName convert(String qname) {
-    return QName.createQName(qname, serviceRegistry.getNamespaceService());
-  }
+	@Override
+	public QName convert(String qname) {
+		return QName.createQName(qname, serviceRegistry.getNamespaceService());
+	}
 
 }

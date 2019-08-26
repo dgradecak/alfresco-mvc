@@ -36,94 +36,100 @@ import com.gradecak.alfresco.mvc.annotation.EnableAlfrescoMvcAop;
 
 public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 
-  public static final String PACKAGE_PROXY_CREATOR_BEAN_NAME = "com.gradecak.alfresco.mvc.aop.alfrescoMvcPackageAutoProxyCreator";
-  // public static final String AUTOWIRED_PROCESSOR_BEAN_NAME =
-  // "org.springframework.beans.factory.annotation.alfrescoMvcAutowiredAnnotationBeanPostProcessor";
+	public static final String PACKAGE_PROXY_CREATOR_BEAN_NAME = "com.gradecak.alfresco.mvc.aop.alfrescoMvcPackageAutoProxyCreator";
+	// public static final String AUTOWIRED_PROCESSOR_BEAN_NAME =
+	// "org.springframework.beans.factory.annotation.alfrescoMvcAutowiredAnnotationBeanPostProcessor";
 
-  private AnnotationAttributes attributes;
-  private AnnotationMetadata metadata;
+	private AnnotationAttributes attributes;
+	private AnnotationMetadata metadata;
 
-  public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
+	public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
 
-    Assert.notNull(annotationMetadata, "AnnotationMetadata must not be null!");
-    Assert.notNull(registry, "BeanDefinitionRegistry must not be null!");
+		Assert.notNull(annotationMetadata, "AnnotationMetadata must not be null!");
+		Assert.notNull(registry, "BeanDefinitionRegistry must not be null!");
 
-    boolean proxyBeanRegistered = false;
-    for (String beanName : PackageAutoProxyCreator.DEFAULT_INTERCEPTORS) {
-      if (registry.containsBeanDefinition(beanName)) {
-        proxyBeanRegistered = true;
-        break;
-      }
-    }
+		boolean proxyBeanRegistered = false;
+		for (String beanName : PackageAutoProxyCreator.DEFAULT_INTERCEPTORS) {
+			if (registry.containsBeanDefinition(beanName)) {
+				proxyBeanRegistered = true;
+				break;
+			}
+		}
 
-    if (!proxyBeanRegistered) {
-      XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(registry);
-      xmlReader.loadBeanDefinitions("classpath:com/gradecak/alfresco-mvc/alfresco-mvc-aop.xml");
-    }
+		if (!proxyBeanRegistered) {
+			XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(registry);
+			xmlReader.loadBeanDefinitions("classpath:com/gradecak/alfresco-mvc/alfresco-mvc-aop.xml");
+		}
 
-    // Guard against calls for sub-classes
-    if (annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcAop.class.getName()) == null) {
-      return;
-    }
+		// Guard against calls for sub-classes
+		if (annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcAop.class.getName()) == null) {
+			return;
+		}
 
-    this.attributes = new AnnotationAttributes(annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcAop.class.getName()));
-    this.metadata = annotationMetadata;
+		this.attributes = new AnnotationAttributes(
+				annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcAop.class.getName()));
+		this.metadata = annotationMetadata;
 
-    Iterable<String> basePackages = getBasePackages();
-    for (String basePackage : basePackages) {
-      registerOrEscalateApcAsRequired(PackageAutoProxyCreator.class, registry, null, basePackage);
-    }
+		Iterable<String> basePackages = getBasePackages();
+		for (String basePackage : basePackages) {
+			registerOrEscalateApcAsRequired(PackageAutoProxyCreator.class, registry, null, basePackage);
+		}
 
-    // if (!registry.containsBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME)) {
-    // RootBeanDefinition beanDefinition = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
-    // beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-    // registry.registerBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME, beanDefinition);
-    // }
+		// if (!registry.containsBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME)) {
+		// RootBeanDefinition beanDefinition = new
+		// RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
+		// beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		// registry.registerBeanDefinition(AUTOWIRED_PROCESSOR_BEAN_NAME,
+		// beanDefinition);
+		// }
 
-    // if (!registry.containsBeanDefinition(CONFIGURATION_PROCESSOR_BEAN_NAME)) {
-    // RootBeanDefinition beanDefinition = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
-    // beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-    // registry.registerBeanDefinition(CONFIGURATION_PROCESSOR_BEAN_NAME, beanDefinition);
-    // }
-  }
+		// if (!registry.containsBeanDefinition(CONFIGURATION_PROCESSOR_BEAN_NAME)) {
+		// RootBeanDefinition beanDefinition = new
+		// RootBeanDefinition(ConfigurationClassPostProcessor.class);
+		// beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		// registry.registerBeanDefinition(CONFIGURATION_PROCESSOR_BEAN_NAME,
+		// beanDefinition);
+		// }
+	}
 
-  public Iterable<String> getBasePackages() {
+	public Iterable<String> getBasePackages() {
 
-    String[] value = attributes.getStringArray("value");
-    String[] basePackages = attributes.getStringArray("basePackages");
-    Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
+		String[] value = attributes.getStringArray("value");
+		String[] basePackages = attributes.getStringArray("basePackages");
+		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
 
-    // Default configuration - return package of annotated class
-    if (value.length == 0 && basePackages.length == 0 && basePackageClasses.length == 0) {
-      String className = metadata.getClassName();
-      return Collections.singleton(ClassUtils.getPackageName(className));
-    }
+		// Default configuration - return package of annotated class
+		if (value.length == 0 && basePackages.length == 0 && basePackageClasses.length == 0) {
+			String className = metadata.getClassName();
+			return Collections.singleton(ClassUtils.getPackageName(className));
+		}
 
-    Set<String> packages = new HashSet<>();
-    packages.addAll(Arrays.asList(value));
-    packages.addAll(Arrays.asList(basePackages));
+		Set<String> packages = new HashSet<>();
+		packages.addAll(Arrays.asList(value));
+		packages.addAll(Arrays.asList(basePackages));
 
-    for (Class<?> typeName : basePackageClasses) {
-      packages.add(ClassUtils.getPackageName(typeName));
-    }
+		for (Class<?> typeName : basePackageClasses) {
+			packages.add(ClassUtils.getPackageName(typeName));
+		}
 
-    return packages;
-  }
+		return packages;
+	}
 
-  public static BeanDefinition registerOrEscalateApcAsRequired(Class<PackageAutoProxyCreator> cls, BeanDefinitionRegistry registry, Object source, String basePackage) {
-    Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
+	public static BeanDefinition registerOrEscalateApcAsRequired(Class<PackageAutoProxyCreator> cls,
+			BeanDefinitionRegistry registry, Object source, String basePackage) {
+		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 
-    String proxyPackageBeanName = PACKAGE_PROXY_CREATOR_BEAN_NAME + "." + basePackage;
-    if (registry.containsBeanDefinition(proxyPackageBeanName)) {
-      return null;
-    }
+		String proxyPackageBeanName = PACKAGE_PROXY_CREATOR_BEAN_NAME + "." + basePackage;
+		if (registry.containsBeanDefinition(proxyPackageBeanName)) {
+			return null;
+		}
 
-    RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
-    beanDefinition.setSource(source);
-    beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
-    beanDefinition.getPropertyValues().add("basePackage", basePackage);
-    beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-    registry.registerBeanDefinition(proxyPackageBeanName, beanDefinition);
-    return beanDefinition;
-  }
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
+		beanDefinition.setSource(source);
+		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
+		beanDefinition.getPropertyValues().add("basePackage", basePackage);
+		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		registry.registerBeanDefinition(proxyPackageBeanName, beanDefinition);
+		return beanDefinition;
+	}
 }

@@ -28,26 +28,26 @@ import com.gradecak.alfresco.mvc.annotation.AuthenticationType;
 @Service
 public class AuthenticationService {
 
-  @Autowired
-  private ServiceRegistry serviceRegistry;
+	@Autowired
+	private ServiceRegistry serviceRegistry;
 
-  @AlfrescoAuthentication
-  public String getNamePropertyAsDefault(final NodeRef nodeRef) {
-    return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
-  }
+	@AlfrescoAuthentication
+	public String getNamePropertyAsDefault(final NodeRef nodeRef) {
+		return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
+	}
 
-  @AlfrescoAuthentication(AuthenticationType.USER)
-  public String getNamePropertyAsUser(final NodeRef nodeRef) {
-    return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
-  }
+	@AlfrescoAuthentication(AuthenticationType.USER)
+	public String getNamePropertyAsUser(final NodeRef nodeRef) {
+		return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
+	}
 
-  @AlfrescoAuthentication(AuthenticationType.ADMIN)
-  public String getNamePropertyAsAdmin(final NodeRef nodeRef) {
-    return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
-  }
+	@AlfrescoAuthentication(AuthenticationType.ADMIN)
+	public String getNamePropertyAsAdmin(final NodeRef nodeRef) {
+		return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
+	}
 
-  @AlfrescoAuthentication(AuthenticationType.NONE)
-  public String getNamePropertyAsNone(final NodeRef nodeRef) {
-    return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
-  }
+	@AlfrescoAuthentication(AuthenticationType.NONE)
+	public String getNamePropertyAsNone(final NodeRef nodeRef) {
+		return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
+	}
 }

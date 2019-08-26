@@ -29,18 +29,20 @@ import com.gradecak.alfresco.mvc.annotation.AlfrescoRunAs;
 @Service
 public class RunAsService {
 
-  @Autowired
-  private ServiceRegistry serviceRegistry;
+	@Autowired
+	private ServiceRegistry serviceRegistry;
 
-  @AlfrescoRunAs("user")
-  public String getNamePropertyAsUser(final NodeRef nodeRef) {
-    Assert.isTrue("user".equals(AuthenticationUtil.getRunAsUser()), "[Assertion failed] - this expression must be true");
-    return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
-  }
+	@AlfrescoRunAs("user")
+	public String getNamePropertyAsUser(final NodeRef nodeRef) {
+		Assert.isTrue("user".equals(AuthenticationUtil.getRunAsUser()),
+				"[Assertion failed] - this expression must be true");
+		return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
+	}
 
-  @AlfrescoRunAs(AuthenticationUtil.SYSTEM_USER_NAME)
-  public String getNamePropertyAsSystem(final NodeRef nodeRef) {
-    Assert.isTrue(AuthenticationUtil.SYSTEM_USER_NAME.equals(AuthenticationUtil.getRunAsUser()), "[Assertion failed] - this expression must be true");
-    return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
-  }
+	@AlfrescoRunAs(AuthenticationUtil.SYSTEM_USER_NAME)
+	public String getNamePropertyAsSystem(final NodeRef nodeRef) {
+		Assert.isTrue(AuthenticationUtil.SYSTEM_USER_NAME.equals(AuthenticationUtil.getRunAsUser()),
+				"[Assertion failed] - this expression must be true");
+		return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
+	}
 }

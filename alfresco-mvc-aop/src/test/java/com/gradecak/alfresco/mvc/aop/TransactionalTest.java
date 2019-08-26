@@ -43,42 +43,42 @@ import com.gradecak.alfresco.mvc.service.TransactionalService;
 @ContextConfiguration(value = { "classpath:test-aop-context.xml" })
 public class TransactionalTest {
 
-  @Mock
-  private RetryingTransactionHelper retryingTransactionHelper;
+	@Mock
+	private RetryingTransactionHelper retryingTransactionHelper;
 
-  @Autowired
-  private ServiceRegistry serviceRegistry;
+	@Autowired
+	private ServiceRegistry serviceRegistry;
 
-  @Autowired
-  private TransactionalService service;
+	@Autowired
+	private TransactionalService service;
 
-  @BeforeEach
-  public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+	@BeforeEach
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-    when(serviceRegistry.getRetryingTransactionHelper()).thenReturn(retryingTransactionHelper);
+		when(serviceRegistry.getRetryingTransactionHelper()).thenReturn(retryingTransactionHelper);
 
-    Assertions.assertTrue(AopUtils.isAopProxy(service));
-  }
+		Assertions.assertTrue(AopUtils.isAopProxy(service));
+	}
 
-  @Test
-  @SuppressWarnings("unchecked")
-  public void txRWriteWithPropagationRequired() throws SystemException {
-    service.transactionWriteWithoutPropagation();
-    verify(retryingTransactionHelper).doInTransaction(any(RetryingTransactionCallback.class), eq(false), eq(false));
-  }
+	@Test
+	@SuppressWarnings("unchecked")
+	public void txRWriteWithPropagationRequired() throws SystemException {
+		service.transactionWriteWithoutPropagation();
+		verify(retryingTransactionHelper).doInTransaction(any(RetryingTransactionCallback.class), eq(false), eq(false));
+	}
 
-  @Test
-  @SuppressWarnings("unchecked")
-  public void txReadOnlyWithPropagationRequired() throws SystemException {
-    service.transactioReadOnlyWithPropagationRequired();
-    verify(retryingTransactionHelper).doInTransaction(any(RetryingTransactionCallback.class), eq(true), eq(false));
-  }
+	@Test
+	@SuppressWarnings("unchecked")
+	public void txReadOnlyWithPropagationRequired() throws SystemException {
+		service.transactioReadOnlyWithPropagationRequired();
+		verify(retryingTransactionHelper).doInTransaction(any(RetryingTransactionCallback.class), eq(true), eq(false));
+	}
 
-  @Test
-  @SuppressWarnings("unchecked")
-  public void txReadOnlyWithPropagationRequiresNew() throws SystemException {
-    service.transactioReadOnlyWithPropagationRequiresNew();
-    verify(retryingTransactionHelper).doInTransaction(any(RetryingTransactionCallback.class), eq(true), eq(true));
-  }
+	@Test
+	@SuppressWarnings("unchecked")
+	public void txReadOnlyWithPropagationRequiresNew() throws SystemException {
+		service.transactioReadOnlyWithPropagationRequiresNew();
+		verify(retryingTransactionHelper).doInTransaction(any(RetryingTransactionCallback.class), eq(true), eq(true));
+	}
 }

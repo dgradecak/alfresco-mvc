@@ -33,31 +33,32 @@ import org.springframework.util.Assert;
 
 public class NodePropertiesMapperUtil {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(NodePropertiesMapperUtil.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(NodePropertiesMapperUtil.class);
 
-  public <T> List<T> mapResultSet(final ResultSet results, final NodePropertiesMapper<T> mapper) {
-    Assert.notNull(results, "[Assertion failed] - the results argument must be null");
-    Assert.notNull(mapper, "[Assertion failed] - the mapper argument must be null");
+	public <T> List<T> mapResultSet(final ResultSet results, final NodePropertiesMapper<T> mapper) {
+		Assert.notNull(results, "[Assertion failed] - the results argument must be null");
+		Assert.notNull(mapper, "[Assertion failed] - the mapper argument must be null");
 
-    List<T> list = new ArrayList<>();
-    for (ResultSetRow resultSetRow : results) {
-      Map<QName, Serializable> properties = new HashMap<>();
+		List<T> list = new ArrayList<>();
+		for (ResultSetRow resultSetRow : results) {
+			Map<QName, Serializable> properties = new HashMap<>();
 
-      Set<QName> mappedQnames = mapper.getMappedQnames();
-      for (QName qName : mappedQnames) {
-        properties.put(qName, resultSetRow.getValue(qName));
-      }
-      list.add(mapper.mapNodeProperties(resultSetRow.getNodeRef(), properties));
-    }
+			Set<QName> mappedQnames = mapper.getMappedQnames();
+			for (QName qName : mappedQnames) {
+				properties.put(qName, resultSetRow.getValue(qName));
+			}
+			list.add(mapper.mapNodeProperties(resultSetRow.getNodeRef(), properties));
+		}
 
-    return list;
-  }
+		return list;
+	}
 
-  public <T> T mapProperties(final NodeRef nodeRef, final Map<QName, Serializable> properties, final NodePropertiesMapper<T> mapper) {
-    Assert.notNull(nodeRef, "[Assertion failed] - the nodeRef argument must be null");
-    Assert.notNull(properties, "[Assertion failed] - the properties argument must be null");
-    Assert.notNull(mapper, "[Assertion failed] - the mapper argument must be null");
+	public <T> T mapProperties(final NodeRef nodeRef, final Map<QName, Serializable> properties,
+			final NodePropertiesMapper<T> mapper) {
+		Assert.notNull(nodeRef, "[Assertion failed] - the nodeRef argument must be null");
+		Assert.notNull(properties, "[Assertion failed] - the properties argument must be null");
+		Assert.notNull(mapper, "[Assertion failed] - the mapper argument must be null");
 
-    return mapper.mapNodeProperties(nodeRef, properties);
-  }
+		return mapper.mapNodeProperties(nodeRef, properties);
+	}
 }

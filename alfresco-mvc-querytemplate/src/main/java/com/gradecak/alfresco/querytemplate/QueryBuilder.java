@@ -29,292 +29,292 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.util.StringUtils;
 
 /**
- * supports only lucene/solr and fts_alfresco languages. Other languages have not been tested, might be that it works
- * for some of them.
+ * supports only lucene/solr and fts_alfresco languages. Other languages have
+ * not been tested, might be that it works for some of them.
  * 
  * @author dgradecak
  */
 public class QueryBuilder {
 
-  private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
-  private final StringBuilder queryStringBuilder = new StringBuilder();
+	private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
+	private final StringBuilder queryStringBuilder = new StringBuilder();
 
-  private String language;
+	private String language;
 
-  public QueryBuilder() {
-    withLanguage(SearchService.LANGUAGE_LUCENE);
-  }
+	public QueryBuilder() {
+		withLanguage(SearchService.LANGUAGE_LUCENE);
+	}
 
-  public QueryBuilder(final String language) {
-    withLanguage(language);
-  }
+	public QueryBuilder(final String language) {
+		withLanguage(language);
+	}
 
-  public String getLanguage() {
-    return language;
-  }
+	public String getLanguage() {
+		return language;
+	}
 
-  public QueryBuilder withLanguage(final String language) {
-    if (!SearchService.LANGUAGE_LUCENE.equals(language) && !SearchService.LANGUAGE_FTS_ALFRESCO.equals(language)) {
-      // TODO add logger
-    }
+	public QueryBuilder withLanguage(final String language) {
+		if (!SearchService.LANGUAGE_LUCENE.equals(language) && !SearchService.LANGUAGE_FTS_ALFRESCO.equals(language)) {
+			// TODO add logger
+		}
 
-    this.language = language;
+		this.language = language;
 
-    return this;
-  }
+		return this;
+	}
 
-  public QueryBuilder exactAnd(Map<QName, Serializable> properties) {
-    for (Entry<QName, Serializable> entry : properties.entrySet()) {
-      Object value = entry.getValue();
+	public QueryBuilder exactAnd(Map<QName, Serializable> properties) {
+		for (Entry<QName, Serializable> entry : properties.entrySet()) {
+			Object value = entry.getValue();
 
-      String convert = value == null ? null : convert(value);
-      if (StringUtils.hasText(convert)) {
-        this.and().property(entry.getKey()).exact(value);
-      }
-    }
+			String convert = value == null ? null : convert(value);
+			if (StringUtils.hasText(convert)) {
+				this.and().property(entry.getKey()).exact(value);
+			}
+		}
 
-    return this;
-  }
+		return this;
+	}
 
-  public QueryBuilder exactOr(Map<QName, Serializable> properties) {
-    for (Entry<QName, Serializable> entry : properties.entrySet()) {
-      Object value = entry.getValue();
+	public QueryBuilder exactOr(Map<QName, Serializable> properties) {
+		for (Entry<QName, Serializable> entry : properties.entrySet()) {
+			Object value = entry.getValue();
 
-      String convert = value == null ? null : convert(value);
-      if (StringUtils.hasText(convert)) {
-        this.or().property(entry.getKey()).exact(value);
-      }
-    }
+			String convert = value == null ? null : convert(value);
+			if (StringUtils.hasText(convert)) {
+				this.or().property(entry.getKey()).exact(value);
+			}
+		}
 
-    return this;
-  }
+		return this;
+	}
 
-  public QueryBuilder likeAnd(Map<QName, Serializable> properties) {
-    for (Entry<QName, Serializable> entry : properties.entrySet()) {
-      Object value = entry.getValue();
+	public QueryBuilder likeAnd(Map<QName, Serializable> properties) {
+		for (Entry<QName, Serializable> entry : properties.entrySet()) {
+			Object value = entry.getValue();
 
-      String convert = value == null ? null : convert(value);
-      if (StringUtils.hasText(convert)) {
-        this.and().property(entry.getKey()).like(convert.toLowerCase());
-      }
-    }
+			String convert = value == null ? null : convert(value);
+			if (StringUtils.hasText(convert)) {
+				this.and().property(entry.getKey()).like(convert.toLowerCase());
+			}
+		}
 
-    return this;
-  }
+		return this;
+	}
 
-  public QueryBuilder likeOr(Map<QName, Serializable> properties) {
-    for (Entry<QName, Serializable> entry : properties.entrySet()) {
-      Object value = entry.getValue();
+	public QueryBuilder likeOr(Map<QName, Serializable> properties) {
+		for (Entry<QName, Serializable> entry : properties.entrySet()) {
+			Object value = entry.getValue();
 
-      String convert = value == null ? null : convert(value);
-      if (StringUtils.hasText(convert)) {
-        this.or().property(entry.getKey()).like(convert.toLowerCase());
-      }
-    }
+			String convert = value == null ? null : convert(value);
+			if (StringUtils.hasText(convert)) {
+				this.or().property(entry.getKey()).like(convert.toLowerCase());
+			}
+		}
 
-    return this;
-  }
+		return this;
+	}
 
-  public QueryBuilder containsAnd(Map<QName, Serializable> properties) {
-    for (Entry<QName, Serializable> entry : properties.entrySet()) {
-      Object value = entry.getValue();
+	public QueryBuilder containsAnd(Map<QName, Serializable> properties) {
+		for (Entry<QName, Serializable> entry : properties.entrySet()) {
+			Object value = entry.getValue();
 
-      String convert = value == null ? null : convert(value);
-      if (StringUtils.hasText(convert)) {
-        this.and().property(entry.getKey()).contains(value);
-      }
-    }
+			String convert = value == null ? null : convert(value);
+			if (StringUtils.hasText(convert)) {
+				this.and().property(entry.getKey()).contains(value);
+			}
+		}
 
-    return this;
-  }
+		return this;
+	}
 
-  public QueryBuilder containsOr(Map<QName, Serializable> properties) {
-    for (Entry<QName, Serializable> entry : properties.entrySet()) {
-      Object value = entry.getValue();
+	public QueryBuilder containsOr(Map<QName, Serializable> properties) {
+		for (Entry<QName, Serializable> entry : properties.entrySet()) {
+			Object value = entry.getValue();
 
-      String convert = value == null ? null : convert(value);
-      if (StringUtils.hasText(convert)) {
-        this.or().property(entry.getKey()).contains(value);
-      }
-    }
+			String convert = value == null ? null : convert(value);
+			if (StringUtils.hasText(convert)) {
+				this.or().property(entry.getKey()).contains(value);
+			}
+		}
 
-    return this;
-  }
+		return this;
+	}
 
-  public QueryBuilder append(String expression) {
-    queryStringBuilder.append(expression);
-    return this;
-  }
+	public QueryBuilder append(String expression) {
+		queryStringBuilder.append(expression);
+		return this;
+	}
 
-  public QueryBuilder exact(Object pCriteria) {
-    String criteria = convert(pCriteria);
-    queryStringBuilder.append("\"");
-    queryStringBuilder.append(criteria);
-    queryStringBuilder.append("\"");
+	public QueryBuilder exact(Object pCriteria) {
+		String criteria = convert(pCriteria);
+		queryStringBuilder.append("\"");
+		queryStringBuilder.append(criteria);
+		queryStringBuilder.append("\"");
 
-    return this;
-  }
+		return this;
+	}
 
-  public QueryBuilder like(Object pCriteria) {
-    String criteria = convert(pCriteria);
-    queryStringBuilder.append("\"");
-    queryStringBuilder.append(criteria);
-    queryStringBuilder.append("*\"");
+	public QueryBuilder like(Object pCriteria) {
+		String criteria = convert(pCriteria);
+		queryStringBuilder.append("\"");
+		queryStringBuilder.append(criteria);
+		queryStringBuilder.append("*\"");
 
-    return this;
-  }
+		return this;
+	}
 
-  public QueryBuilder contains(Object pCriteria) {
-    String criteria = convert(pCriteria);
-    queryStringBuilder.append("\"*");
-    queryStringBuilder.append(criteria);
-    queryStringBuilder.append("*\"");
+	public QueryBuilder contains(Object pCriteria) {
+		String criteria = convert(pCriteria);
+		queryStringBuilder.append("\"*");
+		queryStringBuilder.append(criteria);
+		queryStringBuilder.append("*\"");
 
-    return this;
-  }
+		return this;
+	}
 
-  public QueryBuilder property(QName property) {
-    queryStringBuilder.append("@");
-    queryStringBuilder.append(escapeQName(this.language, property));
-    queryStringBuilder.append(":");
-    return this;
-  }
+	public QueryBuilder property(QName property) {
+		queryStringBuilder.append("@");
+		queryStringBuilder.append(escapeQName(this.language, property));
+		queryStringBuilder.append(":");
+		return this;
+	}
 
-  public QueryBuilder isNotNull(QName property) {
-    queryStringBuilder.append("ISNOTNULL");
-    queryStringBuilder.append(":");
-    queryStringBuilder.append("\"");
-    queryStringBuilder.append(escapeQName(this.language, property));
-    queryStringBuilder.append("\"");
-    return this;
-  }
+	public QueryBuilder isNotNull(QName property) {
+		queryStringBuilder.append("ISNOTNULL");
+		queryStringBuilder.append(":");
+		queryStringBuilder.append("\"");
+		queryStringBuilder.append(escapeQName(this.language, property));
+		queryStringBuilder.append("\"");
+		return this;
+	}
 
-  public QueryBuilder isNull(QName property) {
-    queryStringBuilder.append("ISNULL");
-    queryStringBuilder.append(":");
-    queryStringBuilder.append("\"");
-    queryStringBuilder.append(escapeQName(this.language, property));
-    queryStringBuilder.append("\"");
-    return this;
-  }
+	public QueryBuilder isNull(QName property) {
+		queryStringBuilder.append("ISNULL");
+		queryStringBuilder.append(":");
+		queryStringBuilder.append("\"");
+		queryStringBuilder.append(escapeQName(this.language, property));
+		queryStringBuilder.append("\"");
+		return this;
+	}
 
-  public QueryBuilder isUnset(QName property) {
-    queryStringBuilder.append("ISUNSET");
-    queryStringBuilder.append(":");
-    queryStringBuilder.append("\"");
-    queryStringBuilder.append(escapeQName(this.language, property));
-    queryStringBuilder.append("\"");
-    return this;
-  }
+	public QueryBuilder isUnset(QName property) {
+		queryStringBuilder.append("ISUNSET");
+		queryStringBuilder.append(":");
+		queryStringBuilder.append("\"");
+		queryStringBuilder.append(escapeQName(this.language, property));
+		queryStringBuilder.append("\"");
+		return this;
+	}
 
-  public QueryBuilder id(String id) {
-    queryStringBuilder.append("ID:\"");
-    queryStringBuilder.append(escape(this.language, id));
-    queryStringBuilder.append("\"");
-    return this;
-  }
+	public QueryBuilder id(String id) {
+		queryStringBuilder.append("ID:\"");
+		queryStringBuilder.append(escape(this.language, id));
+		queryStringBuilder.append("\"");
+		return this;
+	}
 
-  public QueryBuilder type(QName type) {
-    queryStringBuilder.append("TYPE:\"");
-    queryStringBuilder.append(escapeQName(this.language, type));
-    queryStringBuilder.append("\"");
-    return this;
-  }
+	public QueryBuilder type(QName type) {
+		queryStringBuilder.append("TYPE:\"");
+		queryStringBuilder.append(escapeQName(this.language, type));
+		queryStringBuilder.append("\"");
+		return this;
+	}
 
-  public QueryBuilder parent(NodeRef parentRef) {
-    queryStringBuilder.append("PARENT:\"");
-    queryStringBuilder.append(parentRef.toString());
-    queryStringBuilder.append("\"");
-    return this;
-  }
+	public QueryBuilder parent(NodeRef parentRef) {
+		queryStringBuilder.append("PARENT:\"");
+		queryStringBuilder.append(parentRef.toString());
+		queryStringBuilder.append("\"");
+		return this;
+	}
 
-  public QueryBuilder aspect(QName aspect) {
-    queryStringBuilder.append("ASPECT:\"");
-    queryStringBuilder.append(escapeQName(this.language, aspect));
-    queryStringBuilder.append("\"");
-    return this;
-  }
+	public QueryBuilder aspect(QName aspect) {
+		queryStringBuilder.append("ASPECT:\"");
+		queryStringBuilder.append(escapeQName(this.language, aspect));
+		queryStringBuilder.append("\"");
+		return this;
+	}
 
-  public QueryBuilder or() {
-    if (queryStringBuilder.length() != 0) {
-      queryStringBuilder.append(" OR ");
-    }
-    return this;
-  }
+	public QueryBuilder or() {
+		if (queryStringBuilder.length() != 0) {
+			queryStringBuilder.append(" OR ");
+		}
+		return this;
+	}
 
-  public QueryBuilder not() {
-    queryStringBuilder.append(" NOT ");
-    return this;
-  }
+	public QueryBuilder not() {
+		queryStringBuilder.append(" NOT ");
+		return this;
+	}
 
-  public QueryBuilder and() {
-    if (queryStringBuilder.length() != 0) {
-      queryStringBuilder.append(" AND ");
-    }
-    return this;
-  }
+	public QueryBuilder and() {
+		if (queryStringBuilder.length() != 0) {
+			queryStringBuilder.append(" AND ");
+		}
+		return this;
+	}
 
-  public QueryBuilder range(Object start, Object end) {
-    queryStringBuilder.append("[");
-    queryStringBuilder.append(start != null ? convert(start) : "MIN");
-    queryStringBuilder.append(" TO ");
-    queryStringBuilder.append(end != null ? convert(end) : "MAX");
-    queryStringBuilder.append("]");
-    return this;
-  }
+	public QueryBuilder range(Object start, Object end) {
+		queryStringBuilder.append("[");
+		queryStringBuilder.append(start != null ? convert(start) : "MIN");
+		queryStringBuilder.append(" TO ");
+		queryStringBuilder.append(end != null ? convert(end) : "MAX");
+		queryStringBuilder.append("]");
+		return this;
+	}
 
-  public QueryBuilder path(final String path) {
-    queryStringBuilder.append("PATH:\"");
-    queryStringBuilder.append(path);
-    queryStringBuilder.append("\"");
-    return this;
-  }
+	public QueryBuilder path(final String path) {
+		queryStringBuilder.append("PATH:\"");
+		queryStringBuilder.append(path);
+		queryStringBuilder.append("\"");
+		return this;
+	}
 
-  public QueryBuilder text(final String term) {
-    queryStringBuilder.append("TEXT:\"");
-    queryStringBuilder.append(term);
-    queryStringBuilder.append("\"");
-    return this;
-  }
+	public QueryBuilder text(final String term) {
+		queryStringBuilder.append("TEXT:\"");
+		queryStringBuilder.append(term);
+		queryStringBuilder.append("\"");
+		return this;
+	}
 
-  private String convert(Object value) {
-    if (value instanceof Date) {
-      return simpleDateFormat.format(value);
-    }
+	private String convert(Object value) {
+		if (value instanceof Date) {
+			return simpleDateFormat.format(value);
+		}
 
-    return value.toString();
-  }
+		return value.toString();
+	}
 
-  public String toString() {
-    return queryStringBuilder.toString();
-  }
+	public String toString() {
+		return queryStringBuilder.toString();
+	}
 
-  public String build() {
-    return queryStringBuilder.toString();
-  }
+	public String build() {
+		return queryStringBuilder.toString();
+	}
 
-  public static String escapeQName(final String language, final QName qName) {
-    String string = qName.toString();
-    return escape(language, string);
-  }
+	public static String escapeQName(final String language, final QName qName) {
+		String string = qName.toString();
+		return escape(language, string);
+	}
 
-  public static String escape(final String language, final String string) {
-    if (!SearchService.LANGUAGE_LUCENE.equals(language)) {
-      return string;
-    }
+	public static String escape(final String language, final String string) {
+		if (!SearchService.LANGUAGE_LUCENE.equals(language)) {
+			return string;
+		}
 
-    final int numOfCharsToAdd = 4;
+		final int numOfCharsToAdd = 4;
 
-    StringBuilder builder = new StringBuilder(string.length() + numOfCharsToAdd);
-    for (int i = 0; i < string.length(); i++) {
-      char character = string.charAt(i);
-      if ((character == '{') || (character == '}') || (character == ':') || (character == '-')) {
-        builder.append('\\');
-      }
+		StringBuilder builder = new StringBuilder(string.length() + numOfCharsToAdd);
+		for (int i = 0; i < string.length(); i++) {
+			char character = string.charAt(i);
+			if ((character == '{') || (character == '}') || (character == ':') || (character == '-')) {
+				builder.append('\\');
+			}
 
-      builder.append(character);
-    }
-    return builder.toString();
-  }
+			builder.append(character);
+		}
+		return builder.toString();
+	}
 
 }

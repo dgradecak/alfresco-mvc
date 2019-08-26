@@ -34,5 +34,5 @@ import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextCon
 @Inherited
 @Import(AlfrescoRestRegistrar.class)
 public @interface EnableAlfrescoMvcRest {
-  AlfrescoDispatcherWebscript[] value() default @AlfrescoDispatcherWebscript(servletContext = DefaultAlfrescoMvcServletContextConfig.class);
+	AlfrescoDispatcherWebscript[] value() default @AlfrescoDispatcherWebscript(servletContext = DefaultAlfrescoMvcServletContextConfig.class);
 }

@@ -27,5 +27,5 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface AlfrescoAuthentication {
 
-  AuthenticationType value() default AuthenticationType.USER;
+	AuthenticationType value() default AuthenticationType.USER;
 }

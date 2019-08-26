@@ -42,57 +42,57 @@ import com.gradecak.alfresco.mvc.service.RunAsService;
 @ContextConfiguration(value = { "classpath:test-aop-context.xml" })
 public class RunAsTest {
 
-  @Mock
-  private MutableAuthenticationService authenticationService;
+	@Mock
+	private MutableAuthenticationService authenticationService;
 
-  @Mock
-  private AuthorityService authorityService;
+	@Mock
+	private AuthorityService authorityService;
 
-  @Mock
-  private NodeService nodeService;
+	@Mock
+	private NodeService nodeService;
 
-  @Autowired
-  private ServiceRegistry serviceRegistry;
+	@Autowired
+	private ServiceRegistry serviceRegistry;
 
-  @Autowired
-  private RunAsService service;
+	@Autowired
+	private RunAsService service;
 
-  private AuthenticationUtil util = new AuthenticationUtil();
-  private NodeRef nodeRef = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "aaa");
+	private AuthenticationUtil util = new AuthenticationUtil();
+	private NodeRef nodeRef = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "aaa");
 
-  @BeforeEach
-  public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+	@BeforeEach
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-    when(serviceRegistry.getAuthenticationService()).thenReturn(authenticationService);
-    when(serviceRegistry.getAuthorityService()).thenReturn(authorityService);
-    when(serviceRegistry.getNodeService()).thenReturn(nodeService);
-    when(authenticationService.getCurrentTicket()).thenReturn("ticket");
+		when(serviceRegistry.getAuthenticationService()).thenReturn(authenticationService);
+		when(serviceRegistry.getAuthorityService()).thenReturn(authorityService);
+		when(serviceRegistry.getNodeService()).thenReturn(nodeService);
+		when(authenticationService.getCurrentTicket()).thenReturn("ticket");
 
-    when(authorityService.hasGuestAuthority()).thenReturn(true);
-    when(authorityService.hasAdminAuthority()).thenReturn(false);
+		when(authorityService.hasGuestAuthority()).thenReturn(true);
+		when(authorityService.hasAdminAuthority()).thenReturn(false);
 
-    util.afterPropertiesSet();
+		util.afterPropertiesSet();
 
-    Assertions.assertTrue(AopUtils.isAopProxy(service));
-    AuthenticationUtil.clearCurrentSecurityContext();
-  }
+		Assertions.assertTrue(AopUtils.isAopProxy(service));
+		AuthenticationUtil.clearCurrentSecurityContext();
+	}
 
-  @Test
-  public void noAutehntication_runAsSystem() {
-    service.getNamePropertyAsSystem(nodeRef);
+	@Test
+	public void noAutehntication_runAsSystem() {
+		service.getNamePropertyAsSystem(nodeRef);
 
-    Assertions.assertNull(AuthenticationUtil.getRunAsUser());
-    Assertions.assertNull(AuthenticationUtil.getFullyAuthenticatedUser());
-  }
+		Assertions.assertNull(AuthenticationUtil.getRunAsUser());
+		Assertions.assertNull(AuthenticationUtil.getFullyAuthenticatedUser());
+	}
 
-  @Test
-  public void authentifiedAsTest_runAsUser() {
+	@Test
+	public void authentifiedAsTest_runAsUser() {
 
-    AuthenticationUtil.setFullyAuthenticatedUser("test");
-    when(authorityService.hasGuestAuthority()).thenReturn(false);
-    service.getNamePropertyAsUser(nodeRef);
-    Assertions.assertEquals("test", AuthenticationUtil.getRunAsUser());
-    Assertions.assertEquals("test", AuthenticationUtil.getFullyAuthenticatedUser());
-  }
+		AuthenticationUtil.setFullyAuthenticatedUser("test");
+		when(authorityService.hasGuestAuthority()).thenReturn(false);
+		service.getNamePropertyAsUser(nodeRef);
+		Assertions.assertEquals("test", AuthenticationUtil.getRunAsUser());
+		Assertions.assertEquals("test", AuthenticationUtil.getFullyAuthenticatedUser());
+	}
 }

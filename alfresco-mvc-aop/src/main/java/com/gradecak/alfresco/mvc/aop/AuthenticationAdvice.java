@@ -36,71 +36,75 @@ import com.gradecak.alfresco.mvc.annotation.AuthenticationType;
 
 public class AuthenticationAdvice implements MethodInterceptor {
 
-  private final ServiceRegistry serviceRegistry;
+	private final ServiceRegistry serviceRegistry;
 
-  @Autowired
-  public AuthenticationAdvice(final ServiceRegistry serviceRegistry) {
-    this.serviceRegistry = serviceRegistry;
-  }
+	@Autowired
+	public AuthenticationAdvice(final ServiceRegistry serviceRegistry) {
+		this.serviceRegistry = serviceRegistry;
+	}
 
-  public Object invoke(final MethodInvocation invocation) throws Throwable {
+	public Object invoke(final MethodInvocation invocation) throws Throwable {
 
-    Class<?> targetClass = invocation.getThis() != null ? invocation.getThis().getClass() : null;
+		Class<?> targetClass = invocation.getThis() != null ? invocation.getThis().getClass() : null;
 
-    Method specificMethod = ClassUtils.getMostSpecificMethod(invocation.getMethod(), targetClass);
-    // If we are dealing with method with generic parameters, find the original
-    // method.
-    specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
+		Method specificMethod = ClassUtils.getMostSpecificMethod(invocation.getMethod(), targetClass);
+		// If we are dealing with method with generic parameters, find the original
+		// method.
+		specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
 
-    AlfrescoAuthentication alfrescoAuthentication = parseAnnotation(specificMethod);
+		AlfrescoAuthentication alfrescoAuthentication = parseAnnotation(specificMethod);
 
-    if (alfrescoAuthentication != null) {
+		if (alfrescoAuthentication != null) {
 
-      AuthenticationType authenticationType = alfrescoAuthentication.value();
+			AuthenticationType authenticationType = alfrescoAuthentication.value();
 
-      if (authenticationType != null && !AuthenticationType.NONE.equals(authenticationType)) {
-        AuthenticationService authenticationService = serviceRegistry.getAuthenticationService();
-        AuthorityService authorityService = serviceRegistry.getAuthorityService();
+			if (authenticationType != null && !AuthenticationType.NONE.equals(authenticationType)) {
+				AuthenticationService authenticationService = serviceRegistry.getAuthenticationService();
+				AuthorityService authorityService = serviceRegistry.getAuthorityService();
 
-        String ticket = authenticationService.getCurrentTicket();
-        if (StringUtils.hasText(ticket)) {
-          if (AuthenticationType.USER.equals(authenticationType) && authorityService.hasGuestAuthority()) {
-            throw new AuthenticationException("User has guest authority where at least a user authentication is required.");
-          } else if (AuthenticationType.ADMIN.equals(authenticationType) && !authorityService.hasAdminAuthority()) {
-            throw new AuthenticationException("User does not have admin authority where at least named admin authentication is required .");
-          }
-        } else if (AuthenticationType.GUEST.equals(authenticationType) && authenticationService.guestUserAuthenticationAllowed()) {
-          authenticationService.authenticateAsGuest();
-        } else {
-          throw new AuthenticationException(
-              "\nUnable to authenticate due to one of the following reasons:\n" + "Credentials are not provided in HTTP request where at least named user or admin authentication is required.\n"
-                  + "Guest user authentication is not allowed where at least guest authentication is required.\n");
-        }
-      }
-    }
+				String ticket = authenticationService.getCurrentTicket();
+				if (StringUtils.hasText(ticket)) {
+					if (AuthenticationType.USER.equals(authenticationType) && authorityService.hasGuestAuthority()) {
+						throw new AuthenticationException(
+								"User has guest authority where at least a user authentication is required.");
+					} else if (AuthenticationType.ADMIN.equals(authenticationType)
+							&& !authorityService.hasAdminAuthority()) {
+						throw new AuthenticationException(
+								"User does not have admin authority where at least named admin authentication is required .");
+					}
+				} else if (AuthenticationType.GUEST.equals(authenticationType)
+						&& authenticationService.guestUserAuthenticationAllowed()) {
+					authenticationService.authenticateAsGuest();
+				} else {
+					throw new AuthenticationException("\nUnable to authenticate due to one of the following reasons:\n"
+							+ "Credentials are not provided in HTTP request where at least named user or admin authentication is required.\n"
+							+ "Guest user authentication is not allowed where at least guest authentication is required.\n");
+				}
+			}
+		}
 
-    return invocation.proceed();
-  }
+		return invocation.proceed();
+	}
 
-  private AlfrescoAuthentication parseAnnotation(AnnotatedElement ae) {
-    AlfrescoAuthentication ann = ae.getAnnotation(AlfrescoAuthentication.class);
-    if (ann == null) {
-      for (Annotation metaAnn : ae.getAnnotations()) {
-        ann = metaAnn.annotationType().getAnnotation(AlfrescoAuthentication.class);
-        if (ann != null) {
-          break;
-        }
-      }
-    }
-    if (ann != null) {
-      return parseAnnotation(ann);
-    } else {
-      return null;
-    }
-  }
+	private AlfrescoAuthentication parseAnnotation(AnnotatedElement ae) {
+		AlfrescoAuthentication ann = ae.getAnnotation(AlfrescoAuthentication.class);
+		if (ann == null) {
+			for (Annotation metaAnn : ae.getAnnotations()) {
+				ann = metaAnn.annotationType().getAnnotation(AlfrescoAuthentication.class);
+				if (ann != null) {
+					break;
+				}
+			}
+		}
+		if (ann != null) {
+			return parseAnnotation(ann);
+		} else {
+			return null;
+		}
+	}
 
-  private AlfrescoAuthentication parseAnnotation(AlfrescoAuthentication ann) {
-    // parse if needed something else
-    return ann;
-  }
+	private AlfrescoAuthentication parseAnnotation(AlfrescoAuthentication ann) {
+		// parse if needed something else
+		return ann;
+	}
 }

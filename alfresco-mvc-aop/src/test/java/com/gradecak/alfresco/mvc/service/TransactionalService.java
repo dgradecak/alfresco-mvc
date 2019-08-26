@@ -29,21 +29,21 @@ import com.gradecak.alfresco.mvc.annotation.AlfrescoTransaction;
 @Service
 public class TransactionalService {
 
-  @Autowired
-  private ServiceRegistry serviceRegistry;
+	@Autowired
+	private ServiceRegistry serviceRegistry;
 
-  @AlfrescoTransaction
-  public String transactionWriteWithoutPropagation() {
-    return (String) serviceRegistry.getNodeService().getProperty(null, ContentModel.PROP_NAME);
-  }
+	@AlfrescoTransaction
+	public String transactionWriteWithoutPropagation() {
+		return (String) serviceRegistry.getNodeService().getProperty(null, ContentModel.PROP_NAME);
+	}
 
-  @AlfrescoTransaction(readOnly = true)
-  public String transactioReadOnlyWithPropagationRequired() throws SystemException {
-    return (String) serviceRegistry.getNodeService().getProperty(null, ContentModel.PROP_NAME);
-  }
+	@AlfrescoTransaction(readOnly = true)
+	public String transactioReadOnlyWithPropagationRequired() throws SystemException {
+		return (String) serviceRegistry.getNodeService().getProperty(null, ContentModel.PROP_NAME);
+	}
 
-  @AlfrescoTransaction(readOnly = true, propagation = Propagation.REQUIRES_NEW)
-  public String transactioReadOnlyWithPropagationRequiresNew() throws SystemException {
-    return (String) serviceRegistry.getNodeService().getProperty(null, ContentModel.PROP_NAME);
-  }
+	@AlfrescoTransaction(readOnly = true, propagation = Propagation.REQUIRES_NEW)
+	public String transactioReadOnlyWithPropagationRequiresNew() throws SystemException {
+		return (String) serviceRegistry.getNodeService().getProperty(null, ContentModel.PROP_NAME);
+	}
 }

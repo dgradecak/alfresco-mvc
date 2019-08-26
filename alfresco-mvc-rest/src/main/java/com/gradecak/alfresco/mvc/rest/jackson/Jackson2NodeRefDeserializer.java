@@ -29,27 +29,28 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 public class Jackson2NodeRefDeserializer extends JsonDeserializer<NodeRef> implements Converter<String, NodeRef> {
 
-  public Jackson2NodeRefDeserializer() {}
+	public Jackson2NodeRefDeserializer() {
+	}
 
-  @Override
-  public NodeRef deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+	@Override
+	public NodeRef deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 
-    String id = jp.getText();
-    if (NodeRef.isNodeRef(id)) {
-      return new NodeRef(id);
-    }
-    return new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, id);
-  }
+		String id = jp.getText();
+		if (NodeRef.isNodeRef(id)) {
+			return new NodeRef(id);
+		}
+		return new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, id);
+	}
 
-  @Override
-  public NodeRef convert(String id) {
-    if (!StringUtils.hasText(id)) {
-      return null;
-    }
-    if (NodeRef.isNodeRef(id)) {
-      return new NodeRef(id);
-    }
-    return new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, id);
-  }
+	@Override
+	public NodeRef convert(String id) {
+		if (!StringUtils.hasText(id)) {
+			return null;
+		}
+		if (NodeRef.isNodeRef(id)) {
+			return new NodeRef(id);
+		}
+		return new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, id);
+	}
 
 }

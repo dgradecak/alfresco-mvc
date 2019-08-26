@@ -36,41 +36,46 @@ import com.google.common.collect.ImmutableMap;
 
 public class MockWebscriptServletRequest extends WebScriptServletRequest {
 
-  // private Content content;
+	// private Content content;
 
-  private MockWebscriptServletRequest(Runtime mockedRuntime, MockHttpServletRequest mockHttpServletRequest, Match match) {
-    super(mockedRuntime, mockHttpServletRequest, match, null);
-  }
+	private MockWebscriptServletRequest(Runtime mockedRuntime, MockHttpServletRequest mockHttpServletRequest,
+			Match match) {
+		super(mockedRuntime, mockHttpServletRequest, match, null);
+	}
 
-  static public MockWebscriptServletRequest createMockWebscriptServletRequest(AbstractWebScript webScript, String method, String webscriptUrl, String controllerMapping,
-      final Map<String, String> parameters, final Map<String, String> body, final Cookie[] cookies, final Map<String, Object> headers) throws IOException {
-    Match match = new Match(null, ImmutableMap.of("", ""), webscriptUrl, webScript);
-    MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest(method, "http://localhost/alfresco" + webscriptUrl + controllerMapping);
-    mockHttpServletRequest.setServletPath("alfresco");
-    mockHttpServletRequest.setContextPath("http://localhost/");
-    mockHttpServletRequest.setContentType("application/json");
-    if (parameters != null) {
-      mockHttpServletRequest.setParameters(parameters);
-    }
-    if (cookies != null) {
-      mockHttpServletRequest.setCookies(cookies);
-    }
-    if (headers != null && !headers.isEmpty()) {
-      for (Entry<String, Object> headerEntry : headers.entrySet()) {
-        mockHttpServletRequest.addHeader(headerEntry.getKey(), headerEntry.getValue());
-      }
-    }
-    
-    if (HttpMethod.POST.name().equals(method) && body != null) {
-      mockHttpServletRequest.setContent(new ObjectMapper().writeValueAsString(body).getBytes());
-    }
+	static public MockWebscriptServletRequest createMockWebscriptServletRequest(AbstractWebScript webScript,
+			String method, String webscriptUrl, String controllerMapping, final Map<String, String> parameters,
+			final Map<String, String> body, final Cookie[] cookies, final Map<String, Object> headers)
+			throws IOException {
+		Match match = new Match(null, ImmutableMap.of("", ""), webscriptUrl, webScript);
+		MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest(method,
+				"http://localhost/alfresco" + webscriptUrl + controllerMapping);
+		mockHttpServletRequest.setServletPath("alfresco");
+		mockHttpServletRequest.setContextPath("http://localhost/");
+		mockHttpServletRequest.setContentType("application/json");
+		if (parameters != null) {
+			mockHttpServletRequest.setParameters(parameters);
+		}
+		if (cookies != null) {
+			mockHttpServletRequest.setCookies(cookies);
+		}
+		if (headers != null && !headers.isEmpty()) {
+			for (Entry<String, Object> headerEntry : headers.entrySet()) {
+				mockHttpServletRequest.addHeader(headerEntry.getKey(), headerEntry.getValue());
+			}
+		}
 
-    MockWebscriptServletRequest webscriptServletRequest = new MockWebscriptServletRequest(mock(Runtime.class), mockHttpServletRequest, match);
-    // if (content != null && !content.isEmpty()) {
-    // Content mockedContent = mock(Content.class);
-    // webscriptServletRequest.content = mockedContent;
-    // }
+		if (HttpMethod.POST.name().equals(method) && body != null) {
+			mockHttpServletRequest.setContent(new ObjectMapper().writeValueAsString(body).getBytes());
+		}
 
-    return webscriptServletRequest;
-  }
+		MockWebscriptServletRequest webscriptServletRequest = new MockWebscriptServletRequest(mock(Runtime.class),
+				mockHttpServletRequest, match);
+		// if (content != null && !content.isEmpty()) {
+		// Content mockedContent = mock(Content.class);
+		// webscriptServletRequest.content = mockedContent;
+		// }
+
+		return webscriptServletRequest;
+	}
 }

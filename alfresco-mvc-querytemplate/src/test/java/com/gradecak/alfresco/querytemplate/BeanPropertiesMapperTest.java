@@ -43,144 +43,160 @@ import com.google.common.collect.ImmutableMap;
 
 public class BeanPropertiesMapperTest {
 
-  private static final NodeRef NODE_REF = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "test_id");
+	private static final NodeRef NODE_REF = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "test_id");
 
-  @Mock
-  private NamespaceService namespaceService;
+	@Mock
+	private NamespaceService namespaceService;
 
-  @Mock
-  private DictionaryService dictionaryService;
+	@Mock
+	private DictionaryService dictionaryService;
 
-  @Mock
-  private PropertyDefinition propertyDefinitionMock;
+	@Mock
+	private PropertyDefinition propertyDefinitionMock;
 
-  private BeanPropertiesMapper<CmFolder> mapper;
+	private BeanPropertiesMapper<CmFolder> mapper;
 
-  @BeforeEach
-  public void before() throws Exception {
-    MockitoAnnotations.initMocks(this);
+	@BeforeEach
+	public void before() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-    doAnswer(new Answer<String>() {
-      @Override
-      public String answer(InvocationOnMock invocation) {
+		doAnswer(new Answer<String>() {
+			@Override
+			public String answer(InvocationOnMock invocation) {
 
-        return NamespaceService.CONTENT_MODEL_1_0_URI;
-      }
-    }).when(namespaceService).getNamespaceURI("cm");
+				return NamespaceService.CONTENT_MODEL_1_0_URI;
+			}
+		}).when(namespaceService).getNamespaceURI("cm");
 
-    doAnswer(new Answer<String>() {
-      @Override
-      public String answer(InvocationOnMock invocation) {
+		doAnswer(new Answer<String>() {
+			@Override
+			public String answer(InvocationOnMock invocation) {
 
-        return "custom_uri";
-      }
-    }).when(namespaceService).getNamespaceURI("custom");
+				return "custom_uri";
+			}
+		}).when(namespaceService).getNamespaceURI("custom");
 
-    doAnswer(new Answer<PropertyDefinition>() {
-      @Override
-      public PropertyDefinition answer(InvocationOnMock invocation) {
+		doAnswer(new Answer<PropertyDefinition>() {
+			@Override
+			public PropertyDefinition answer(InvocationOnMock invocation) {
 
-        return propertyDefinitionMock;
-      }
-    }).when(dictionaryService).getProperty(any());
+				return propertyDefinitionMock;
+			}
+		}).when(dictionaryService).getProperty(any());
 
-    mapper = new CmFolderPropertiesMapper(namespaceService, dictionaryService, true) {};
-  }
+		mapper = new CmFolderPropertiesMapper(namespaceService, dictionaryService, true) {
+		};
+	}
 
-  @Test
-  public void mapNodeProperties_withCorrectData() {
-    CmFolder cmFolder = mapper.mapNodeProperties(NODE_REF, ImmutableMap.of(ContentModel.PROP_TITLE, "Test Title value", ContentModel.PROP_DESCRIPTION, "Test Description value"));
-    assertEquals("Test Title value", cmFolder.getCmTitle());
-    assertEquals("Test Description value", cmFolder.getCmDescription());
-    assertEquals(NODE_REF.getId(), cmFolder.getRef());
-    assertNull(cmFolder.getCustomNamespaceData());
-  }
+	@Test
+	public void mapNodeProperties_withCorrectData() {
+		CmFolder cmFolder = mapper.mapNodeProperties(NODE_REF, ImmutableMap.of(ContentModel.PROP_TITLE,
+				"Test Title value", ContentModel.PROP_DESCRIPTION, "Test Description value"));
+		assertEquals("Test Title value", cmFolder.getCmTitle());
+		assertEquals("Test Description value", cmFolder.getCmDescription());
+		assertEquals(NODE_REF.getId(), cmFolder.getRef());
+		assertNull(cmFolder.getCustomNamespaceData());
+	}
 
-  @Test
-  public void mapNodeProperties_withCustomNamespaceCorrectData() {
-    Date testDate = new Date();
-    CmFolder cmFolder = mapper.mapNodeProperties(NODE_REF, ImmutableMap.of(QName.createQName("custom_uri", "namespaceData"), testDate));
-    assertNull(cmFolder.getCmDescription());
-    assertNull(cmFolder.getCmTitle());
-    assertEquals(NODE_REF.getId(), cmFolder.getRef());
-    assertEquals(testDate, cmFolder.getCustomNamespaceData());
-  }
+	@Test
+	public void mapNodeProperties_withCustomNamespaceCorrectData() {
+		Date testDate = new Date();
+		CmFolder cmFolder = mapper.mapNodeProperties(NODE_REF,
+				ImmutableMap.of(QName.createQName("custom_uri", "namespaceData"), testDate));
+		assertNull(cmFolder.getCmDescription());
+		assertNull(cmFolder.getCmTitle());
+		assertEquals(NODE_REF.getId(), cmFolder.getRef());
+		assertEquals(testDate, cmFolder.getCustomNamespaceData());
+	}
 
-  @Test
-  public void mapNodeProperties_withNonExistingProperty_reportException() {
-    Assertions.assertThrows(NamespaceException.class, () -> {
-      BeanPropertiesMapper<NonExistingNodeProperties> mapperWrong = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>().mappedClass(NonExistingNodeProperties.class)
-              .namespaceService(namespaceService).dictionaryService(dictionaryService).reportNamespaceException(true).build();
-      mapperWrong.mapNodeProperties(NODE_REF, ImmutableMap.of());
-    });
-  }
+	@Test
+	public void mapNodeProperties_withNonExistingProperty_reportException() {
+		Assertions.assertThrows(NamespaceException.class, () -> {
+			BeanPropertiesMapper<NonExistingNodeProperties> mapperWrong = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>()
+					.mappedClass(NonExistingNodeProperties.class).namespaceService(namespaceService)
+					.dictionaryService(dictionaryService).reportNamespaceException(true).build();
+			mapperWrong.mapNodeProperties(NODE_REF, ImmutableMap.of());
+		});
+	}
 
-  @Test
-  public void mapNodeProperties_withNonExistingProperty_doNotReportException() {
-    BeanPropertiesMapper<NonExistingNodeProperties> mapperWrong = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>().mappedClass(NonExistingNodeProperties.class)
-        .namespaceService(namespaceService).dictionaryService(dictionaryService).build();
-    NonExistingNodeProperties nonExistingNodeProperties = mapperWrong.mapNodeProperties(NODE_REF, ImmutableMap.of());
-    assertNull(nonExistingNodeProperties.getNonexistingData());
-  }
+	@Test
+	public void mapNodeProperties_withNonExistingProperty_doNotReportException() {
+		BeanPropertiesMapper<NonExistingNodeProperties> mapperWrong = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>()
+				.mappedClass(NonExistingNodeProperties.class).namespaceService(namespaceService)
+				.dictionaryService(dictionaryService).build();
+		NonExistingNodeProperties nonExistingNodeProperties = mapperWrong.mapNodeProperties(NODE_REF,
+				ImmutableMap.of());
+		assertNull(nonExistingNodeProperties.getNonexistingData());
+	}
 
-  @Test
-  public void registry_withCorrectDataAndConfigurer() {
-    Date testDate = new Date();
-    BeanPropertiesMapper<CmFolder> mapper = new BeanPropertiesMapperRegistry(namespaceService, dictionaryService).addBeanPropertiesMapper(this.mapper).getForClass(CmFolder.class);
-    CmFolder cmFolder = mapper.mapNodeProperties(NODE_REF,
-        ImmutableMap.of(QName.createQName("custom_uri", "namespaceData"), testDate, ContentModel.PROP_TITLE, "Test Title value", ContentModel.PROP_DESCRIPTION, "Test Description value"));
-    assertEquals("Test Title value", cmFolder.getCmTitle());
-    assertEquals("Test Description value", cmFolder.getCmDescription());
-    assertEquals(NODE_REF.getId(), cmFolder.getRef());
-    assertEquals(testDate, cmFolder.getCustomNamespaceData());
-  }
+	@Test
+	public void registry_withCorrectDataAndConfigurer() {
+		Date testDate = new Date();
+		BeanPropertiesMapper<CmFolder> mapper = new BeanPropertiesMapperRegistry(namespaceService, dictionaryService)
+				.addBeanPropertiesMapper(this.mapper).getForClass(CmFolder.class);
+		CmFolder cmFolder = mapper.mapNodeProperties(NODE_REF,
+				ImmutableMap.of(QName.createQName("custom_uri", "namespaceData"), testDate, ContentModel.PROP_TITLE,
+						"Test Title value", ContentModel.PROP_DESCRIPTION, "Test Description value"));
+		assertEquals("Test Title value", cmFolder.getCmTitle());
+		assertEquals("Test Description value", cmFolder.getCmDescription());
+		assertEquals(NODE_REF.getId(), cmFolder.getRef());
+		assertEquals(testDate, cmFolder.getCustomNamespaceData());
+	}
 
-  @Test
-  public void registry_withCorrectData() {
-    Date testDate = new Date();
-    BeanPropertiesMapper<CmFolder> mapper = new BeanPropertiesMapperRegistry(namespaceService, dictionaryService).getForClass(CmFolder.class);
-    CmFolder cmFolder = mapper.mapNodeProperties(NODE_REF,
-        ImmutableMap.of(QName.createQName("custom_uri", "namespaceData"), testDate, ContentModel.PROP_TITLE, "Test Title value", ContentModel.PROP_DESCRIPTION, "Test Description value"));
-    assertEquals("Test Title value", cmFolder.getCmTitle());
-    assertEquals("Test Description value", cmFolder.getCmDescription());
-    assertNull(cmFolder.getRef());
-    assertEquals(testDate, cmFolder.getCustomNamespaceData());
-  }
+	@Test
+	public void registry_withCorrectData() {
+		Date testDate = new Date();
+		BeanPropertiesMapper<CmFolder> mapper = new BeanPropertiesMapperRegistry(namespaceService, dictionaryService)
+				.getForClass(CmFolder.class);
+		CmFolder cmFolder = mapper.mapNodeProperties(NODE_REF,
+				ImmutableMap.of(QName.createQName("custom_uri", "namespaceData"), testDate, ContentModel.PROP_TITLE,
+						"Test Title value", ContentModel.PROP_DESCRIPTION, "Test Description value"));
+		assertEquals("Test Title value", cmFolder.getCmTitle());
+		assertEquals("Test Description value", cmFolder.getCmDescription());
+		assertNull(cmFolder.getRef());
+		assertEquals(testDate, cmFolder.getCustomNamespaceData());
+	}
 
-  @Test
-  public void registry_doubleEntry() {
-    Assertions.assertThrows(RuntimeException.class, () -> {
-      BeanPropertiesMapperRegistry registry = new BeanPropertiesMapperRegistry(namespaceService, dictionaryService);
-      
-      BeanPropertiesMapper<NonExistingNodeProperties> mapper1 = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>().mappedClass(NonExistingNodeProperties.class)
-          .namespaceService(namespaceService).dictionaryService(dictionaryService).reportNamespaceException(false).build();
-      
-      BeanPropertiesMapper<NonExistingNodeProperties> mapper2 = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>().mappedClass(NonExistingNodeProperties.class)
-          .namespaceService(namespaceService).dictionaryService(dictionaryService).reportNamespaceException(false).build();
-      
-      registry.addBeanPropertiesMapper(mapper1);
-      registry.addBeanPropertiesMapper(mapper2);
-    });
-  }
+	@Test
+	public void registry_doubleEntry() {
+		Assertions.assertThrows(RuntimeException.class, () -> {
+			BeanPropertiesMapperRegistry registry = new BeanPropertiesMapperRegistry(namespaceService,
+					dictionaryService);
 
-  @Test
-  public void registry_severalEntries() {
-    BeanPropertiesMapperRegistry registry = new BeanPropertiesMapperRegistry(namespaceService, dictionaryService);
+			BeanPropertiesMapper<NonExistingNodeProperties> mapper1 = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>()
+					.mappedClass(NonExistingNodeProperties.class).namespaceService(namespaceService)
+					.dictionaryService(dictionaryService).reportNamespaceException(false).build();
 
-    BeanPropertiesMapper<NonExistingNodeProperties> mapper1 = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>().mappedClass(NonExistingNodeProperties.class)
-        .namespaceService(namespaceService).dictionaryService(dictionaryService).reportNamespaceException(false).build();
+			BeanPropertiesMapper<NonExistingNodeProperties> mapper2 = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>()
+					.mappedClass(NonExistingNodeProperties.class).namespaceService(namespaceService)
+					.dictionaryService(dictionaryService).reportNamespaceException(false).build();
 
-    BeanPropertiesMapper<CmFolder> mapper2 = new BeanPropertiesMapperBuilder<CmFolder>().mappedClass(CmFolder.class).namespaceService(namespaceService).dictionaryService(dictionaryService)
-        .reportNamespaceException(false).build();
+			registry.addBeanPropertiesMapper(mapper1);
+			registry.addBeanPropertiesMapper(mapper2);
+		});
+	}
 
-    registry.addBeanPropertiesMapper(mapper1);
-    registry.addBeanPropertiesMapper(mapper2);
-  }
+	@Test
+	public void registry_severalEntries() {
+		BeanPropertiesMapperRegistry registry = new BeanPropertiesMapperRegistry(namespaceService, dictionaryService);
 
-  // TODO test mamper utilities (bean and node)
-  @Test
-  public void beanPropertiesMapperUtil_withCorrectdata() {
-    BeanPropertiesMapperUtil beanPropertiesMapperUtil = new BeanPropertiesMapperUtil(new BeanPropertiesMapperRegistry(namespaceService, dictionaryService));
+		BeanPropertiesMapper<NonExistingNodeProperties> mapper1 = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>()
+				.mappedClass(NonExistingNodeProperties.class).namespaceService(namespaceService)
+				.dictionaryService(dictionaryService).reportNamespaceException(false).build();
 
-  }
+		BeanPropertiesMapper<CmFolder> mapper2 = new BeanPropertiesMapperBuilder<CmFolder>().mappedClass(CmFolder.class)
+				.namespaceService(namespaceService).dictionaryService(dictionaryService).reportNamespaceException(false)
+				.build();
+
+		registry.addBeanPropertiesMapper(mapper1);
+		registry.addBeanPropertiesMapper(mapper2);
+	}
+
+	// TODO test mamper utilities (bean and node)
+	@Test
+	public void beanPropertiesMapperUtil_withCorrectdata() {
+		BeanPropertiesMapperUtil beanPropertiesMapperUtil = new BeanPropertiesMapperUtil(
+				new BeanPropertiesMapperRegistry(namespaceService, dictionaryService));
+
+	}
 }

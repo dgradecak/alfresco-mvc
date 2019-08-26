@@ -20,6 +20,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 
 public interface BeanPropertiesMapperConfigurer<T> {
 
-  void configure(NodeRef nodeRef, T mappedObject);
+	void configure(NodeRef nodeRef, T mappedObject);
 
 }

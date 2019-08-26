@@ -34,100 +34,103 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class MockWebscript {
 
-  private AbstractWebScript webScript;
-  private HttpMethod method = HttpMethod.GET;
-  private Map<String, String> parameters;
-  private Map<String, String> body;
-  private String webscriptUrl = "/service/mvc/";
-  private String controllerMapping;
-  private Container container;
-  private Description description = mock(Description.class);
-  private Cookie[] cookies;
-  private Map<String, Object> headers;
+	private AbstractWebScript webScript;
+	private HttpMethod method = HttpMethod.GET;
+	private Map<String, String> parameters;
+	private Map<String, String> body;
+	private String webscriptUrl = "/service/mvc/";
+	private String controllerMapping;
+	private Container container;
+	private Description description = mock(Description.class);
+	private Cookie[] cookies;
+	private Map<String, Object> headers;
 
-  public MockWebscript(final AbstractWebScript webScript) throws IOException {
-    this.webScript = webScript;
-    container = getMockedContainer();
-  }
+	public MockWebscript(final AbstractWebScript webScript) throws IOException {
+		this.webScript = webScript;
+		container = getMockedContainer();
+	}
 
-  public MockWebscript withGetRequest() {
-    return withMethod(HttpMethod.GET);
-  }
+	public MockWebscript withGetRequest() {
+		return withMethod(HttpMethod.GET);
+	}
 
-  public MockWebscript withPostRequest() {
-    return withMethod(HttpMethod.POST);
-  }
+	public MockWebscript withPostRequest() {
+		return withMethod(HttpMethod.POST);
+	}
 
-  public MockWebscript withMethod(final HttpMethod method) {
-    this.method = method;
-    return this;
-  }
+	public MockWebscript withMethod(final HttpMethod method) {
+		this.method = method;
+		return this;
+	}
 
-  public MockWebscript withParameters(final Map<String, String> parameters) {
-    this.parameters = parameters;
-    return this;
-  }
+	public MockWebscript withParameters(final Map<String, String> parameters) {
+		this.parameters = parameters;
+		return this;
+	}
 
-  public MockWebscript withBody(final Map<String, String> body) {
-    this.body = body;
-    return this;
-  }
+	public MockWebscript withBody(final Map<String, String> body) {
+		this.body = body;
+		return this;
+	}
 
-  public MockWebscript withControllerMapping(final String controllerMapping) {
-    this.controllerMapping = controllerMapping;
-    return this;
-  }
+	public MockWebscript withControllerMapping(final String controllerMapping) {
+		this.controllerMapping = controllerMapping;
+		return this;
+	}
 
-  public MockWebscript withUrl(final String webscriptUrl) {
-    this.webscriptUrl = webscriptUrl;
-    return this;
-  }
+	public MockWebscript withUrl(final String webscriptUrl) {
+		this.webscriptUrl = webscriptUrl;
+		return this;
+	}
 
-  public MockWebscript withContainer(final Container container) {
-    this.container = container;
-    return this;
-  }
+	public MockWebscript withContainer(final Container container) {
+		this.container = container;
+		return this;
+	}
 
-  public MockWebscript withDescription(final Description description) {
-    this.description = description;
-    return this;
-  }
+	public MockWebscript withDescription(final Description description) {
+		this.description = description;
+		return this;
+	}
 
-  // public MockWebscript withContent(final String content) {
-  // this.content = content;
-  // return this;
-  // }
+	// public MockWebscript withContent(final String content) {
+	// this.content = content;
+	// return this;
+	// }
 
-  public MockWebscript withCookies(Cookie... cookies) {
-    this.cookies = cookies;
-    return this;
-  }
+	public MockWebscript withCookies(Cookie... cookies) {
+		this.cookies = cookies;
+		return this;
+	}
 
-  public MockWebscript withHeaders(Map<String, Object> headers) {
-    this.headers = headers;
-    return this;
-  }
+	public MockWebscript withHeaders(Map<String, Object> headers) {
+		this.headers = headers;
+		return this;
+	}
 
-  public MockHttpServletResponse execute() throws IOException {
-    return doRequest(webScript, container, description, method.name(), parameters, body, webscriptUrl, controllerMapping, cookies, headers);
-  }
+	public MockHttpServletResponse execute() throws IOException {
+		return doRequest(webScript, container, description, method.name(), parameters, body, webscriptUrl,
+				controllerMapping, cookies, headers);
+	}
 
-  private MockHttpServletResponse doRequest(AbstractWebScript webScript, Container container, Description description, String method, Map<String, String> parameters, Map<String, String> body,
-      String webscriptUrl, String controllerMapping, Cookie[] cookies, Map<String, Object> headers) throws IOException {
-    webScript.init(container, description);
+	private MockHttpServletResponse doRequest(AbstractWebScript webScript, Container container, Description description,
+			String method, Map<String, String> parameters, Map<String, String> body, String webscriptUrl,
+			String controllerMapping, Cookie[] cookies, Map<String, Object> headers) throws IOException {
+		webScript.init(container, description);
 
-    MockWebScriptResponse mockedResponse = MockWebScriptResponse.createMockWebScriptResponse();
-    webScript.execute(MockWebscriptServletRequest.createMockWebscriptServletRequest(webScript, method, webscriptUrl, controllerMapping, parameters, body, cookies, headers), mockedResponse);
+		MockWebScriptResponse mockedResponse = MockWebScriptResponse.createMockWebScriptResponse();
+		webScript.execute(MockWebscriptServletRequest.createMockWebscriptServletRequest(webScript, method, webscriptUrl,
+				controllerMapping, parameters, body, cookies, headers), mockedResponse);
 
-    return mockedResponse.getMockHttpServletResponse();
-  }
+		return mockedResponse.getMockHttpServletResponse();
+	}
 
-  static private Container getMockedContainer() throws IOException {
-    Container mockedContainer = mock(Container.class);
-    SearchPath mockedSearchPath = mock(SearchPath.class);
-    doReturn(false).when(mockedSearchPath).hasDocument(anyString());
-    doReturn(mockedSearchPath).when(mockedContainer).getSearchPath();
+	static private Container getMockedContainer() throws IOException {
+		Container mockedContainer = mock(Container.class);
+		SearchPath mockedSearchPath = mock(SearchPath.class);
+		doReturn(false).when(mockedSearchPath).hasDocument(anyString());
+		doReturn(mockedSearchPath).when(mockedContainer).getSearchPath();
 
-    return mockedContainer;
-  }
+		return mockedContainer;
+	}
 }

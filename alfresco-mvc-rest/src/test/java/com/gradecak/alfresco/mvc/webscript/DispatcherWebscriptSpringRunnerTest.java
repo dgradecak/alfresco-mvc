@@ -41,111 +41,125 @@ import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 @ContextConfiguration(locations = { "/web-context-test.xml" })
 public class DispatcherWebscriptSpringRunnerTest {
 
-  @Spy
-  @Autowired
-  private DispatcherWebscript webScript;
+	@Spy
+	@Autowired
+	private DispatcherWebscript webScript;
 
-  private MockWebscript mockWebscript;
+	private MockWebscript mockWebscript;
 
-  @BeforeEach
-  public void before() throws Exception {
-    MockitoAnnotations.initMocks(this);
+	@BeforeEach
+	public void before() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-    webScript.setServletContext(new MockServletContext());
-    webScript.setContextConfigLocation("test-webscriptdispatcher-context.xml");
+		webScript.setServletContext(new MockServletContext());
+		webScript.setContextConfigLocation("test-webscriptdispatcher-context.xml");
 
-    mockWebscript = MockWebscriptBuilder.singleWebscript(webScript);
-  }
+		mockWebscript = MockWebscriptBuilder.singleWebscript(webScript);
+	}
 
-  @Test
-  public void requestGet_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withParameters(ImmutableMap.of("id", "testId")).withControllerMapping("test/get").execute();
-    Assertions.assertTrue(res.getStatus() == 200);
-    Assertions.assertEquals("{\"data\":\"testId\",\"total\":1,\"success\":true}", res.getContentAsString());
-  }
+	@Test
+	public void requestGet_responseOk() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withParameters(ImmutableMap.of("id", "testId"))
+				.withControllerMapping("test/get").execute();
+		Assertions.assertTrue(res.getStatus() == 200);
+		Assertions.assertEquals("{\"data\":\"testId\",\"total\":1,\"success\":true}", res.getContentAsString());
+	}
 
-  @Test
-  public void requestGet_withHeaders_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withHeaders(ImmutableMap.of("header-key", (Object) "header-value")).withControllerMapping("test/getHeaders").execute();
-    Assertions.assertTrue(res.getStatus() == 200);
-    Assertions.assertEquals("{\"data\":{\"Content-Type\":\"application/json\",\"header-key\":\"header-value\"},\"total\":1,\"success\":true}", res.getContentAsString());
-  }
+	@Test
+	public void requestGet_withHeaders_responseOk() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withHeaders(ImmutableMap.of("header-key", (Object) "header-value"))
+				.withControllerMapping("test/getHeaders").execute();
+		Assertions.assertTrue(res.getStatus() == 200);
+		Assertions.assertEquals(
+				"{\"data\":{\"Content-Type\":\"application/json\",\"header-key\":\"header-value\"},\"total\":1,\"success\":true}",
+				res.getContentAsString());
+	}
 
-  @Test
-  public void requestGet_withCookies_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withCookies(new Cookie("cookie-key", "cookie-value")).withControllerMapping("test/getCookies").execute();
-    Assertions.assertTrue(res.getStatus() == 200);
-    Assertions.assertEquals(
-        "{\"data\":[{\"name\":\"cookie-key\",\"value\":\"cookie-value\",\"comment\":null,\"domain\":null,\"maxAge\":-1,\"path\":null,\"secure\":false,\"version\":0,\"httpOnly\":false}],\"total\":1,\"success\":true}",
-        res.getContentAsString());
-  }
+	@Test
+	public void requestGet_withCookies_responseOk() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withCookies(new Cookie("cookie-key", "cookie-value"))
+				.withControllerMapping("test/getCookies").execute();
+		Assertions.assertTrue(res.getStatus() == 200);
+		Assertions.assertEquals(
+				"{\"data\":[{\"name\":\"cookie-key\",\"value\":\"cookie-value\",\"comment\":null,\"domain\":null,\"maxAge\":-1,\"path\":null,\"secure\":false,\"version\":0,\"httpOnly\":false}],\"total\":1,\"success\":true}",
+				res.getContentAsString());
+	}
 
-  @Test
-  public void requestPost_withParams_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withPostRequest().withParameters(ImmutableMap.of("id", "testId")).withControllerMapping("test/post").execute();
-    Assertions.assertTrue(res.getStatus() == 200);
-    Assertions.assertEquals("{\"data\":\"testId\",\"total\":1,\"success\":true}", res.getContentAsString());
-  }
+	@Test
+	public void requestPost_withParams_responseOk() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withPostRequest().withParameters(ImmutableMap.of("id", "testId"))
+				.withControllerMapping("test/post").execute();
+		Assertions.assertTrue(res.getStatus() == 200);
+		Assertions.assertEquals("{\"data\":\"testId\",\"total\":1,\"success\":true}", res.getContentAsString());
+	}
 
-  @Test
-  public void requestPost_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withPostRequest().withControllerMapping("test/post2").execute();
-    Assertions.assertTrue(res.getStatus() == 200);
-    Assertions.assertEquals("{\"success\":true}", res.getContentAsString());
-  }
+	@Test
+	public void requestPost_responseOk() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withPostRequest().withControllerMapping("test/post2").execute();
+		Assertions.assertTrue(res.getStatus() == 200);
+		Assertions.assertEquals("{\"success\":true}", res.getContentAsString());
+	}
 
-  @Test
-  public void requestPost_withBody_response400() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withPostRequest().withControllerMapping("test/body").execute();
-    Assertions.assertTrue(res.getStatus() == 400);
-  }
+	@Test
+	public void requestPost_withBody_response400() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withPostRequest().withControllerMapping("test/body").execute();
+		Assertions.assertTrue(res.getStatus() == 400);
+	}
 
-  @Test
-  public void requestPost_withBody_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withPostRequest().withBody(ImmutableMap.of("id", "testId")).withControllerMapping("test/body").execute();
-    Assertions.assertTrue(res.getStatus() == 200);
-    Assertions.assertEquals("{\"data\":{\"id\":\"testId\"},\"total\":1,\"success\":true}", res.getContentAsString());
-  }
+	@Test
+	public void requestPost_withBody_responseOk() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withPostRequest().withBody(ImmutableMap.of("id", "testId"))
+				.withControllerMapping("test/body").execute();
+		Assertions.assertTrue(res.getStatus() == 200);
+		Assertions.assertEquals("{\"data\":{\"id\":\"testId\"},\"total\":1,\"success\":true}",
+				res.getContentAsString());
+	}
 
-  @Test
-  public void requestGet_wrongControllerMapping_response404() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withParameters(ImmutableMap.of("id", "testId")).withControllerMapping("test/wrong").execute();
-    Assertions.assertTrue(res.getStatus() == 404);
-  }
+	@Test
+	public void requestGet_wrongControllerMapping_response404() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withParameters(ImmutableMap.of("id", "testId"))
+				.withControllerMapping("test/wrong").execute();
+		Assertions.assertTrue(res.getStatus() == 404);
+	}
 
-  @Test
-  public void requestPost_toGetMethod() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withPostRequest().withParameters(ImmutableMap.of("id", "testId")).withControllerMapping("test/get").execute();
-    Assertions.assertTrue(res.getStatus() == 405);
-    Assertions.assertEquals("Request method 'POST' not supported", res.getErrorMessage());
-  }
+	@Test
+	public void requestPost_toGetMethod() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withPostRequest().withParameters(ImmutableMap.of("id", "testId"))
+				.withControllerMapping("test/get").execute();
+		Assertions.assertTrue(res.getStatus() == 405);
+		Assertions.assertEquals("Request method 'POST' not supported", res.getErrorMessage());
+	}
 
-  @Test
-  public void requestDelete_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.DELETE).withControllerMapping("test/delete").execute();
-    Assertions.assertTrue(res.getStatus() == 200);
-    Assertions.assertEquals("{\"success\":true}", res.getContentAsString());
-  }
+	@Test
+	public void requestDelete_responseOk() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.DELETE)
+				.withControllerMapping("test/delete").execute();
+		Assertions.assertTrue(res.getStatus() == 200);
+		Assertions.assertEquals("{\"success\":true}", res.getContentAsString());
+	}
 
-  @Test
-  public void requestPut_responseOk() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.PUT).withControllerMapping("test/delete").execute();
-    Assertions.assertTrue(res.getStatus() == 200);
-    Assertions.assertEquals("{\"success\":true}", res.getContentAsString());
-  }
+	@Test
+	public void requestPut_responseOk() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.PUT)
+				.withControllerMapping("test/delete").execute();
+		Assertions.assertTrue(res.getStatus() == 200);
+		Assertions.assertEquals("{\"success\":true}", res.getContentAsString());
+	}
 
-  @Test
-  public void requestHead_response405() throws Exception {
-    MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.HEAD).withControllerMapping("test/delete").execute();
-    Assertions.assertTrue(res.getStatus() == 405);
-  }
+	@Test
+	public void requestHead_response405() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.HEAD)
+				.withControllerMapping("test/delete").execute();
+		Assertions.assertTrue(res.getStatus() == 405);
+	}
 
-  @Test
-  public void requestGet_responseException() throws Exception {
-	  Assertions.assertThrows(IOException.class, () -> {
-		  mockWebscript.withParameters(ImmutableMap.of("id", "testId")).withControllerMapping("test/exception").execute();
+	@Test
+	public void requestGet_responseException() throws Exception {
+		Assertions.assertThrows(IOException.class, () -> {
+			mockWebscript.withParameters(ImmutableMap.of("id", "testId")).withControllerMapping("test/exception")
+					.execute();
 		});
-  }
+	}
 
-  // TODO add file upload test
+	// TODO add file upload test
 }

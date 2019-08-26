@@ -22,7 +22,7 @@ import org.springframework.extensions.webscripts.AbstractWebScript;
 
 public class MockWebscriptBuilder {
 
-  static public MockWebscript singleWebscript(final AbstractWebScript webScript) throws IOException {
-    return new MockWebscript(webScript);
-  }
+	static public MockWebscript singleWebscript(final AbstractWebScript webScript) throws IOException {
+		return new MockWebscript(webScript);
+	}
 }

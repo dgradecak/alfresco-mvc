@@ -27,18 +27,19 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 public class Jackson2NodeRefSerializer extends StdSerializer<NodeRef> {
 
-  public Jackson2NodeRefSerializer() {
-    super(NodeRef.class);
-  }
+	public Jackson2NodeRefSerializer() {
+		super(NodeRef.class);
+	}
 
-  @Override
-  public void serialize(NodeRef value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-    jgen.writeString(value.getId());
-  }
+	@Override
+	public void serialize(NodeRef value, JsonGenerator jgen, SerializerProvider provider)
+			throws IOException, JsonProcessingException {
+		jgen.writeString(value.getId());
+	}
 
-  @Override
-  public Class<NodeRef> handledType() {
-    return NodeRef.class;
-  }
+	@Override
+	public Class<NodeRef> handledType() {
+		return NodeRef.class;
+	}
 
 }

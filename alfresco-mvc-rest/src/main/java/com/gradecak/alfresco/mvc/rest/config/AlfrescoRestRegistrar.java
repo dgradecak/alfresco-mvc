@@ -34,50 +34,53 @@ import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript;
 
 public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
 
-  private AnnotationAttributes attributes;
+	private AnnotationAttributes attributes;
 
-  public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
+	public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
 
-    Assert.notNull(annotationMetadata, "AnnotationMetadata must not be null!");
-    Assert.notNull(registry, "BeanDefinitionRegistry must not be null!");
+		Assert.notNull(annotationMetadata, "AnnotationMetadata must not be null!");
+		Assert.notNull(registry, "BeanDefinitionRegistry must not be null!");
 
-    this.attributes = new AnnotationAttributes(annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcRest.class.getName()));
+		this.attributes = new AnnotationAttributes(
+				annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcRest.class.getName()));
 
-    AnnotationAttributes[] dispatcherWebscripts = (AnnotationAttributes[]) attributes.get("value");
+		AnnotationAttributes[] dispatcherWebscripts = (AnnotationAttributes[]) attributes.get("value");
 
-    for (AnnotationAttributes dispatcherWebscript : dispatcherWebscripts) {
-      processDispatcherWebscript(dispatcherWebscript, registry);
-    }
+		for (AnnotationAttributes dispatcherWebscript : dispatcherWebscripts) {
+			processDispatcherWebscript(dispatcherWebscript, registry);
+		}
 
-  }
+	}
 
-  private void processDispatcherWebscript(AnnotationAttributes webscriptAttributes, BeanDefinitionRegistry registry) {
-    String webscript = webscriptAttributes.getString("name");
-    Assert.notNull(webscript, "Webscript name cannot be empty!");
+	private void processDispatcherWebscript(AnnotationAttributes webscriptAttributes, BeanDefinitionRegistry registry) {
+		String webscript = webscriptAttributes.getString("name");
+		Assert.notNull(webscript, "Webscript name cannot be empty!");
 
-    Class<?> servletContext = webscriptAttributes.getClass("servletContext");
-    HttpMethod[] httpMethods = (HttpMethod[]) webscriptAttributes.get("httpMethods");
+		Class<?> servletContext = webscriptAttributes.getClass("servletContext");
+		HttpMethod[] httpMethods = (HttpMethod[]) webscriptAttributes.get("httpMethods");
 
-    // DispatcherWebscript dispatcherWebscript = dispatcherWebscript(servletContext);
+		// DispatcherWebscript dispatcherWebscript =
+		// dispatcherWebscript(servletContext);
 
-    RootBeanDefinition beanDefinition = new RootBeanDefinition(DispatcherWebscript.class);
-    beanDefinition.setSource(null);
-    beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(webscript);
-    beanDefinition.getPropertyValues().add("contextClass", org.springframework.web.context.support.AnnotationConfigWebApplicationContext.class);
-    beanDefinition.getPropertyValues().add("contextConfigLocation", servletContext.getName());
-    beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(DispatcherWebscript.class);
+		beanDefinition.setSource(null);
+		beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(webscript);
+		beanDefinition.getPropertyValues().add("contextClass",
+				org.springframework.web.context.support.AnnotationConfigWebApplicationContext.class);
+		beanDefinition.getPropertyValues().add("contextConfigLocation", servletContext.getName());
+		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 
-    List<HttpMethod> methodsIteable = new ArrayList<>(Arrays.asList(httpMethods));
-    String beanName = getWebscriptName(webscript, methodsIteable.remove(0));
-    registry.registerBeanDefinition(beanName, beanDefinition);
+		List<HttpMethod> methodsIteable = new ArrayList<>(Arrays.asList(httpMethods));
+		String beanName = getWebscriptName(webscript, methodsIteable.remove(0));
+		registry.registerBeanDefinition(beanName, beanDefinition);
 
-    for (HttpMethod httpMethod : httpMethods) {
-      registry.registerAlias(beanName, getWebscriptName(webscript, httpMethod));
-    }
-  }
+		for (HttpMethod httpMethod : httpMethods) {
+			registry.registerAlias(beanName, getWebscriptName(webscript, httpMethod));
+		}
+	}
 
-  private String getWebscriptName(String webscript, HttpMethod httpMethod) {
-    String beanName = "webscript." + webscript + "." + httpMethod.name();
-    return beanName.toLowerCase();
-  }
+	private String getWebscriptName(String webscript, HttpMethod httpMethod) {
+		String beanName = "webscript." + webscript + "." + httpMethod.name();
+		return beanName.toLowerCase();
+	}
 }

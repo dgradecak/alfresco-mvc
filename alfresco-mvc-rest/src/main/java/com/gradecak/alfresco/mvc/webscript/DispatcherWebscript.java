@@ -31,14 +31,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.dao.DataAccessException;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
@@ -50,78 +48,77 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.util.JavaScriptUtils;
-import org.springframework.web.util.NestedServletException;
 
-import com.gradecak.alfresco.mvc.rest.ResponseMapBuilder;
-import com.gradecak.alfresco.mvc.rest.util.JsonUtils;
+public class DispatcherWebscript extends AbstractWebScript
+		implements ApplicationListener<ContextRefreshedEvent>, ServletContextAware, ApplicationContextAware {
 
-public class DispatcherWebscript extends AbstractWebScript implements ApplicationListener<ContextRefreshedEvent>, ServletContextAware, ApplicationContextAware {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
+	protected DispatcherServlet s;
+	private String contextConfigLocation;
+	private Class<?> contextClass;
+	private ApplicationContext applicationContext;
+	private ServletContext servletContext;
 
-  protected DispatcherServlet s;
-  private String contextConfigLocation;
-  private Class<?> contextClass;
-  private ApplicationContext applicationContext;
-  private ServletContext servletContext;
+	private final String servletName;
 
-  private final String servletName;
+	public DispatcherWebscript() {
+		this.servletName = "Alfresco @MVC Dispatcher Webscript";
+	}
 
-  public DispatcherWebscript() {
-    this.servletName = "Alfresco @MVC Dispatcher Webscript";
-  }
+	public DispatcherWebscript(final String servletName) {
+		Assert.hasText(servletName,
+				"[Assertion failed] - this String servletName must have text; it must not be null, empty, or blank");
+		this.servletName = "Alfresco @MVC Dispatcher Webscript: " + servletName;
+	}
 
-  public DispatcherWebscript(final String servletName) {
-    Assert.hasText(servletName, "[Assertion failed] - this String servletName must have text; it must not be null, empty, or blank");
-    this.servletName = "Alfresco @MVC Dispatcher Webscript: " + servletName;
-  }
+	public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
-  public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
+		final WebScriptServletRequest origReq = (WebScriptServletRequest) req;
 
-    final WebScriptServletRequest origReq = (WebScriptServletRequest) req;
+		WebScriptServletResponse wsr = null;
+		if (res instanceof WrappingWebScriptResponse) {
+			wsr = (WebScriptServletResponse) ((WrappingWebScriptResponse) res).getNext();
+		} else {
+			wsr = (WebScriptServletResponse) res;
+		}
 
-    WebScriptServletResponse wsr = null;
-    if (res instanceof WrappingWebScriptResponse) {
-      wsr = (WebScriptServletResponse) ((WrappingWebScriptResponse) res).getNext();
-    } else {
-      wsr = (WebScriptServletResponse) res;
-    }
+		final HttpServletResponse sr = wsr.getHttpServletResponse();
+		res.setHeader("Cache-Control", "no-cache");
 
-    final HttpServletResponse sr = wsr.getHttpServletResponse();
-    res.setHeader("Cache-Control", "no-cache");
+		WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
+		LocalHttpServletResponse mockHttpServletResponse = new LocalHttpServletResponse(wrapper);
+		try {
+			s.service(wrapper, mockHttpServletResponse);
 
-    WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
-    LocalHttpServletResponse mockHttpServletResponse = new LocalHttpServletResponse(wrapper);
-    try {
-      s.service(wrapper, mockHttpServletResponse);
+			writeResponseToWebscript(wsr, mockHttpServletResponse);
+		} catch (Throwable e) {
+			throw new IOException(e);
+		}
+	}
 
-      writeResponseToWebscript(wsr, mockHttpServletResponse);
-    } catch (Throwable e) {
-      throw new IOException(e);
-    }
-  }
+	private void writeResponseToWebscript(WebScriptServletResponse wsr,
+			LocalHttpServletResponse mockHttpServletResponse) throws UnsupportedEncodingException, IOException {
+		String contentAsString = mockHttpServletResponse.getContentAsString();
 
-  private void writeResponseToWebscript(WebScriptServletResponse wsr, LocalHttpServletResponse mockHttpServletResponse) throws UnsupportedEncodingException, IOException {
-    String contentAsString = mockHttpServletResponse.getContentAsString();
+		Collection<String> headerNames = mockHttpServletResponse.getHeaderNames();
+		for (String header : headerNames) {
+			wsr.setHeader(header, mockHttpServletResponse.getHeader(header));
+		}
 
-    Collection<String> headerNames = mockHttpServletResponse.getHeaderNames();
-    for (String header : headerNames) {
-      wsr.setHeader(header, mockHttpServletResponse.getHeader(header));
-    }
+		wsr.setStatus(mockHttpServletResponse.getStatus());
+		String contentType = mockHttpServletResponse.getContentType();
+		if (StringUtils.hasText(contentType)) {
+			wsr.setContentType(contentType);
+		}
 
-    wsr.setStatus(mockHttpServletResponse.getStatus());
-    String contentType = mockHttpServletResponse.getContentType();
-    if (StringUtils.hasText(contentType)) {
-      wsr.setContentType(contentType);
-    }
-
-    if (StringUtils.hasText(mockHttpServletResponse.getErrorMessage())) {
-      wsr.getHttpServletResponse().sendError(mockHttpServletResponse.getStatus(), mockHttpServletResponse.getErrorMessage());
-    } else if (StringUtils.hasText(contentAsString)) {
-      wsr.getWriter().write(contentAsString);
-    }
-  }
+		if (StringUtils.hasText(mockHttpServletResponse.getErrorMessage())) {
+			wsr.getHttpServletResponse().sendError(mockHttpServletResponse.getStatus(),
+					mockHttpServletResponse.getErrorMessage());
+		} else if (StringUtils.hasText(contentAsString)) {
+			wsr.getWriter().write(contentAsString);
+		}
+	}
 
 //  private void convertExceptionToJson(Throwable ex, WebScriptServletResponse wsr, final HttpServletResponse sr, LocalHttpServletResponse mockHttpServletResponse) throws IOException {
 //    ResponseMapBuilder builder = ResponseMapBuilder.createFailResponseMap().withEntry("event", "exception").withEntry("exception", ex.getClass().getCanonicalName()).withEntry("message",
@@ -154,141 +151,145 @@ public class DispatcherWebscript extends AbstractWebScript implements Applicatio
 //    writeResponseToWebscript(wsr, mockHttpServletResponse);
 //  }
 
-  public void onApplicationEvent(ContextRefreshedEvent event) {
-    ApplicationContext refreshContext = event.getApplicationContext();
-    if (refreshContext != null && refreshContext.equals(applicationContext)) {
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		ApplicationContext refreshContext = event.getApplicationContext();
+		if (refreshContext != null && refreshContext.equals(applicationContext)) {
 
-      s = new DispatcherServlet() {
+			s = new DispatcherServlet() {
 
-        private static final long serialVersionUID = -7492692694742840997L;
+				private static final long serialVersionUID = -7492692694742840997L;
 
-        @Override
-        protected WebApplicationContext initWebApplicationContext() {
-          WebApplicationContext wac = createWebApplicationContext(applicationContext);
-          if (wac == null) {
-            wac = super.initWebApplicationContext();
-          }
-          return wac;
-        }
+				@Override
+				protected WebApplicationContext initWebApplicationContext() {
+					WebApplicationContext wac = createWebApplicationContext(applicationContext);
+					if (wac == null) {
+						wac = super.initWebApplicationContext();
+					}
+					return wac;
+				}
 
-      };
+			};
 
-      if (contextClass != null) {
-        s.setContextClass(contextClass);
-      }
-      s.setContextConfigLocation(contextConfigLocation);
-      configureDispatcherServlet(s);
+			if (contextClass != null) {
+				s.setContextClass(contextClass);
+			}
+			s.setContextConfigLocation(contextConfigLocation);
+			configureDispatcherServlet(s);
 
-      try {
-        s.init(new DelegatingServletConfig(servletName));
-      } catch (ServletException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
+			try {
+				s.init(new DelegatingServletConfig(servletName));
+			} catch (ServletException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
 
-  protected void configureDispatcherServlet(DispatcherServlet dispatcherServlet) {}
+	protected void configureDispatcherServlet(DispatcherServlet dispatcherServlet) {
+	}
 
-  public String getContextConfigLocation() {
-    return contextConfigLocation;
-  }
+	public String getContextConfigLocation() {
+		return contextConfigLocation;
+	}
 
-  public void setContextConfigLocation(String contextConfigLocation) {
-    this.contextConfigLocation = contextConfigLocation;
-  }
+	public void setContextConfigLocation(String contextConfigLocation) {
+		this.contextConfigLocation = contextConfigLocation;
+	}
 
-  public ApplicationContext getApplicationContext() {
-    return applicationContext;
-  }
+	public ApplicationContext getApplicationContext() {
+		return applicationContext;
+	}
 
-  public void setApplicationContext(ApplicationContext applicationContext) {
-    this.applicationContext = applicationContext;
-  }
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
 
-  public ServletContext getServletContext() {
-    return servletContext;
-  }
+	public ServletContext getServletContext() {
+		return servletContext;
+	}
 
-  public void setServletContext(ServletContext servletContext) {
-    this.servletContext = servletContext;
-  }
+	public void setServletContext(ServletContext servletContext) {
+		this.servletContext = servletContext;
+	}
 
-  public void setContextClass(Class<?> contextClass) {
-    this.contextClass = contextClass;
-  }
+	public void setContextClass(Class<?> contextClass) {
+		this.contextClass = contextClass;
+	}
 
-  public Class<?> getContextClass() {
-    return this.contextClass;
-  }
+	public Class<?> getContextClass() {
+		return this.contextClass;
+	}
 
-  /**
-   * Internal implementation of the {@link ServletConfig} interface, to be passed to the servlet adapter.
-   */
-  public class DelegatingServletConfig implements ServletConfig {
+	/**
+	 * Internal implementation of the {@link ServletConfig} interface, to be passed
+	 * to the servlet adapter.
+	 */
+	public class DelegatingServletConfig implements ServletConfig {
 
-    final private String name;
+		final private String name;
 
-    public DelegatingServletConfig(final String name) {
-      Assert.hasText(name, "[Assertion failed] - this String name must have text; it must not be null, empty, or blank");
-      this.name = name;
-    }
+		public DelegatingServletConfig(final String name) {
+			Assert.hasText(name,
+					"[Assertion failed] - this String name must have text; it must not be null, empty, or blank");
+			this.name = name;
+		}
 
-    public String getServletName() {
-      return name;
-    }
+		public String getServletName() {
+			return name;
+		}
 
-    public ServletContext getServletContext() {
-      return DispatcherWebscript.this.servletContext;
-    }
+		public ServletContext getServletContext() {
+			return DispatcherWebscript.this.servletContext;
+		}
 
-    public String getInitParameter(String paramName) {
-      return null;
-    }
+		public String getInitParameter(String paramName) {
+			return null;
+		}
 
-    public Enumeration<String> getInitParameterNames() {
-      return Collections.enumeration(new HashSet<String>());
-    }
-  }
+		public Enumeration<String> getInitParameterNames() {
+			return Collections.enumeration(new HashSet<String>());
+		}
+	}
 
-  public class WebscriptRequestWrapper extends HttpServletRequestWrapper {
+	public class WebscriptRequestWrapper extends HttpServletRequestWrapper {
 
-    private WebScriptServletRequest origReq;
+		private WebScriptServletRequest origReq;
 
-    public WebscriptRequestWrapper(WebScriptServletRequest request) {
-      super(request.getHttpServletRequest());
-      this.origReq = request;
-    }
+		public WebscriptRequestWrapper(WebScriptServletRequest request) {
+			super(request.getHttpServletRequest());
+			this.origReq = request;
+		}
 
-    @Override
-    public String getRequestURI() {
-      String uri = super.getRequestURI();
-      Pattern pattern = Pattern.compile("(^" + origReq.getServiceContextPath() + "/)(.*)(/" + origReq.getExtensionPath() + ")");
-      Matcher matcher = pattern.matcher(uri);
+		@Override
+		public String getRequestURI() {
+			String uri = super.getRequestURI();
+			Pattern pattern = Pattern
+					.compile("(^" + origReq.getServiceContextPath() + "/)(.*)(/" + origReq.getExtensionPath() + ")");
+			Matcher matcher = pattern.matcher(uri);
 
-      final int extensionPathRegexpGroupIndex = 3;
-      if (matcher.find()) {
-        try {
-          return matcher.group(extensionPathRegexpGroupIndex);
-        } catch (Exception e) {
-          // let an empty string be returned
-          LOGGER.warn("no such group (3) in regexp while URI evaluation", e);
-        }
-      }
+			final int extensionPathRegexpGroupIndex = 3;
+			if (matcher.find()) {
+				try {
+					return matcher.group(extensionPathRegexpGroupIndex);
+				} catch (Exception e) {
+					// let an empty string be returned
+					LOGGER.warn("no such group (3) in regexp while URI evaluation", e);
+				}
+			}
 
-      return "";
-    }
+			return "";
+		}
 
-    public String getContextPath() {
-      return origReq.getContextPath();
-    }
+		public String getContextPath() {
+			return origReq.getContextPath();
+		}
 
-    public String getServletPath() {
-      return "";
-    }
+		public String getServletPath() {
+			return "";
+		}
 
-    public WebScriptServletRequest getWebScriptServletRequest() {
-      return origReq;
-    }
-  }
+		public WebScriptServletRequest getWebScriptServletRequest() {
+			return origReq;
+		}
+	}
 
 }

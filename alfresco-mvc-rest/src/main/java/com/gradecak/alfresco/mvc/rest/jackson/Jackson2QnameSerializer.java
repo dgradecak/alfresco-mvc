@@ -27,22 +27,22 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 public class Jackson2QnameSerializer extends StdSerializer<QName> {
 
-  private ServiceRegistry serviceRegistry;
+	private ServiceRegistry serviceRegistry;
 
-  public Jackson2QnameSerializer(ServiceRegistry serviceRegistry) {
-    super(QName.class);
-    this.serviceRegistry = serviceRegistry;
-  }
+	public Jackson2QnameSerializer(ServiceRegistry serviceRegistry) {
+		super(QName.class);
+		this.serviceRegistry = serviceRegistry;
+	}
 
-  @Override
-  public void serialize(QName value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-    String prefixString = value.toPrefixString(serviceRegistry.getNamespaceService());
-    jgen.writeString(prefixString);
-  }
+	@Override
+	public void serialize(QName value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+		String prefixString = value.toPrefixString(serviceRegistry.getNamespaceService());
+		jgen.writeString(prefixString);
+	}
 
-  @Override
-  public Class<QName> handledType() {
-    return QName.class;
-  }
+	@Override
+	public Class<QName> handledType() {
+		return QName.class;
+	}
 
 }
