@@ -16,9 +16,9 @@
 
 package com.gradecak.alfresco.querytemplate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 
 import java.util.Date;
@@ -31,17 +31,16 @@ import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.namespace.NamespaceException;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.ImmutableMap;
 
-@RunWith(MockitoJUnitRunner.class)
 public class BeanPropertiesMapperTest {
 
   private static final NodeRef NODE_REF = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "test_id");
@@ -56,10 +55,11 @@ public class BeanPropertiesMapperTest {
   private PropertyDefinition propertyDefinitionMock;
 
   private BeanPropertiesMapper<CmFolder> mapper;
-  private BeanPropertiesMapperConfigurer<CmFolder> configurer;
 
-  @Before
+  @BeforeEach
   public void before() throws Exception {
+    MockitoAnnotations.initMocks(this);
+
     doAnswer(new Answer<String>() {
       @Override
       public String answer(InvocationOnMock invocation) {
@@ -106,11 +106,13 @@ public class BeanPropertiesMapperTest {
     assertEquals(testDate, cmFolder.getCustomNamespaceData());
   }
 
-  @Test(expected = NamespaceException.class)
+  @Test
   public void mapNodeProperties_withNonExistingProperty_reportException() {
-    BeanPropertiesMapper<NonExistingNodeProperties> mapperWrong = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>().mappedClass(NonExistingNodeProperties.class)
-        .namespaceService(namespaceService).dictionaryService(dictionaryService).reportNamespaceException(true).build();
-    mapperWrong.mapNodeProperties(NODE_REF, ImmutableMap.of());
+    Assertions.assertThrows(NamespaceException.class, () -> {
+      BeanPropertiesMapper<NonExistingNodeProperties> mapperWrong = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>().mappedClass(NonExistingNodeProperties.class)
+              .namespaceService(namespaceService).dictionaryService(dictionaryService).reportNamespaceException(true).build();
+      mapperWrong.mapNodeProperties(NODE_REF, ImmutableMap.of());
+    });
   }
 
   @Test
@@ -145,18 +147,20 @@ public class BeanPropertiesMapperTest {
     assertEquals(testDate, cmFolder.getCustomNamespaceData());
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void registry_doubleEntry() {
-    BeanPropertiesMapperRegistry registry = new BeanPropertiesMapperRegistry(namespaceService, dictionaryService);
-
-    BeanPropertiesMapper<NonExistingNodeProperties> mapper1 = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>().mappedClass(NonExistingNodeProperties.class)
-        .namespaceService(namespaceService).dictionaryService(dictionaryService).reportNamespaceException(false).build();
-
-    BeanPropertiesMapper<NonExistingNodeProperties> mapper2 = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>().mappedClass(NonExistingNodeProperties.class)
-        .namespaceService(namespaceService).dictionaryService(dictionaryService).reportNamespaceException(false).build();
-
-    registry.addBeanPropertiesMapper(mapper1);
-    registry.addBeanPropertiesMapper(mapper2);
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      BeanPropertiesMapperRegistry registry = new BeanPropertiesMapperRegistry(namespaceService, dictionaryService);
+      
+      BeanPropertiesMapper<NonExistingNodeProperties> mapper1 = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>().mappedClass(NonExistingNodeProperties.class)
+          .namespaceService(namespaceService).dictionaryService(dictionaryService).reportNamespaceException(false).build();
+      
+      BeanPropertiesMapper<NonExistingNodeProperties> mapper2 = new BeanPropertiesMapperBuilder<NonExistingNodeProperties>().mappedClass(NonExistingNodeProperties.class)
+          .namespaceService(namespaceService).dictionaryService(dictionaryService).reportNamespaceException(false).build();
+      
+      registry.addBeanPropertiesMapper(mapper1);
+      registry.addBeanPropertiesMapper(mapper2);
+    });
   }
 
   @Test

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.gradecak.alfresco-mvc</groupId>
-  <version>6.1.0-SNAPSHOT</version>
+  <version>7.0.0-SNAPSHOT</version>
   <artifactId>alfresco-mvc-bom</artifactId>
   <packaging>pom</packaging>
 
@@ -26,18 +26,6 @@
       <organization>PleoSoft</organization>
       <organizationUrl>http://pleosoft.com/</organizationUrl>
     </developer>
-    <developer>
-      <name>Luka Orelj</name>
-      <email>luka@pleosoft.com</email>
-      <organization>PleoSoft</organization>
-      <organizationUrl>http://pleosoft.com/</organizationUrl>
-    </developer>
-    <developer>
-      <name>Antonio Jedvaj</name>
-      <email>antonio@pleosoft.com</email>
-      <organization>PleoSoft</organization>
-      <organizationUrl>http://pleosoft.com/</organizationUrl>
-    </developer>
   </developers>
 
   <scm>
@@ -48,10 +36,9 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <alfresco.version>6.0.7-ga</alfresco.version>
-    <spring.version>5.0.4.RELEASE</spring.version>
-    <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-    <mockito-all.version>1.10.19</mockito-all.version>
+    <alfresco.version>6.2.0-A6</alfresco.version>
+    <spring.version>5.1.8.RELEASE</spring.version>
+    <javax.servlet-api.version>3.0.1</javax.servlet-api.version>    
   </properties>
 
   <modules>
@@ -79,9 +66,9 @@
 
       <dependency>
         <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>${mockito-all.version}</version>
-        <scope>test</scope>
+        <artifactId>mockito-core</artifactId>
+        <version>3.0.0</version>
+        <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -89,7 +76,19 @@
         <artifactId>spring-test</artifactId>
         <version>${spring.version}</version>
         <scope>test</scope>
+         <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
       </dependency>
+        <dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.5.1</version>			
+			<scope>test</scope>
+		</dependency>
 
       <dependency>
         <groupId>com.gradecak.alfresco-mvc</groupId>
@@ -131,8 +130,12 @@
 
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
+    <plugin>
+      <artifactId>maven-surefire-plugin</artifactId>
+	  <version>2.22.2</version>
+	  </plugin>
+    <plugin>
+      <artifactId>maven-source-plugin</artifactId>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -146,7 +149,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
+        <version>3.1.1</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -155,30 +158,57 @@
             </goals>
           </execution>
         </executions>
+     </plugin>
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-compiler-plugin</artifactId>
+       <version>3.8.1</version>
+       <configuration>
+         <release>11</release>
+       </configuration>
+     </plugin>
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-gpg-plugin</artifactId>
+       <version>1.6</version>
+       <executions>
+         <execution>
+           <id>sign-artifacts</id>
+           <phase>verify</phase>
+           <goals>
+             <goal>sign</goal>
+           </goals>
+           <configuration>
+             <gpgArguments>
+               <arg>--pinentry-mode</arg>
+               <arg>loopback</arg>
+             </gpgArguments>
+           </configuration>
+         </execution>
+       </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+   </plugins>
   </build>
+  
+  <profiles>
+		<profile>
+			<id>snapshot</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>none</phase>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

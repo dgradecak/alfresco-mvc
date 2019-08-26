@@ -20,9 +20,9 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import com.gradecak.alfresco.mvc.annotation.AlfrescoRunAs;
 
@@ -34,13 +34,13 @@ public class RunAsService {
 
   @AlfrescoRunAs("user")
   public String getNamePropertyAsUser(final NodeRef nodeRef) {
-    Assert.assertEquals("user", AuthenticationUtil.getRunAsUser());
+    Assert.isTrue("user".equals(AuthenticationUtil.getRunAsUser()), "[Assertion failed] - this expression must be true");
     return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
   }
 
   @AlfrescoRunAs(AuthenticationUtil.SYSTEM_USER_NAME)
   public String getNamePropertyAsSystem(final NodeRef nodeRef) {
-    Assert.assertEquals(AuthenticationUtil.SYSTEM_USER_NAME, AuthenticationUtil.getRunAsUser());
+    Assert.isTrue(AuthenticationUtil.SYSTEM_USER_NAME.equals(AuthenticationUtil.getRunAsUser()), "[Assertion failed] - this expression must be true");
     return (String) serviceRegistry.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME);
   }
 }

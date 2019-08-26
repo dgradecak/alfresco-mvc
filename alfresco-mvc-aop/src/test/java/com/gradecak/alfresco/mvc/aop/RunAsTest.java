@@ -16,7 +16,6 @@
 
 package com.gradecak.alfresco.mvc.aop;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -26,27 +25,22 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.MutableAuthenticationService;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gradecak.alfresco.mvc.service.RunAsService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(value = { "classpath:test-aop-context.xml" })
 public class RunAsTest {
-
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
 
   @Mock
   private MutableAuthenticationService authenticationService;
@@ -66,7 +60,7 @@ public class RunAsTest {
   private AuthenticationUtil util = new AuthenticationUtil();
   private NodeRef nodeRef = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "aaa");
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
@@ -80,7 +74,7 @@ public class RunAsTest {
 
     util.afterPropertiesSet();
 
-    assertTrue(AopUtils.isAopProxy(service));
+    Assertions.assertTrue(AopUtils.isAopProxy(service));
     AuthenticationUtil.clearCurrentSecurityContext();
   }
 
@@ -88,8 +82,8 @@ public class RunAsTest {
   public void noAutehntication_runAsSystem() {
     service.getNamePropertyAsSystem(nodeRef);
 
-    Assert.assertNull(AuthenticationUtil.getRunAsUser());
-    Assert.assertNull(AuthenticationUtil.getFullyAuthenticatedUser());
+    Assertions.assertNull(AuthenticationUtil.getRunAsUser());
+    Assertions.assertNull(AuthenticationUtil.getFullyAuthenticatedUser());
   }
 
   @Test
@@ -98,7 +92,7 @@ public class RunAsTest {
     AuthenticationUtil.setFullyAuthenticatedUser("test");
     when(authorityService.hasGuestAuthority()).thenReturn(false);
     service.getNamePropertyAsUser(nodeRef);
-    Assert.assertEquals("test", AuthenticationUtil.getRunAsUser());
-    Assert.assertEquals("test", AuthenticationUtil.getFullyAuthenticatedUser());
+    Assertions.assertEquals("test", AuthenticationUtil.getRunAsUser());
+    Assertions.assertEquals("test", AuthenticationUtil.getFullyAuthenticatedUser());
   }
 }

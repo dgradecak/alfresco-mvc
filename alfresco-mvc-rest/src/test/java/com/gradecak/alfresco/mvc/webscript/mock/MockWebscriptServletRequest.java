@@ -18,6 +18,7 @@ package com.gradecak.alfresco.mvc.webscript.mock;
 
 import static org.mockito.Mockito.mock;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -30,9 +31,7 @@ import org.springframework.extensions.webscripts.servlet.WebScriptServletRequest
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 
 public class MockWebscriptServletRequest extends WebScriptServletRequest {
@@ -44,7 +43,7 @@ public class MockWebscriptServletRequest extends WebScriptServletRequest {
   }
 
   static public MockWebscriptServletRequest createMockWebscriptServletRequest(AbstractWebScript webScript, String method, String webscriptUrl, String controllerMapping,
-      final Map<String, String> parameters, final Map<String, String> body, final Cookie[] cookies, final Map<String, Object> headers) {
+      final Map<String, String> parameters, final Map<String, String> body, final Cookie[] cookies, final Map<String, Object> headers) throws IOException {
     Match match = new Match(null, ImmutableMap.of("", ""), webscriptUrl, webScript);
     MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest(method, "http://localhost/alfresco" + webscriptUrl + controllerMapping);
     mockHttpServletRequest.setServletPath("alfresco");
@@ -61,12 +60,9 @@ public class MockWebscriptServletRequest extends WebScriptServletRequest {
         mockHttpServletRequest.addHeader(headerEntry.getKey(), headerEntry.getValue());
       }
     }
-    try {
-      if (HttpMethod.POST.name().equals(method) && body != null) {
-        mockHttpServletRequest.setContent(new ObjectMapper().writeValueAsString(body).getBytes());
-      }
-    } catch (JsonProcessingException e) {
-      Throwables.propagate(e);
+    
+    if (HttpMethod.POST.name().equals(method) && body != null) {
+      mockHttpServletRequest.setContent(new ObjectMapper().writeValueAsString(body).getBytes());
     }
 
     MockWebscriptServletRequest webscriptServletRequest = new MockWebscriptServletRequest(mock(Runtime.class), mockHttpServletRequest, match);

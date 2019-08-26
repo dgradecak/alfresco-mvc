@@ -16,9 +16,8 @@
 
 package com.gradecak.alfresco.mvc.aop;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,26 +26,22 @@ import javax.transaction.SystemException;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransactionCallback;
 import org.alfresco.service.ServiceRegistry;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gradecak.alfresco.mvc.service.TransactionalService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(value = { "classpath:test-aop-context.xml" })
 public class TransactionalTest {
-
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
 
   @Mock
   private RetryingTransactionHelper retryingTransactionHelper;
@@ -57,13 +52,13 @@ public class TransactionalTest {
   @Autowired
   private TransactionalService service;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
     when(serviceRegistry.getRetryingTransactionHelper()).thenReturn(retryingTransactionHelper);
 
-    assertTrue(AopUtils.isAopProxy(service));
+    Assertions.assertTrue(AopUtils.isAopProxy(service));
   }
 
   @Test

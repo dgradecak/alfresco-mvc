@@ -16,7 +16,7 @@
 
 package com.gradecak.alfresco.mvc.webscript.mock;
 
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -32,8 +32,6 @@ import org.springframework.extensions.webscripts.SearchPath;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import com.google.common.base.Throwables;
-
 public class MockWebscript {
 
   private AbstractWebScript webScript;
@@ -42,13 +40,14 @@ public class MockWebscript {
   private Map<String, String> body;
   private String webscriptUrl = "/service/mvc/";
   private String controllerMapping;
-  private Container container = getMockedContainer();
+  private Container container;
   private Description description = mock(Description.class);
   private Cookie[] cookies;
   private Map<String, Object> headers;
 
-  public MockWebscript(final AbstractWebScript webScript) {
+  public MockWebscript(final AbstractWebScript webScript) throws IOException {
     this.webScript = webScript;
+    container = getMockedContainer();
   }
 
   public MockWebscript withGetRequest() {
@@ -109,32 +108,24 @@ public class MockWebscript {
     return this;
   }
 
-  public MockHttpServletResponse execute() {
+  public MockHttpServletResponse execute() throws IOException {
     return doRequest(webScript, container, description, method.name(), parameters, body, webscriptUrl, controllerMapping, cookies, headers);
   }
 
   private MockHttpServletResponse doRequest(AbstractWebScript webScript, Container container, Description description, String method, Map<String, String> parameters, Map<String, String> body,
-      String webscriptUrl, String controllerMapping, Cookie[] cookies, Map<String, Object> headers) {
+      String webscriptUrl, String controllerMapping, Cookie[] cookies, Map<String, Object> headers) throws IOException {
     webScript.init(container, description);
 
     MockWebScriptResponse mockedResponse = MockWebScriptResponse.createMockWebScriptResponse();
-    try {
-      webScript.execute(MockWebscriptServletRequest.createMockWebscriptServletRequest(webScript, method, webscriptUrl, controllerMapping, parameters, body, cookies, headers), mockedResponse);
-    } catch (IOException e) {
-      Throwables.propagate(e);
-    }
+    webScript.execute(MockWebscriptServletRequest.createMockWebscriptServletRequest(webScript, method, webscriptUrl, controllerMapping, parameters, body, cookies, headers), mockedResponse);
 
     return mockedResponse.getMockHttpServletResponse();
   }
 
-  static private Container getMockedContainer() {
+  static private Container getMockedContainer() throws IOException {
     Container mockedContainer = mock(Container.class);
     SearchPath mockedSearchPath = mock(SearchPath.class);
-    try {
-      doReturn(false).when(mockedSearchPath).hasDocument(anyString());
-    } catch (IOException e) {
-      Throwables.propagate(e);
-    }
+    doReturn(false).when(mockedSearchPath).hasDocument(anyString());
     doReturn(mockedSearchPath).when(mockedContainer).getSearchPath();
 
     return mockedContainer;
