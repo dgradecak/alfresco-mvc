@@ -1,6 +1,6 @@
 package com.gradecak.alfresco.mvc.rest;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.alfresco.rest.framework.resource.parameters.Params;
 import org.alfresco.rest.framework.resource.parameters.Params.RecognizedParams;
@@ -13,13 +13,12 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.gradecak.alfresco.mvc.rest.annotation.AlfrescoRestResponse;
 import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.WebscriptRequestWrapper;
-import com.gradecak.alfresco.mvc.webscript.LocalHttpServletResponse;
 
 /**
  * 
@@ -61,18 +60,20 @@ public class AlfrescoApiResponseInterceptor implements ResponseBodyAdvice<Object
 		}
 
 		if (useAlfrescoResponse) {
-			WebScriptServletRequest webScriptServletRequest = null;
-			if (response instanceof ServletServerHttpResponse) {
-				HttpServletResponse servletResponse = ((ServletServerHttpResponse) response).getServletResponse();
-				if (servletResponse instanceof LocalHttpServletResponse) {
-					WebscriptRequestWrapper localServletResponse = ((LocalHttpServletResponse) servletResponse)
-							.getRequestWrapper();
-					webScriptServletRequest = localServletResponse.getWebScriptServletRequest();
-				}
+			if (!(request instanceof ServletServerHttpRequest)) {
+				throw new RuntimeException("the request must be an instance of org.springframework.http.server.ServletServerHttpRequest");
 			}
+			
+			HttpServletRequest r = ((ServletServerHttpRequest)request).getServletRequest();
+			
+			if (!(r instanceof WebscriptRequestWrapper)) {
+				throw new RuntimeException("the request must be an instance of com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.WebscriptRequestWrapper. It seems the request is not coming from Alfresco @MVC");
+			}
+			
+			WebScriptServletRequest a = ((WebscriptRequestWrapper)r).getWebScriptServletRequest();
 
 			return webscriptHelper.processAdditionsToTheResponse(null, null, null,
-					getDefaultParameters(webScriptServletRequest), body);
+					getDefaultParameters(a), body);
 		}
 
 		return body;

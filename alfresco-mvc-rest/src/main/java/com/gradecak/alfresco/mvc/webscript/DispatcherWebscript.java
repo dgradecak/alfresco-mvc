@@ -17,8 +17,6 @@
 package com.gradecak.alfresco.mvc.webscript;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -44,7 +42,6 @@ import org.springframework.extensions.webscripts.WrappingWebScriptResponse;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletRequest;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletResponse;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -87,36 +84,11 @@ public class DispatcherWebscript extends AbstractWebScript
 		res.setHeader("Cache-Control", "no-cache");
 
 		WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
-		LocalHttpServletResponse mockHttpServletResponse = new LocalHttpServletResponse(wrapper);
 		try {
-			s.service(wrapper, mockHttpServletResponse);
+			s.service(wrapper, sr);
 
-			writeResponseToWebscript(wsr, mockHttpServletResponse);
 		} catch (Throwable e) {
 			throw new IOException(e);
-		}
-	}
-
-	private void writeResponseToWebscript(WebScriptServletResponse wsr,
-			LocalHttpServletResponse mockHttpServletResponse) throws UnsupportedEncodingException, IOException {
-		String contentAsString = mockHttpServletResponse.getContentAsString();
-
-		Collection<String> headerNames = mockHttpServletResponse.getHeaderNames();
-		for (String header : headerNames) {
-			wsr.setHeader(header, mockHttpServletResponse.getHeader(header));
-		}
-
-		wsr.setStatus(mockHttpServletResponse.getStatus());
-		String contentType = mockHttpServletResponse.getContentType();
-		if (StringUtils.hasText(contentType)) {
-			wsr.setContentType(contentType);
-		}
-
-		if (StringUtils.hasText(mockHttpServletResponse.getErrorMessage())) {
-			wsr.getHttpServletResponse().sendError(mockHttpServletResponse.getStatus(),
-					mockHttpServletResponse.getErrorMessage());
-		} else if (StringUtils.hasText(contentAsString)) {
-			wsr.getWriter().write(contentAsString);
 		}
 	}
 
