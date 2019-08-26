@@ -37,6 +37,10 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.util.Assert;
 
+/**
+ *
+ * @deprecated Alfresco 5.2+ include a REST API and we recommend using classes from the package <code>org.alfresco.rest.api</code>
+ */
 public class BeanPropertiesMapper<T> implements NodePropertiesMapper<T> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BeanPropertiesMapper.class);

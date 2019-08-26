@@ -23,6 +23,10 @@ import java.util.Set;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 
+/**
+*
+* @deprecated Alfresco 5.2+ include a REST API and we recommend using classes from the package <code>org.alfresco.rest.api</code>
+*/
 public interface NodePropertiesMapper<T> {
 
 	T mapNodeProperties(NodeRef nodeRef, Map<QName, Serializable> properties);
