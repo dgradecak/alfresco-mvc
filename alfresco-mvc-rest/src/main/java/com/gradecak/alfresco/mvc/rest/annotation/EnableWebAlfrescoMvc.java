@@ -29,7 +29,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextConfig;
 
 /**
- * use this lass in order to import
+ * use this class in order to import
  * <code>DefaultAlfrescoMvcServletContextConfig</code> and to add @EnableWebMvc.
  * You can omit this annotation and directly use @EnableWebMvc
  * 
@@ -42,5 +42,5 @@ import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextCon
 @Inherited
 @EnableWebMvc
 @Import(DefaultAlfrescoMvcServletContextConfig.class)
-public @interface EnableAlfrescoMvcWeb {
+public @interface EnableWebAlfrescoMvc {
 }

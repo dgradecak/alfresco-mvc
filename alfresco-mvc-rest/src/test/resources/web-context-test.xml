@@ -11,10 +11,15 @@
 
   <bean id="flashMapManager" class="org.springframework.web.servlet.support.SessionFlashMapManager">
   </bean>
-
+  
   <bean id="ServiceRegistry" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="org.alfresco.service.ServiceRegistry" />
   </bean>
+  
+  
+  <bean id="webscriptHelper" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="org.alfresco.rest.framework.webscripts.ResourceWebScriptHelper" />
+  </bean>  
 
   <bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript">
     <property name="contextConfigLocation" value="classpath:test-webscriptdispatcher-context.xml" />

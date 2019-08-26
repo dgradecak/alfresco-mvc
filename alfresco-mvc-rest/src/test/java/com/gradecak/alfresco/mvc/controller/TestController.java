@@ -16,13 +16,18 @@
 
 package com.gradecak.alfresco.mvc.controller;
 
+import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.gradecak.alfresco.mvc.rest.ResponseMapBuilder;
+import com.gradecak.alfresco.mvc.rest.annotation.AlfrescoRestResponse;
 
 @Controller
 @RequestMapping("/test")
@@ -74,5 +80,22 @@ public class TestController {
 	@RequestMapping(value = "/delete", method = { RequestMethod.DELETE, RequestMethod.PUT })
 	public ResponseEntity<?> delete() {
 		return new ResponseEntity<>(ResponseMapBuilder.createSuccessResponseMap().build(), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/download", method = { RequestMethod.GET })
+	public ResponseEntity<?> download() throws IOException {
+		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mvc.delete.desc.xml\"")
+				.body(new ClassPathResource("alfresco/extension/templates/webscripts/alfresco-mvc/mvc.delete.desc.xml"));
+	}
+	
+	@GetMapping(value = "noderef")
+	public ResponseEntity<?> noderef() throws IOException {
+		return ResponseEntity.ok(new NodeRef("a://a/a"));
+	}
+	
+	@GetMapping(value = "noderefAlfrescoResponse")
+	@AlfrescoRestResponse
+	public ResponseEntity<?> noderefAlfrescoResponse() throws IOException {
+		return ResponseEntity.ok(new NodeRef("a://a/a"));
 	}
 }

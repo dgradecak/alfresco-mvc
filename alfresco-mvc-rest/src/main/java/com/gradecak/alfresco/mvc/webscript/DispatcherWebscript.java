@@ -120,37 +120,6 @@ public class DispatcherWebscript extends AbstractWebScript
 		}
 	}
 
-//  private void convertExceptionToJson(Throwable ex, WebScriptServletResponse wsr, final HttpServletResponse sr, LocalHttpServletResponse mockHttpServletResponse) throws IOException {
-//    ResponseMapBuilder builder = ResponseMapBuilder.createFailResponseMap().withEntry("event", "exception").withEntry("exception", ex.getClass().getCanonicalName()).withEntry("message",
-//        JavaScriptUtils.javaScriptEscape(ex.getMessage()));
-//    int status = mockHttpServletResponse.getStatus();
-//    if (HttpServletResponse.SC_OK == status) {
-//      status = HttpServletResponse.SC_BAD_REQUEST;
-//    }
-//
-//    // String errorMessage = ex.getLocalizedMessage();
-//    if (ex instanceof NestedServletException) {
-//      NestedServletException nestedServletException = (NestedServletException) ex;
-//      if (nestedServletException.getCause() != null) {
-//        builder.withEntry("cause", nestedServletException.getCause().getClass().getCanonicalName());
-//        builder.withEntry("causeMessage", nestedServletException.getCause().getMessage());
-//        if (nestedServletException.getCause() instanceof DataAccessException) {
-//          if (HttpServletResponse.SC_OK == mockHttpServletResponse.getStatus()) {
-//            status = HttpServletResponse.SC_NOT_ACCEPTABLE;
-//          }
-//        }
-//        mockHttpServletResponse.addHeader("error", nestedServletException.getCause().getClass().getCanonicalName());
-//      }
-//    } else {
-//      mockHttpServletResponse.addHeader("error", ex.getClass().getCanonicalName());
-//    }
-//    // mockHttpServletResponse.sendError(status, errorMessage);
-//    mockHttpServletResponse.setStatus(status);
-//    mockHttpServletResponse.setContentType("application/json");
-//    IOUtils.write(JsonUtils.mapToJsonString(builder.build()), mockHttpServletResponse.getOutputStream());
-//    writeResponseToWebscript(wsr, mockHttpServletResponse);
-//  }
-
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		ApplicationContext refreshContext = event.getApplicationContext();
 		if (refreshContext != null && refreshContext.equals(applicationContext)) {

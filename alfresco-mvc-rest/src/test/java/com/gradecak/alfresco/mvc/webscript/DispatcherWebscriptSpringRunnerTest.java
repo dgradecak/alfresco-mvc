@@ -17,9 +17,12 @@
 package com.gradecak.alfresco.mvc.webscript;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import javax.servlet.http.Cookie;
 
+import org.alfresco.rest.framework.webscripts.ResourceWebScriptHelper;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +30,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -34,6 +39,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.google.common.collect.ImmutableMap;
+import com.gradecak.alfresco.mvc.rest.AlfrescoApiResponseInterceptor;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscript;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 
@@ -44,7 +50,7 @@ public class DispatcherWebscriptSpringRunnerTest {
 	@Spy
 	@Autowired
 	private DispatcherWebscript webScript;
-
+	
 	private MockWebscript mockWebscript;
 
 	@BeforeEach
@@ -151,6 +157,28 @@ public class DispatcherWebscriptSpringRunnerTest {
 		MockHttpServletResponse res = mockWebscript.withPostRequest().withMethod(HttpMethod.HEAD)
 				.withControllerMapping("test/delete").execute();
 		Assertions.assertTrue(res.getStatus() == 405);
+	}
+	
+	@Test
+	public void get_fileDownloaded_status200() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/download").execute();
+		Assertions.assertTrue(res.getStatus() == 200);
+		
+		String contentAsString = res.getContentAsString();		
+		ClassPathResource resource = new ClassPathResource("alfresco/extension/templates/webscripts/alfresco-mvc/mvc.delete.desc.xml");
+		Assertions.assertEquals(IOUtils.toString(resource.getInputStream(), Charset.defaultCharset()), contentAsString); 
+	}
+	
+	@Test
+	public void get_noderefAlfrescoResponse_status200() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/noderefAlfrescoResponse").execute();
+		Assertions.assertTrue(res.getStatus() == 200);
+		
+		String contentAsString = res.getContentAsString();
+
+		// TODO: since a mock is being used for webscriptHelper and if the response i correctly processed by AlfrescoApiResponseInterceptor
+		// there will always be an empty string unless we do something more to handle this (so it is expected as is)
+		Assertions.assertEquals("", contentAsString); 
 	}
 
 	@Test
