@@ -31,6 +31,7 @@ import org.springframework.extensions.webscripts.Description;
 import org.springframework.extensions.webscripts.SearchPath;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.util.MimeType;
 
 public class MockWebscript {
 
@@ -40,6 +41,7 @@ public class MockWebscript {
 	private Map<String, String> body;
 	private String webscriptUrl;
 	private String controllerMapping;
+	private String contentType;
 	private Container container;
 	private Description description = mock(Description.class);
 	private Cookie[] cookies;
@@ -48,7 +50,7 @@ public class MockWebscript {
 	public MockWebscript(final AbstractWebScript webScript) throws IOException {
 		this.webScript = webScript;
 		container = getMockedContainer();
-		
+
 		initialize();
 	}
 
@@ -56,12 +58,13 @@ public class MockWebscript {
 		initialize();
 		return this;
 	}
-	
+
 	private void initialize() {
 		method = HttpMethod.GET;
 		parameters = null;
 		body = null;
 		webscriptUrl = "/service/mvc/";
+		contentType = "application/json";
 		controllerMapping = null;
 		cookies = null;
 		headers = null;
@@ -75,8 +78,21 @@ public class MockWebscript {
 		return withMethod(HttpMethod.POST);
 	}
 
+	public MockWebscript withDeleteRequest() {
+		return withMethod(HttpMethod.DELETE);
+	}
+
 	public MockWebscript withMethod(final HttpMethod method) {
 		this.method = method;
+		return this;
+	}
+
+	public MockWebscript withContentType(final MimeType type) {
+		return withContentType(type.toString());
+	}
+
+	public MockWebscript withContentType(final String type) {
+		this.contentType = type;
 		return this;
 	}
 
@@ -122,17 +138,18 @@ public class MockWebscript {
 
 	public MockHttpServletResponse execute() throws IOException {
 		return doRequest(webScript, container, description, method.name(), parameters, body, webscriptUrl,
-				controllerMapping, cookies, headers);
+				controllerMapping, cookies, headers, contentType);
 	}
 
 	private MockHttpServletResponse doRequest(AbstractWebScript webScript, Container container, Description description,
 			String method, Map<String, String> parameters, Map<String, String> body, String webscriptUrl,
-			String controllerMapping, Cookie[] cookies, Map<String, Object> headers) throws IOException {
+			String controllerMapping, Cookie[] cookies, Map<String, Object> headers, String contentType)
+			throws IOException {
 		webScript.init(container, description);
 
 		MockWebScriptResponse mockedResponse = MockWebScriptResponse.createMockWebScriptResponse();
 		webScript.execute(MockWebscriptServletRequest.createMockWebscriptServletRequest(webScript, method, webscriptUrl,
-				controllerMapping, parameters, body, cookies, headers), mockedResponse);
+				controllerMapping, parameters, body, cookies, headers, contentType), mockedResponse);
 
 		return mockedResponse.getMockHttpServletResponse();
 	}

@@ -32,7 +32,8 @@ import org.springframework.util.StringUtils;
  * supports only lucene/solr and fts_alfresco languages. Other languages have
  * not been tested, might be that it works for some of them.
  * 
- * @deprecated Alfresco 5.2+ include a REST API and we recommend using classes from the package <code>org.alfresco.rest.api</code>
+ * @deprecated Alfresco 5.2+ include a REST API and we recommend using classes
+ *             from the package <code>org.alfresco.rest.api</code>
  */
 public class QueryBuilder {
 

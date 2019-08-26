@@ -16,33 +16,35 @@
 
 package com.gradecak.alfresco.mvc.webscript;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = { "/test-webscriptdispatcher-annotation-context.xml" })
+@ContextConfiguration(locations = { "/web-context-test.xml" })
 @TestInstance(Lifecycle.PER_CLASS)
-public class DispatcherWebscriptSpringAnnotationTest extends AbstractAlfrescoMvcTest {
+public class DispatcherWebscriptSpringXmlTest extends AbstractAlfrescoMvcTest {
 
+	@Spy
 	@Autowired
 	private DispatcherWebscript webScript;
 
 	@BeforeAll
 	public void beforeAll() throws Exception {
 		MockitoAnnotations.initMocks(this);
+
+		webScript.setServletContext(new MockServletContext());
+		webScript.setContextConfigLocation("test-webscriptdispatcher-context.xml");
 
 		mockWebscript = MockWebscriptBuilder.singleWebscript(webScript);
 	}
@@ -52,17 +54,4 @@ public class DispatcherWebscriptSpringAnnotationTest extends AbstractAlfrescoMvc
 		mockWebscript.newRequest();
 	}
 
-	@Test
-	public void when_alfrescoMvcSerializationIsUsed_expect_okAndNodrefFullySerialized() throws Exception {
-		// the config is correct uses
-		// org.alfresco.rest.framework.jacksonextensions.RestJsonModule so we have to
-		// change the response
-		// format expectation due to different serializers
-
-		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/noderef").execute();
-		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
-
-		String contentAsString = res.getContentAsString();
-		Assertions.assertEquals("\"a\"", contentAsString);
-	}
 }

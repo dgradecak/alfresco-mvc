@@ -61,19 +61,20 @@ public class AlfrescoApiResponseInterceptor implements ResponseBodyAdvice<Object
 
 		if (useAlfrescoResponse) {
 			if (!(request instanceof ServletServerHttpRequest)) {
-				throw new RuntimeException("the request must be an instance of org.springframework.http.server.ServletServerHttpRequest");
+				throw new RuntimeException(
+						"the request must be an instance of org.springframework.http.server.ServletServerHttpRequest");
 			}
-			
-			HttpServletRequest r = ((ServletServerHttpRequest)request).getServletRequest();
-			
-			if (!(r instanceof WebscriptRequestWrapper)) {
-				throw new RuntimeException("the request must be an instance of com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.WebscriptRequestWrapper. It seems the request is not coming from Alfresco @MVC");
-			}
-			
-			WebScriptServletRequest a = ((WebscriptRequestWrapper)r).getWebScriptServletRequest();
 
-			return webscriptHelper.processAdditionsToTheResponse(null, null, null,
-					getDefaultParameters(a), body);
+			HttpServletRequest r = ((ServletServerHttpRequest) request).getServletRequest();
+
+			if (!(r instanceof WebscriptRequestWrapper)) {
+				throw new RuntimeException(
+						"the request must be an instance of com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.WebscriptRequestWrapper. It seems the request is not coming from Alfresco @MVC");
+			}
+
+			WebScriptServletRequest a = ((WebscriptRequestWrapper) r).getWebScriptServletRequest();
+
+			return webscriptHelper.processAdditionsToTheResponse(null, null, null, getDefaultParameters(a), body);
 		}
 
 		return body;

@@ -32,9 +32,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
-*
-* @deprecated Alfresco 5.2+ include a REST API and we recommend using classes from the package <code>org.alfresco.rest.api</code>
-*/
+ *
+ * @deprecated Alfresco 5.2+ include a REST API and we recommend using classes
+ *             from the package <code>org.alfresco.rest.api</code>
+ */
 public class NodePropertiesMapperUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NodePropertiesMapperUtil.class);

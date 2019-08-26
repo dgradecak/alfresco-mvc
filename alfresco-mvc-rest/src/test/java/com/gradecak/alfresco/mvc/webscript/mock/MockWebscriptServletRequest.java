@@ -45,14 +45,14 @@ public class MockWebscriptServletRequest extends WebScriptServletRequest {
 
 	static public MockWebscriptServletRequest createMockWebscriptServletRequest(AbstractWebScript webScript,
 			String method, String webscriptUrl, String controllerMapping, final Map<String, String> parameters,
-			final Map<String, String> body, final Cookie[] cookies, final Map<String, Object> headers)
-			throws IOException {
+			final Map<String, String> body, final Cookie[] cookies, final Map<String, Object> headers,
+			final String contentType) throws IOException {
 		Match match = new Match(null, ImmutableMap.of("", ""), webscriptUrl, webScript);
 		MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest(method,
 				"http://localhost/alfresco" + webscriptUrl + controllerMapping);
 		mockHttpServletRequest.setServletPath("alfresco");
 		mockHttpServletRequest.setContextPath("http://localhost/");
-		mockHttpServletRequest.setContentType("application/json");
+		mockHttpServletRequest.setContentType(contentType);
 		if (parameters != null) {
 			mockHttpServletRequest.setParameters(parameters);
 		}

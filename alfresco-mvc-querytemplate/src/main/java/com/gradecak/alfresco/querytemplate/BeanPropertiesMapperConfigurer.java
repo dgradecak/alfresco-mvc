@@ -19,9 +19,10 @@ package com.gradecak.alfresco.querytemplate;
 import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
-*
-* @deprecated Alfresco 5.2+ include a REST API and we recommend using classes from the package <code>org.alfresco.rest.api</code>
-*/
+ *
+ * @deprecated Alfresco 5.2+ include a REST API and we recommend using classes
+ *             from the package <code>org.alfresco.rest.api</code>
+ */
 public interface BeanPropertiesMapperConfigurer<T> {
 
 	void configure(NodeRef nodeRef, T mappedObject);
