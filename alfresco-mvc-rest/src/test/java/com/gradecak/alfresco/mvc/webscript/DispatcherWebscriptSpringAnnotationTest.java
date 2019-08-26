@@ -28,42 +28,35 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.google.common.collect.ImmutableMap;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscript;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(locations = { "/web-annotationcontext-test.xml" })
 @TestInstance(Lifecycle.PER_CLASS)
-public class DispatcherWebscriptMockitoRunnerTest {
+public class DispatcherWebscriptSpringAnnotationTest {
 
-	private @Spy DispatcherWebscript webScript;
-
+	@Autowired
+	private DispatcherWebscript webScript;
+	
 	private MockWebscript mockWebscript;
 
 	@BeforeAll
 	public void beforeAll() throws Exception {
 		MockitoAnnotations.initMocks(this);
 
-		webScript.setServletContext(new MockServletContext());
-		webScript.setContextConfigLocation("test-webscriptdispatcher-context.xml");
-
-		ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext();
-		applicationContext.setConfigLocation("web-context-test.xml");
-		applicationContext.refresh();
-		webScript.setApplicationContext(applicationContext);
-		webScript.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
-
 		mockWebscript = MockWebscriptBuilder.singleWebscript(webScript);
 	}
-	
 	
 	@BeforeEach
 	public void before() throws Exception {
@@ -94,8 +87,12 @@ public class DispatcherWebscriptMockitoRunnerTest {
 				.withControllerMapping("test/getCookies").execute();
 		Assertions.assertTrue(res.getStatus() == 200);
 		Assertions.assertEquals(
-				"{\"data\":[{\"name\":\"cookie-key\",\"value\":\"cookie-value\",\"comment\":null,\"domain\":null,\"maxAge\":-1,\"path\":null,\"secure\":false,\"version\":0,\"httpOnly\":false}],\"total\":1,\"success\":true}",
+				"{\"data\":[{\"name\":\"cookie-key\",\"value\":\"cookie-value\",\"maxAge\":-1,\"secure\":false,\"version\":0,\"httpOnly\":false}],\"total\":1,\"success\":true}",
 				res.getContentAsString());
+		
+//		BEFORE: nulls were serialized Assertions.assertEquals(
+//				"{\"data\":[{\"name\":\"cookie-key\",\"value\":\"cookie-value\",\"comment\":null,\"domain\":null,\"maxAge\":-1,\"path\":null,\"secure\":false,\"version\":0,\"httpOnly\":false}],\"total\":1,\"success\":true}",
+//				res.getContentAsString());
 	}
 
 	@Test
@@ -165,7 +162,7 @@ public class DispatcherWebscriptMockitoRunnerTest {
 				.withControllerMapping("test/delete").execute();
 		Assertions.assertTrue(res.getStatus() == 405);
 	}
-
+	
 	@Test
 	public void get_fileDownloaded_status200() throws Exception {
 		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/download").execute();
@@ -174,15 +171,6 @@ public class DispatcherWebscriptMockitoRunnerTest {
 		String contentAsString = res.getContentAsString();		
 		ClassPathResource resource = new ClassPathResource("alfresco/extension/templates/webscripts/alfresco-mvc/mvc.delete.desc.xml");
 		Assertions.assertEquals(IOUtils.toString(resource.getInputStream(), Charset.defaultCharset()), contentAsString); 
-	}
-	
-	@Test
-	public void get_noderef_status200() throws Exception {
-		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/noderef").execute();
-		Assertions.assertTrue(res.getStatus() == 200);
-		
-		String contentAsString = res.getContentAsString();		
-		Assertions.assertEquals("{\"storeRef\":{\"protocol\":\"a\",\"identifier\":\"a\"},\"id\":\"a\"}", contentAsString); 
 	}
 	
 	@Test

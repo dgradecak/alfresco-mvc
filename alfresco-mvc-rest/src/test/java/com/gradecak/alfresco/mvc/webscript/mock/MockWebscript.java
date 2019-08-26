@@ -35,10 +35,10 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class MockWebscript {
 
 	private AbstractWebScript webScript;
-	private HttpMethod method = HttpMethod.GET;
+	private HttpMethod method;
 	private Map<String, String> parameters;
 	private Map<String, String> body;
-	private String webscriptUrl = "/service/mvc/";
+	private String webscriptUrl;
 	private String controllerMapping;
 	private Container container;
 	private Description description = mock(Description.class);
@@ -48,6 +48,23 @@ public class MockWebscript {
 	public MockWebscript(final AbstractWebScript webScript) throws IOException {
 		this.webScript = webScript;
 		container = getMockedContainer();
+		
+		initialize();
+	}
+
+	public MockWebscript newRequest() {
+		initialize();
+		return this;
+	}
+	
+	private void initialize() {
+		method = HttpMethod.GET;
+		parameters = null;
+		body = null;
+		webscriptUrl = "/service/mvc/";
+		controllerMapping = null;
+		cookies = null;
+		headers = null;
 	}
 
 	public MockWebscript withGetRequest() {
@@ -92,11 +109,6 @@ public class MockWebscript {
 		this.description = description;
 		return this;
 	}
-
-	// public MockWebscript withContent(final String content) {
-	// this.content = content;
-	// return this;
-	// }
 
 	public MockWebscript withCookies(Cookie... cookies) {
 		this.cookies = cookies;

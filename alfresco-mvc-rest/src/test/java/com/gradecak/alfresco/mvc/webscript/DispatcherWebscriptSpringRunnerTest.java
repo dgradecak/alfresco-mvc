@@ -21,16 +21,17 @@ import java.nio.charset.Charset;
 
 import javax.servlet.http.Cookie;
 
-import org.alfresco.rest.framework.webscripts.ResourceWebScriptHelper;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -39,12 +40,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.google.common.collect.ImmutableMap;
-import com.gradecak.alfresco.mvc.rest.AlfrescoApiResponseInterceptor;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscript;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = { "/web-context-test.xml" })
+@TestInstance(Lifecycle.PER_CLASS)
 public class DispatcherWebscriptSpringRunnerTest {
 
 	@Spy
@@ -53,14 +54,19 @@ public class DispatcherWebscriptSpringRunnerTest {
 	
 	private MockWebscript mockWebscript;
 
-	@BeforeEach
-	public void before() throws Exception {
+	@BeforeAll
+	public void beforeAll() throws Exception {
 		MockitoAnnotations.initMocks(this);
 
 		webScript.setServletContext(new MockServletContext());
 		webScript.setContextConfigLocation("test-webscriptdispatcher-context.xml");
 
 		mockWebscript = MockWebscriptBuilder.singleWebscript(webScript);
+	}
+	
+	@BeforeEach
+	public void before() throws Exception {
+		mockWebscript.newRequest();
 	}
 
 	@Test

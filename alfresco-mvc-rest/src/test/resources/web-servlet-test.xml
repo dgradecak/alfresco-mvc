@@ -9,14 +9,22 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
-
-  <import resource="web-servlet-test.xml"/>
-
-  <bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript">
-    <property name="contextConfigLocation" value="classpath:test-webscriptdispatcher-context.xml" />
+  <bean id="flashMapManager" class="org.springframework.web.servlet.support.SessionFlashMapManager">
   </bean>
-  <alias name="webscript.alfresco-mvc.mvc.post" alias="webscript.alfresco-mvc.mvc.get" />
-  <alias name="webscript.alfresco-mvc.mvc.post" alias="webscript.alfresco-mvc.mvc.delete" />
+  
+  <bean id="ServiceRegistry" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="org.alfresco.service.ServiceRegistry" />
+  </bean>
+  
+  
+  <bean id="webscriptHelper" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="org.alfresco.rest.framework.webscripts.ResourceWebScriptHelper" />
+  </bean>  
 
+  <bean class="org.springframework.mock.web.MockServletContext" id="mockServletContext" />
+
+  <bean class="org.springframework.web.context.support.ServletContextAwareProcessor">
+    <constructor-arg ref="mockServletContext" />
+  </bean>
 
 </beans>
