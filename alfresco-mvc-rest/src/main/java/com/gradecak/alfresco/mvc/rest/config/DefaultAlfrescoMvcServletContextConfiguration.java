@@ -26,8 +26,12 @@ import com.gradecak.alfresco.mvc.rest.AlfrescoApiResponseInterceptor;
 @Configuration
 public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConfigurer {
 
+	private final RestJsonModule alfrescoRestJsonModule;
+
 	@Autowired
-	private RestJsonModule alfrescoRestJsonModule;
+	public DefaultAlfrescoMvcServletContextConfiguration(RestJsonModule alfrescoRestJsonModule) {
+		this.alfrescoRestJsonModule = alfrescoRestJsonModule;
+	}
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {

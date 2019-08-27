@@ -63,6 +63,33 @@ public class DispatcherWebscriptSpringAnnotationEnableTest extends AbstractAlfre
 		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
 
 		String contentAsString = res.getContentAsString();
-		Assertions.assertEquals("\"a\"", contentAsString);
+		Assertions.assertEquals("\"b\"", contentAsString);
+	}
+
+	@Test
+	public void when_alfrescoMvcReceivesRegularExpressionInUrlEncoded_expect_ok() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/regexp/abc%24def").execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("abc$def", contentAsString);
+	}
+
+	@Test
+	public void when_alfrescoMvcReceivesRegularExpressionInUrlDecoded_expect_ok() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/regexp/abc$def").execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("abc$def", contentAsString);
+	}
+
+	@Test
+	public void when_alfrescoMvcReceivesRegularExpressionInUrlDecoded2_expect_ok() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/regexp/abc.de.fe").execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("abc.de.fe", contentAsString);
 	}
 }

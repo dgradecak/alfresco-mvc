@@ -26,11 +26,13 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.gradecak.alfresco.mvc.rest.config.AlfrescoRestRegistrar;
+import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.ServletConfigOptions;
 
 @Repeatable(EnableAlfrescoMvcRest.class)
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
@@ -41,4 +43,10 @@ public @interface AlfrescoDispatcherWebscript {
 	HttpMethod[] httpMethods() default { HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PUT };
 
 	Class<?> servletContext();
+
+	Class<? extends WebApplicationContext> servletContextClass() default org.springframework.web.context.support.AnnotationConfigWebApplicationContext.class;
+
+	boolean inheritGlobalProperties() default false;
+
+	ServletConfigOptions[] servletConfigOptions() default {};
 }

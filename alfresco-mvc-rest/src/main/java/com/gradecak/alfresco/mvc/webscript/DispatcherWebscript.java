@@ -17,9 +17,12 @@
 package com.gradecak.alfresco.mvc.webscript;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,10 +34,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.env.AbstractEnvironment;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
@@ -42,6 +55,7 @@ import org.springframework.extensions.webscripts.WrappingWebScriptResponse;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletRequest;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletResponse;
 import org.springframework.util.Assert;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -50,6 +64,7 @@ public class DispatcherWebscript extends AbstractWebScript
 		implements ApplicationListener<ContextRefreshedEvent>, ServletContextAware, ApplicationContextAware {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
+	private static final int EXTENSION_PATH_REGEXP_GROUP_INDEX = 3;
 
 	protected DispatcherServlet s;
 	private String contextConfigLocation;
@@ -57,16 +72,23 @@ public class DispatcherWebscript extends AbstractWebScript
 	private ApplicationContext applicationContext;
 	private ServletContext servletContext;
 
+	private final EnumSet<ServletConfigOptions> servletConfigOptions = EnumSet.noneOf(ServletConfigOptions.class);
 	private final String servletName;
+	private final boolean inheritGlobalProperties;
 
 	public DispatcherWebscript() {
-		this.servletName = "Alfresco @MVC Dispatcher Webscript";
+		this("alfresco-mvc.mvc", false);
 	}
 
 	public DispatcherWebscript(final String servletName) {
+		this(servletName, false);
+	}
+
+	public DispatcherWebscript(final String servletName, boolean inheritGlobalProperties) {
 		Assert.hasText(servletName,
 				"[Assertion failed] - this String servletName must have text; it must not be null, empty, or blank");
-		this.servletName = "Alfresco @MVC Dispatcher Webscript: " + servletName;
+		this.servletName = servletName;
+		this.inheritGlobalProperties = inheritGlobalProperties;
 	}
 
 	public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -106,10 +128,42 @@ public class DispatcherWebscript extends AbstractWebScript
 					if (wac == null) {
 						wac = super.initWebApplicationContext();
 					}
+
 					return wac;
 				}
 
+				@Override
+				protected void postProcessWebApplicationContext(ConfigurableWebApplicationContext wac) {
+					wac.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
+
+						@Override
+						public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+								throws BeansException {
+
+							if (!beanFactory.containsBean("dispatcherServlet")) {
+								AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
+										.genericBeanDefinition(DispatcherServlet.class).getBeanDefinition();
+								beanDefinition
+										.setInstanceSupplier(() -> DispatcherWebscript.this.getDispatcherServlet());
+								beanDefinition.setPrimary(true);
+								((BeanDefinitionRegistry) beanFactory).registerBeanDefinition("dispatcherServlet",
+										beanDefinition);
+							}
+						}
+					});
+				}
 			};
+
+			if (!servletConfigOptions.isEmpty()) {
+				s.setDetectAllHandlerMappings(
+						!servletConfigOptions.contains(ServletConfigOptions.DISABLED_PARENT_HANDLER_MAPPINGS));
+				s.setDetectAllHandlerAdapters(
+						!servletConfigOptions.contains(ServletConfigOptions.DISABLED_PARENT_HANDLER_ADAPTERS));
+				s.setDetectAllViewResolvers(
+						!servletConfigOptions.contains(ServletConfigOptions.DISABLED_PARENT_VIEW_RESOLVERS));
+				s.setDetectAllHandlerExceptionResolvers(!servletConfigOptions
+						.contains(ServletConfigOptions.DISABLED_PARENT_HANDLER_EXCEPTION_RESOLVERS));
+			}
 
 			if (contextClass != null) {
 				s.setContextClass(contextClass);
@@ -119,6 +173,7 @@ public class DispatcherWebscript extends AbstractWebScript
 
 			try {
 				s.init(new DelegatingServletConfig(servletName));
+				LOGGER.info("Alfresco @MVC Dispatcher Webscript: {} has been started", servletName);
 			} catch (ServletException e) {
 				throw new RuntimeException(e);
 			}
@@ -126,6 +181,24 @@ public class DispatcherWebscript extends AbstractWebScript
 	}
 
 	protected void configureDispatcherServlet(DispatcherServlet dispatcherServlet) {
+		if (inheritGlobalProperties) {
+			final Properties globalProperties = (Properties) this.applicationContext.getBean("global-properties");
+
+			ConfigurableEnvironment servletEnv = dispatcherServlet.getEnvironment();
+			servletEnv.merge(new AbstractEnvironment() {
+				@Override
+				public MutablePropertySources getPropertySources() {
+					MutablePropertySources mutablePropertySources = new MutablePropertySources();
+					mutablePropertySources
+							.addFirst(new PropertiesPropertySource("alfresco-global.properties", globalProperties));
+					return mutablePropertySources;
+				}
+			});
+		}
+	}
+
+	public DispatcherServlet getDispatcherServlet() {
+		return s;
 	}
 
 	public String getContextConfigLocation() {
@@ -158,6 +231,16 @@ public class DispatcherWebscript extends AbstractWebScript
 
 	public Class<?> getContextClass() {
 		return this.contextClass;
+	}
+
+	public void addServletConfigOptions(ServletConfigOptions[] detectServletConfig) {
+		if (detectServletConfig != null) {
+			this.servletConfigOptions.addAll(Arrays.asList(detectServletConfig));
+		}
+	}
+
+	public ServletConfigOptions[] getServletConfigOptions() {
+		return servletConfigOptions.toArray(new ServletConfigOptions[0]);
 	}
 
 	/**
@@ -203,14 +286,21 @@ public class DispatcherWebscript extends AbstractWebScript
 		@Override
 		public String getRequestURI() {
 			String uri = super.getRequestURI();
-			Pattern pattern = Pattern
-					.compile("(^" + origReq.getServiceContextPath() + "/)(.*)(/" + origReq.getExtensionPath() + ")");
+			if (uri.contains("$")) {
+				uri = uri.replaceAll("\\$", "%24");
+			}
+
+			String origUri = origReq.getExtensionPath();
+			if (origUri.contains("$")) {
+				origUri = origUri.replaceAll("\\$", "%24");
+			}
+
+			Pattern pattern = Pattern.compile("(^" + origReq.getServiceContextPath() + "/)(.*)(/" + origUri + ")");
 			Matcher matcher = pattern.matcher(uri);
 
-			final int extensionPathRegexpGroupIndex = 3;
 			if (matcher.find()) {
 				try {
-					return matcher.group(extensionPathRegexpGroupIndex);
+					return matcher.group(EXTENSION_PATH_REGEXP_GROUP_INDEX);
 				} catch (Exception e) {
 					// let an empty string be returned
 					LOGGER.warn("no such group (3) in regexp while URI evaluation", e);
@@ -231,6 +321,11 @@ public class DispatcherWebscript extends AbstractWebScript
 		public WebScriptServletRequest getWebScriptServletRequest() {
 			return origReq;
 		}
+	}
+
+	public static enum ServletConfigOptions {
+		DISABLED_PARENT_HANDLER_MAPPINGS, DISABLED_PARENT_HANDLER_ADAPTERS, DISABLED_PARENT_VIEW_RESOLVERS,
+		DISABLED_PARENT_HANDLER_EXCEPTION_RESOLVERS
 	}
 
 }

@@ -10,24 +10,9 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
 
+	<import resource="test-restjsonmodule.xml"/>
 	<import resource="web-servlet-test.xml"/>
 
 	<bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.config.AlfrescoMvcRestModuleConfigurationEnable" />
 
-	<bean id="restJsonModule" class="org.alfresco.rest.framework.jacksonextensions.RestJsonModule">
-        <property name="jsonSerializers">
-            <list>
-                <bean class="org.alfresco.rest.framework.jacksonextensions.SerializerOfExecutionResult" />
-                <bean class="org.alfresco.rest.framework.jacksonextensions.SerializerOfCollectionWithPaging" />
-                <bean class="org.alfresco.rest.framework.jacksonextensions.NodeRefSerializer" />
-            </list>
-        </property>
-        <property name="jsonDeserializers">
-            <map>
-                <entry key="org.alfresco.service.cmr.repository.NodeRef"><bean class="org.alfresco.rest.framework.jacksonextensions.NodeRefDeserializer" /></entry>
-                <entry key="java.lang.String"><bean class="org.alfresco.rest.framework.jacksonextensions.RestApiStringDeserializer" /></entry>
-                <entry key="org.alfresco.rest.api.model.Target"><bean class="org.alfresco.rest.framework.jacksonextensions.TargetDeserializer" /></entry>
-            </map>
-        </property>
-	</bean>
 </beans>

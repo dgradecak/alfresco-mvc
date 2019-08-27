@@ -26,5 +26,14 @@
   <bean class="org.springframework.web.context.support.ServletContextAwareProcessor">
     <constructor-arg ref="mockServletContext" />
   </bean>
+  
+
+  <bean id="global-properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    <property name="properties">
+      <props>
+        <prop key="myKey">myValue</prop>
+      </props>
+    </property>
+  </bean>
 
 </beans>

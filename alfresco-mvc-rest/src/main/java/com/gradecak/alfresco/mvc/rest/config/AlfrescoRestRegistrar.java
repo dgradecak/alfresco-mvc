@@ -16,24 +16,23 @@
 
 package com.gradecak.alfresco.mvc.rest.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.gradecak.alfresco.mvc.rest.annotation.AlfrescoDispatcherWebscript;
 import com.gradecak.alfresco.mvc.rest.annotation.EnableAlfrescoMvcRest;
 import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript;
+import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.ServletConfigOptions;
 
 public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
 
@@ -72,25 +71,31 @@ public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
 
 	private void processDispatcherWebscript(AnnotationAttributes webscriptAttributes, BeanDefinitionRegistry registry) {
 		String webscript = webscriptAttributes.getString("name");
-		Assert.notNull(webscript, "Webscript name cannot be empty!");
+		Assert.hasText(webscript, "Webscript name cannot be empty!");
 
 		Class<?> servletContext = webscriptAttributes.getClass("servletContext");
+
+		ServletConfigOptions[] servletConfigOptions = (ServletConfigOptions[]) webscriptAttributes
+				.get("servletConfigOptions");
+		Class<? extends WebApplicationContext> servletContextClass = webscriptAttributes
+				.getClass("servletContextClass");
 		HttpMethod[] httpMethods = (HttpMethod[]) webscriptAttributes.get("httpMethods");
+		boolean inheritGlobalProperties = (Boolean) webscriptAttributes.get("inheritGlobalProperties");
 
-		RootBeanDefinition beanDefinition = new RootBeanDefinition(DispatcherWebscript.class);
-		beanDefinition.setSource(null);
-		beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(webscript);
-		beanDefinition.getPropertyValues().add("contextClass",
-				org.springframework.web.context.support.AnnotationConfigWebApplicationContext.class);
-		beanDefinition.getPropertyValues().add("contextConfigLocation", servletContext.getName());
-		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+		beanDefinition.setBeanClass(DispatcherWebscript.class);
 
-		List<HttpMethod> methodsIteable = new ArrayList<>(Arrays.asList(httpMethods));
-		String beanName = getWebscriptName(webscript, methodsIteable.remove(0));
-		registry.registerBeanDefinition(beanName, beanDefinition);
+		DispatcherWebscript ws = new DispatcherWebscript(webscript, inheritGlobalProperties);
+		ws.setContextClass(servletContextClass);
+		ws.setContextConfigLocation(servletContext.getName());
+		ws.addServletConfigOptions(servletConfigOptions);
+		beanDefinition.setInstanceSupplier(() -> ws);
+		beanDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
+
+		registry.registerBeanDefinition(webscript, beanDefinition);
 
 		for (HttpMethod httpMethod : httpMethods) {
-			registry.registerAlias(beanName, getWebscriptName(webscript, httpMethod));
+			registry.registerAlias(webscript, getWebscriptName(webscript, httpMethod));
 		}
 	}
 

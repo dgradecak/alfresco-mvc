@@ -31,6 +31,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -123,6 +124,11 @@ public class TestController {
 	@RequestMapping(value = "/exceptionHandler", method = { RequestMethod.GET })
 	public ResponseEntity<?> exceptionHandler() {
 		throw new IllegalArgumentException("test exception");
+	}
+
+	@GetMapping(value = "regexp/{regexpchars:.+}")
+	public ResponseEntity<?> regexpchars(@PathVariable String regexpchars) throws IOException {
+		return ResponseEntity.ok(regexpchars);
 	}
 
 	@ExceptionHandler({ IllegalArgumentException.class })

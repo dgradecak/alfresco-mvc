@@ -151,9 +151,12 @@ public abstract class AbstractAlfrescoMvcTest {
 		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/noderef").execute();
 		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
 
+		// the response has been changed in the advice
 		String contentAsString = res.getContentAsString();
-		Assertions.assertEquals("{\"storeRef\":{\"protocol\":\"a\",\"identifier\":\"a\"},\"id\":\"a\"}",
+		Assertions.assertEquals("{\"storeRef\":{\"protocol\":\"a\",\"identifier\":\"a\"},\"id\":\"b\"}",
 				contentAsString);
+
+		Assertions.assertEquals("true", res.getHeader("TEST_ADVICE_APPLIED"));
 	}
 
 	@Test
@@ -161,6 +164,7 @@ public abstract class AbstractAlfrescoMvcTest {
 		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/noderefAlfrescoResponse").execute();
 		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
 
+		// the response has been changed in the advice
 		String contentAsString = res.getContentAsString();
 
 		// TODO: since a mock is being used for webscriptHelper and if the response i
@@ -168,6 +172,7 @@ public abstract class AbstractAlfrescoMvcTest {
 		// there will always be an empty string unless we do something more to handle
 		// this (so it is expected as is)
 		Assertions.assertEquals("", contentAsString);
+		Assertions.assertEquals("true", res.getHeader("TEST_ADVICE_APPLIED"));
 	}
 
 	@Test
@@ -185,4 +190,5 @@ public abstract class AbstractAlfrescoMvcTest {
 	}
 
 	// TODO add file upload test
+
 }

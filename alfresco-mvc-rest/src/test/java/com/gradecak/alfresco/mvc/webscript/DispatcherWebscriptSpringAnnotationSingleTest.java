@@ -63,6 +63,6 @@ public class DispatcherWebscriptSpringAnnotationSingleTest extends AbstractAlfre
 		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
 
 		String contentAsString = res.getContentAsString();
-		Assertions.assertEquals("\"a\"", contentAsString);
+		Assertions.assertEquals("\"b\"", contentAsString);
 	}
 }

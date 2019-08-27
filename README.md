@@ -18,6 +18,13 @@ You would benefit of
 
 Supported Alfresco versions
 ----
+v7.5.0-snapshot
+-
+- Possibility to disable parent context servlet behavior @AlfrescoDispatcherWebscript(... servletConfigOptions = {ServletConfigOptions.DISABLED_PARENT_HANDLER_MAPPINGS, ...})
+- DispatcherWebscript servlet context can inherit all parent context properties (alfresco global included), or by annotation @AlfrescoDispatcherWebscript(inheritGlobalProperties = true, ...)  
+- Tested on Alfresco Community 6.2.0-GA
+- Tested on Alfresco Enterprise  6.2
+
 v7
 -
 - the querytemplate module has been deprecated and will be removed in the next major release (Alfresco 5.2+ include a REST API and we recommend using classes from the package org.alfresco.rest.api)
@@ -26,13 +33,14 @@ v7
   Therefore if you want to continue using any of the serializers/deserializers or converters/formatters you need to manually include them in your WebMvcConfigurer implementation   
 - use @EnableWebAlfrescoMvc which enables @EnableWebMvc and reuses com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextConfig otherwise just use @EnableWebMvc and customize your servlet context as needed
 - ResponseMapBuilder has been deprecated use a Map instead
-- Tested on Alfresco Community 6.0.7-GA, 6.1.x, 6.2.0-A2
-- Tested on Alfresco Enterprise 6.0.1, 6.1
+- Tested on Alfresco Community 6.0.7-GA, 6.1.x, 6.2.0-GA
+- Tested on Alfresco Enterprise 6.0.1, 6.1, 6.2
 
 v6
 -
 - Tested on Alfresco Community 6.0.7-GA, 6.1.x, 6.2.0-A2
-- Tested on Alfresco Enterprise 6.0.1, 6.1
+- Tested on Alfresco Enterprise 6.0.1, 6.1, 6.2
+- there is an known issue with AGS/RM that can be easily avoided by not using the default servlet context configuration
 
 v5
 -
