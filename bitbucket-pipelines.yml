@@ -1,13 +1,22 @@
-image: maven:3.3.9
+image: maven:3-jdk-11
 
 pipelines:
   custom:
-    deploy:
+    build:
       - step:
           caches:
             - maven
-          script: # Modify the commands below to build your repository.
+          script: 
+            - mvn -B clean install 
+    deploy: 
+      - step:
+          caches:
+            - maven
+          script: 
             - (echo $RELEASE_GPG_ENC | base64 --decode > ~/private-key.gpg.enc)
-            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in ~/private-key.gpg.enc -out private-key.gpg -d
-            - gpg --import private-key.gpg
-            - mvn -V -B -s settings.xml deploy -DaltDeploymentRepository=ossrh::default::https://oss.sonatype.org/service/local/staging/deploy/maven2
+            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in ~/private-key.gpg.enc -md md5 -out ./private-key.gpg -d
+            - export GPG_TTY=$(tty)
+            - gpg --version
+            - gpg --batch --import ./private-key.gpg
+            - mvn -V -B -s settings.xml deploy -DskipTests -DaltDeploymentRepository=ossrh::default::https://oss.sonatype.org/service/local/staging/deploy/maven2
+    
