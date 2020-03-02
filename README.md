@@ -18,7 +18,7 @@ You would benefit of
 
 Supported Alfresco versions
 ----
-v7.5.0-snapshot
+v7.5.0-RELEASE
 -
 - Possibility to disable parent context servlet behavior @AlfrescoDispatcherWebscript(... servletConfigOptions = {ServletConfigOptions.DISABLED_PARENT_HANDLER_MAPPINGS, ...})
 - DispatcherWebscript servlet context can inherit all parent context properties (alfresco global included), or by annotation @AlfrescoDispatcherWebscript(inheritGlobalProperties = true, ...)  
