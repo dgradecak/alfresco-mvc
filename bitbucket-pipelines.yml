@@ -14,7 +14,7 @@ pipelines:
             - maven
           script: 
             - (echo $RELEASE_GPG_ENC | base64 --decode > ~/private-key.gpg.enc)
-            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in ~/private-key.gpg.enc -md md5 -out ./private-key.gpg -d -pbkdf2
+            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in ~/private-key.gpg.enc -md md5 -out ./private-key.gpg -d -salt -pbkdf2
             - export GPG_TTY=$(tty)
             - gpg --version
             - gpg --batch --import ./private-key.gpg
