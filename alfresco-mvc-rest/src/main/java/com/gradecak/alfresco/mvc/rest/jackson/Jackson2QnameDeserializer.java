@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -31,7 +30,6 @@ public class Jackson2QnameDeserializer extends JsonDeserializer<QName> implement
 
 	private ServiceRegistry serviceRegistry;
 
-	@Autowired
 	public Jackson2QnameDeserializer(ServiceRegistry serviceRegistry) {
 		this.serviceRegistry = serviceRegistry;
 	}

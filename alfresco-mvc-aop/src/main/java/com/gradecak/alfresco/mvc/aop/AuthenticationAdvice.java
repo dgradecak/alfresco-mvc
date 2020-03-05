@@ -26,7 +26,6 @@ import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -38,7 +37,6 @@ public class AuthenticationAdvice implements MethodInterceptor {
 
 	private final ServiceRegistry serviceRegistry;
 
-	@Autowired
 	public AuthenticationAdvice(final ServiceRegistry serviceRegistry) {
 		this.serviceRegistry = serviceRegistry;
 	}

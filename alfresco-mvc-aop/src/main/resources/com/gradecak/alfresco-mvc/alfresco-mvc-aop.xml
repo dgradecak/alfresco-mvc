@@ -20,7 +20,9 @@
     <constructor-arg value="com.gradecak.alfresco.mvc.annotation.AlfrescoAuthentication" />
   </bean>
 
-  <bean id="mvc.aop.authenticationAdvice" class="com.gradecak.alfresco.mvc.aop.AuthenticationAdvice" />
+  <bean id="mvc.aop.authenticationAdvice" class="com.gradecak.alfresco.mvc.aop.AuthenticationAdvice">
+    <constructor-arg><ref bean="ServiceRegistry"/></constructor-arg>
+  </bean>
 
   <!-- RunAs -->
   <bean id="mvc.aop.alfrescoRunAsAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
@@ -47,5 +49,7 @@
     <constructor-arg value="com.gradecak.alfresco.mvc.annotation.AlfrescoTransaction" />
   </bean>
 
-  <bean id="mvc.aop.transactionAdvice" class="com.gradecak.alfresco.mvc.aop.TransactionalAdvice" />
+  <bean id="mvc.aop.transactionAdvice" class="com.gradecak.alfresco.mvc.aop.TransactionalAdvice">
+    <constructor-arg><ref bean="ServiceRegistry"/></constructor-arg>
+  </bean>
 </beans>

@@ -24,7 +24,6 @@ import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransacti
 import org.alfresco.service.ServiceRegistry;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.util.ClassUtils;
@@ -35,7 +34,6 @@ public class TransactionalAdvice implements MethodInterceptor {
 
 	private final ServiceRegistry serviceRegistry;
 
-	@Autowired
 	public TransactionalAdvice(final ServiceRegistry serviceRegistry) {
 		this.serviceRegistry = serviceRegistry;
 	}
