@@ -43,6 +43,7 @@
 
 	<modules>
 		<module>alfresco-mvc-rest</module>
+		<module>alfresco-mvc-boot</module>
 		<module>alfresco-mvc-aop</module>
 		<module>alfresco-mvc-querytemplate</module>
 	</modules>

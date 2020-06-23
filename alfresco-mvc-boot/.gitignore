@@ -1,0 +1,14 @@
+.bpmn2d
+.settings
+target
+bin
+.project
+.classpath
+.metadata
+Servers
+deployment
+local
+.idea
+*iml
+*.log
+*.log.*
