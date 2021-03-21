@@ -2,7 +2,7 @@ The missing glue between Alfresco and Spring MVC
 ===
 Personally I do not like webscripts because of the boilerplate code that comes with them (XML, FTL, Java/Javascript). Also I am not a big fan of javascript on the server side esither, as in a medium sized application this becomes unmaintainable. That is why I wrote Alfresco @MVC.
 
-Alfresco @MVC consists of several libraries for REST, AOP (and the deprecated QueryTemplate).
+Alfresco @MVC consists of several libraries for REST, AOP
 - Alfresco MVC REST enables the usage of the full Spring MVC stack within the context of a webscript, benefiting of Alfresco standard authentication and security
 - Alfresco MVC AOP enables simple handling of Alfresco transactions and Alfresco runAs mechanism with simple annotations
 
@@ -12,17 +12,19 @@ Alfresco @MVC consists of several libraries for REST, AOP (and the deprecated Qu
 <dependency>
   <groupId>com.gradecak.alfresco</groupId>
   <artifactId>alfresco-mvc-rest</artifactId>
-  <version>7.5.1-RELEASE</version>
+  <version>xxx</version>
 </dependency>
 
 <dependency>
   <groupId>com.gradecak.alfresco</groupId>
   <artifactId>alfresco-mvc-aop</artifactId>
-  <version>7.5.1-RELEASE</version>
+  <version>xxx</version>
 </dependency>
 ```
 
-Works on Enterprise as well as on Community and it ruses a widely accepted REST framework
+Works on Enterprise as well as on Community and it ruses a widely accepted REST framework. 
+For the correct version supported on your Alfresco version [please check the wiki](https://github.com/dgradecak/alfresco-mvc/wiki) or 
+[the release page](https://github.com/dgradecak/alfresco-mvc/releases).
 
 [The docs are on the wiki page](https://github.com/dgradecak/alfresco-mvc/wiki)
 
