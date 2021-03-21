@@ -30,6 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscript;
@@ -56,8 +57,16 @@ public class CustomServletConfigTest {
 		mockWebscript.newRequest();
 	}
 
+	/**
+	 * @deprecated as of Spring 5.2.4. See class-level note in
+	 * {@link RequestMappingHandlerMapping} on the deprecation of path extension
+	 * config options. As there is no replacement for this method, in Spring 5.2.x it is
+	 * necessary to set it to {@code false}. In Spring 5.3 the default changes to
+	 * {@code false} and use of this property becomes unnecessary.
+	 */
+	@Deprecated
 	@Test
-	public void when_alfrescoMvcDispatcherServletConfigOptionsWithSuffix_expect_suffixNotHandledAndOk() throws Exception {
+	public void when_alfrescoMvcDispatcherServletConfigOptionsWithSuffix_expect_ok() throws Exception {
 		DispatcherServlet dispatcherServlet = dispatcherWebscript.getDispatcherServlet().getWebApplicationContext()
 				.getBean(DispatcherServlet.class);
 		Assertions.assertNotNull(dispatcherServlet);
@@ -66,9 +75,7 @@ public class CustomServletConfigTest {
 		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
 
 		String contentAsString = res.getContentAsString();
-		Assertions.assertEquals("withsufix", contentAsString);
-
-		System.out.println();
+		Assertions.assertEquals("withsufix.test", contentAsString);
 	}
 
 	@Test
@@ -82,7 +89,5 @@ public class CustomServletConfigTest {
 
 		String contentAsString = res.getContentAsString();
 		Assertions.assertEquals("withoutsufix", contentAsString);
-
-		System.out.println();
 	}
 }

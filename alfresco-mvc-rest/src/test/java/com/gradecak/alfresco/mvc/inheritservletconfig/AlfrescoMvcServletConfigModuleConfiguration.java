@@ -31,6 +31,6 @@ public class AlfrescoMvcServletConfigModuleConfiguration implements WebMvcConfig
 
 	@Override
 	public void configurePathMatch(PathMatchConfigurer configurer) {
-		configurer.setUseSuffixPatternMatch(false);
+		configurer.setUseSuffixPatternMatch(true);
 	}
 }
