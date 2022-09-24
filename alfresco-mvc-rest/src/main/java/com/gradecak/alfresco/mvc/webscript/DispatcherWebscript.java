@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,20 +34,21 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.extensions.webscripts.AbstractWebScript;
+import org.springframework.extensions.webscripts.Container;
 import org.springframework.extensions.webscripts.Description;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
@@ -91,7 +91,7 @@ public class DispatcherWebscript extends AbstractWebScript
 		this.servletName = servletName;
 		this.inheritGlobalProperties = inheritGlobalProperties;
 	}
-
+	
 	public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
 		final WebScriptServletRequest origReq = (WebScriptServletRequest) req;
@@ -119,7 +119,7 @@ public class DispatcherWebscript extends AbstractWebScript
 		ApplicationContext refreshContext = event.getApplicationContext();
 		if (refreshContext != null && refreshContext.equals(applicationContext)) {
 
-			s = new DispatcherWebscriptServlet(applicationContext, this);
+			s = new DispatcherWebscriptServlet((WebApplicationContext) applicationContext, this, servletName);
 
 			if (!servletConfigOptions.isEmpty()) {
 				s.setDetectAllHandlerMappings(
@@ -132,9 +132,7 @@ public class DispatcherWebscript extends AbstractWebScript
 						.contains(ServletConfigOptions.DISABLED_PARENT_HANDLER_EXCEPTION_RESOLVERS));
 			}
 
-			if (contextClass != null) {
-				s.setContextClass(contextClass);
-			}
+			s.setContextClass(contextClass != null ? contextClass : AnnotationConfigApplicationContext.class);
 			s.setContextConfigLocation(contextConfigLocation);
 			configureDispatcherServlet(s);
 
@@ -167,7 +165,7 @@ public class DispatcherWebscript extends AbstractWebScript
 	public DispatcherServlet getDispatcherServlet() {
 		return s;
 	}
-	
+
 	public String getContextConfigLocation() {
 		return contextConfigLocation;
 	}
@@ -237,7 +235,7 @@ public class DispatcherWebscript extends AbstractWebScript
 		}
 
 		public Enumeration<String> getInitParameterNames() {
-			return Collections.enumeration(new HashSet<String>());
+			return Collections.enumeration(Collections.emptySet());
 		}
 	}
 
@@ -294,14 +292,17 @@ public class DispatcherWebscript extends AbstractWebScript
 		DISABLED_PARENT_HANDLER_MAPPINGS, DISABLED_PARENT_HANDLER_ADAPTERS, DISABLED_PARENT_VIEW_RESOLVERS,
 		DISABLED_PARENT_HANDLER_EXCEPTION_RESOLVERS
 	}
-	
+
 	public static class DispatcherWebscriptServlet extends DispatcherServlet {
 		private static final long serialVersionUID = -7492692694742840997L;
-		
-		private final ApplicationContext applicationContext;
+
+		private final WebApplicationContext applicationContext;
 		private final DispatcherWebscript dispatcherWebscript;
-		
-		public DispatcherWebscriptServlet(ApplicationContext applicationContext, DispatcherWebscript dispatcherWebscript) {
+
+		public DispatcherWebscriptServlet(WebApplicationContext applicationContext,
+				DispatcherWebscript dispatcherWebscript, String servletName) {
+			super(applicationContext);
+			setContextId(servletName);
 			this.applicationContext = applicationContext;
 			this.dispatcherWebscript = dispatcherWebscript;
 		}
@@ -312,7 +313,6 @@ public class DispatcherWebscript extends AbstractWebScript
 			if (wac == null) {
 				wac = super.initWebApplicationContext();
 			}
-
 			return wac;
 		}
 
@@ -321,23 +321,30 @@ public class DispatcherWebscript extends AbstractWebScript
 			wac.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
 
 				@Override
-				public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-						throws BeansException {
+				public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
-					if (!beanFactory.containsBean("dispatcherServlet")) {
-						AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
-								.genericBeanDefinition(DispatcherWebscriptServlet.class).getBeanDefinition();
-						
-						beanDefinition
-								.setInstanceSupplier(() ->DispatcherWebscriptServlet.this);
-						beanDefinition.setPrimary(true);
-						((BeanDefinitionRegistry) beanFactory).registerBeanDefinition("dispatcherServlet",
-								beanDefinition);
+					if (beanFactory.containsBean("dispatcherServlet")) {
+						BeanDefinition beanDefinition = (BeanDefinition) beanFactory
+								.getBeanDefinition("dispatcherServlet");
+						if (!(beanDefinition instanceof GenericBeanDefinition)) {
+							throw new RuntimeException(
+									"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
+						}
+						Class<?> beanClass = ((GenericBeanDefinition) beanDefinition).getBeanClass();
+						if (!(beanClass.isAssignableFrom(DispatcherWebscriptServlet.class))) {
+							throw new RuntimeException(
+									"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
+						}
+						((GenericBeanDefinition) beanDefinition)
+								.setInstanceSupplier(() -> DispatcherWebscriptServlet.this);
+					} else {
+						throw new RuntimeException(
+								"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
 					}
 				}
 			});
 		}
-		
+
 		public DispatcherWebscript getDispatcherWebscript() {
 			return this.dispatcherWebscript;
 		}

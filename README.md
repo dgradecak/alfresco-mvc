@@ -10,19 +10,19 @@ Alfresco @MVC consists of several libraries for REST, AOP
 
 ```
 <dependency>
-  <groupId>com.gradecak.alfresco</groupId>
+  <groupId>com.gradecak.alfresco-mvc</groupId>
   <artifactId>alfresco-mvc-rest</artifactId>
   <version>xxx</version>
 </dependency>
 
 <dependency>
-  <groupId>com.gradecak.alfresco</groupId>
+  <groupId>com.gradecak.alfresco-mvc</groupId>
   <artifactId>alfresco-mvc-aop</artifactId>
   <version>xxx</version>
 </dependency>
 ```
 
-Works on Enterprise as well as on Community and it ruses a widely accepted REST framework. 
+Works on Enterprise as well as on Community and it reuses a widely accepted REST framework. 
 For the correct version supported on your Alfresco version [please check the wiki](https://github.com/dgradecak/alfresco-mvc/wiki) or 
 [the release page](https://github.com/dgradecak/alfresco-mvc/releases).
 

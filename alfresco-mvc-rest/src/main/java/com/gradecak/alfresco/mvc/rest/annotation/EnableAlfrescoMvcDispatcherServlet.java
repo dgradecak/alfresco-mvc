@@ -24,24 +24,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextConfiguration;
+import com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar;
 
 /**
  * use this class in order to import
- * <code>DefaultAlfrescoMvcServletContextConfig</code> and to
- * add @EnableAlfrescoMvcDispatcherServlet. You can omit this annotation and
- * directly use @EnableAlfrescoMvcDispatcherServlet with your custom servlet
- * context configuration within the @Import
+ * to add @EnableWebMvc.
+ * You can omit this annotation and directly use @EnableWebMvc but in that case
+ * make sure to @Import {@link AlfrescoRestServletRegistrar}
  * 
- * The default configuration reuse the Alfresco jackson configuration
- * <code>org.alfresco.rest.framework.jacksonextensions.RestJsonModule</code>
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@EnableAlfrescoMvcDispatcherServlet
-@Import({ DefaultAlfrescoMvcServletContextConfiguration.class })
-public @interface EnableWebAlfrescoMvc {
+@EnableWebMvc
+@Import(AlfrescoRestServletRegistrar.class)
+public @interface EnableAlfrescoMvcDispatcherServlet {
 }

@@ -42,14 +42,13 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.build.sourceVersion>11</maven.build.sourceVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<dependency.alfresco.version>7.0.0</dependency.alfresco.version>
-		<dependency.spring.version>5.3.3</dependency.spring.version>
+		<dependency.spring.version>5.3.9</dependency.spring.version>
 		<dependency.javax.servlet-api.version>4.0.1</dependency.javax.servlet-api.version>
+		<dependency.acs-community-packaging.version>7.1.0.1</dependency.acs-community-packaging.version>
 	</properties>
 
 	<modules>
 		<module>alfresco-mvc-rest</module>
-		<module>alfresco-mvc-boot</module>
 		<module>alfresco-mvc-aop</module>
 	</modules>
 
@@ -57,16 +56,10 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.alfresco</groupId>
-				<artifactId>alfresco-content-services-community-distribution</artifactId>
-				<version>${dependency.alfresco.version}</version>
+				<artifactId>acs-community-packaging</artifactId>
+				<version>${dependency.acs-community-packaging.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>junit</groupId>
-						<artifactId>junit</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 
 			<dependency>
@@ -112,13 +105,6 @@
 			<dependency>
 				<groupId>com.gradecak.alfresco-mvc</groupId>
 				<artifactId>alfresco-mvc-aop</artifactId>
-				<version>${project.version}</version>
-				<scope>compile</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>com.gradecak.alfresco-mvc</groupId>
-				<artifactId>alfresco-mvc-querytemplate</artifactId>
 				<version>${project.version}</version>
 				<scope>compile</scope>
 			</dependency>

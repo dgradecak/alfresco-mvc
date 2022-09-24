@@ -23,21 +23,23 @@ import java.util.TimeZone;
 
 import org.alfresco.rest.framework.jacksonextensions.RestJsonModule;
 import org.alfresco.rest.framework.webscripts.ResourceWebScriptHelper;
+import org.alfresco.service.ServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.gradecak.alfresco.mvc.rest.AlfrescoApiResponseInterceptor;
+import com.gradecak.alfresco.mvc.rest.jackson.Jackson2NodeRefDeserializer;
+import com.gradecak.alfresco.mvc.rest.jackson.Jackson2NodeRefSerializer;
+import com.gradecak.alfresco.mvc.rest.jackson.Jackson2QnameDeserializer;
+import com.gradecak.alfresco.mvc.rest.jackson.Jackson2QnameSerializer;
 
 @Configuration
 public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConfigurer {
@@ -71,28 +73,46 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 	private void configureMultipartResolver(final CommonsMultipartResolver resolver) {
 	}
 
-	@Override
-	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+	@Bean
+	@Primary
+	public ObjectMapper objectMapper(ServiceRegistry serviceRegistry) {
+		DateFormat DATE_FORMAT_ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		DATE_FORMAT_ISO8601.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-		converters.stream().filter(c -> c instanceof MappingJackson2HttpMessageConverter).forEach(c -> {
-			Jackson2ObjectMapperBuilder objectMapperBuilder = Jackson2ObjectMapperBuilder.json();
+		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().failOnEmptyBeans(false)
+				.failOnUnknownProperties(false).dateFormat(DATE_FORMAT_ISO8601).modulesToInstall(alfrescoRestJsonModule)
+				.serializers(new Jackson2NodeRefSerializer(), new Jackson2QnameSerializer(null))
+				.deserializers(new Jackson2NodeRefDeserializer(), new Jackson2QnameDeserializer(serviceRegistry))
+				.findModulesViaServiceLoader(true).build();
 
-			ObjectMapper objectMapper = objectMapperBuilder.failOnEmptyBeans(false).failOnUnknownProperties(false)
-					.build();
-			objectMapper.registerModule(alfrescoRestJsonModule);
-			objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY);
-			objectMapper.configOverride(java.util.Map.class)
-					.setInclude(JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, null));
-			objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-			DateFormat DATE_FORMAT_ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-			DATE_FORMAT_ISO8601.setTimeZone(TimeZone.getTimeZone("UTC"));
-			objectMapper.setDateFormat(DATE_FORMAT_ISO8601);
-			objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-
-			((MappingJackson2HttpMessageConverter) c).setObjectMapper(objectMapper);
-		});
-
-		// this is from alfresco config in
-		// org.alfresco.rest.framework.jacksonextensions.JacksonHelper.afterPropertiesSet()
+		objectMapper.setDateFormat(DATE_FORMAT_ISO8601);
+		objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+		return objectMapper;
 	}
+
+//	@Override
+//	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+//
+
+//		converters.stream().filter(c -> c instanceof MappingJackson2HttpMessageConverter).forEach(c -> {
+//			Jackson2ObjectMapperBuilder objectMapperBuilder = Jackson2ObjectMapperBuilder.json();
+//
+//			ObjectMapper objectMapper = objectMapperBuilder.failOnEmptyBeans(false).failOnUnknownProperties(false)
+//					.build();
+//			objectMapper.registerModule(alfrescoRestJsonModule);
+//			// objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY);
+////			objectMapper.configOverride(java.util.Map.class)
+////					.setInclude(JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, null));
+//			objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+//			DateFormat DATE_FORMAT_ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+//			DATE_FORMAT_ISO8601.setTimeZone(TimeZone.getTimeZone("UTC"));
+//			objectMapper.setDateFormat(DATE_FORMAT_ISO8601);
+//			objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+//
+//			((MappingJackson2HttpMessageConverter) c).setObjectMapper(objectMapper);
+//		});
+//
+//		// this is from alfresco config in
+//		// org.alfresco.rest.framework.jacksonextensions.JacksonHelper.afterPropertiesSet()
+//	}
 }

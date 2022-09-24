@@ -33,6 +33,11 @@ public class Jackson2QnameDeserializer extends JsonDeserializer<QName> implement
 	public Jackson2QnameDeserializer(ServiceRegistry serviceRegistry) {
 		this.serviceRegistry = serviceRegistry;
 	}
+	
+	@Override
+	public Class<?> handledType() {
+		return QName.class;
+	}
 
 	@Override
 	public QName deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {

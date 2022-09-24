@@ -31,6 +31,11 @@ public class Jackson2NodeRefDeserializer extends JsonDeserializer<NodeRef> imple
 
 	public Jackson2NodeRefDeserializer() {
 	}
+	
+	@Override
+	public Class<?> handledType() {
+		return NodeRef.class;
+	}
 
 	@Override
 	public NodeRef deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {

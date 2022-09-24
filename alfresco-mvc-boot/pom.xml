@@ -15,11 +15,12 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<dependency.spring.boot.version>2.4.2</dependency.spring.boot.version>
-		<dependency.org.springdoc.version>1.5.4</dependency.org.springdoc.version>
 	</properties>
 
 	<dependencies>
+		<!-- dependency> <groupId>com.gradecak.alfresco-mvc</groupId> <artifactId>alfresco-mvc-rest</artifactId> 
+			<version>8.0.0-SNAPSHOT</version> <scope>compile</scope> </dependency -->
+
 		<dependency>
 			<groupId>com.gradecak.alfresco-mvc</groupId>
 			<artifactId>alfresco-mvc-rest</artifactId>
@@ -59,7 +60,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot</artifactId>
-			<version>${dependency.spring.boot.version}</version>
+			<version>2.1.6.RELEASE</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
@@ -75,7 +76,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-autoconfigure</artifactId>
-			<version>${dependency.spring.boot.version}</version>
+			<version>2.1.6.RELEASE</version>
 		</dependency>
 
 		<dependency>
@@ -87,7 +88,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-webmvc-core</artifactId>
-			<version>${dependency.org.springdoc.version}</version>
+			<version>1.4.1</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -108,7 +109,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>${dependency.org.springdoc.version}</version>
+			<version>1.4.1</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
