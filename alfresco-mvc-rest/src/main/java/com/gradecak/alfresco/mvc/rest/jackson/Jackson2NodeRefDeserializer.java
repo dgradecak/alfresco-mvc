@@ -29,9 +29,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 public class Jackson2NodeRefDeserializer extends JsonDeserializer<NodeRef> implements Converter<String, NodeRef> {
 
-	public Jackson2NodeRefDeserializer() {
-	}
-	
 	@Override
 	public Class<?> handledType() {
 		return NodeRef.class;

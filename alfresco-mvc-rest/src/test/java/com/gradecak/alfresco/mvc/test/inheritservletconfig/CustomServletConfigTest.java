@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.inheritservletconfig;
+package com.gradecak.alfresco.mvc.test.inheritservletconfig;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,6 +29,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -37,10 +38,11 @@ import com.gradecak.alfresco.mvc.webscript.mock.MockWebscript;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 
 @ExtendWith(SpringExtension.class)
-@ContextHierarchy({ @ContextConfiguration(locations = "/test-restjsonmodule.xml"),
-		@ContextConfiguration(classes = AlfrescoMvcServletConfigModuleConfiguration.class) })
+@ContextHierarchy({ @ContextConfiguration(locations = { "/mock-alfresco-context.xml", "/test-restjsonmodule.xml" }),
+		@ContextConfiguration(classes = AlfrescoMvcCustomServletConfigModuleConfiguration.class) })
+@WebAppConfiguration
 @TestInstance(Lifecycle.PER_CLASS)
-public class InheritedServletConfigTest {
+public class CustomServletConfigTest {
 
 	@Autowired
 	private DispatcherWebscript dispatcherWebscript;
@@ -59,14 +61,15 @@ public class InheritedServletConfigTest {
 
 	/**
 	 * @deprecated as of Spring 5.2.4. See class-level note in
-	 * {@link RequestMappingHandlerMapping} on the deprecation of path extension
-	 * config options. As there is no replacement for this method, in Spring 5.2.x it is
-	 * necessary to set it to {@code false}. In Spring 5.3 the default changes to
-	 * {@code false} and use of this property becomes unnecessary.
+	 *             {@link RequestMappingHandlerMapping} on the deprecation of path
+	 *             extension config options. As there is no replacement for this
+	 *             method, in Spring 5.2.x it is necessary to set it to
+	 *             {@code false}. In Spring 5.3 the default changes to {@code false}
+	 *             and use of this property becomes unnecessary.
 	 */
 	@Deprecated
 	@Test
-	public void when_alfrescoMvcDispatcherServletConfigOptionsWithSuffix_expect_suffixHandledAndOk() throws Exception {
+	public void when_alfrescoMvcDispatcherServletConfigOptionsWithSuffix_expect_ok() throws Exception {
 		DispatcherServlet dispatcherServlet = dispatcherWebscript.getDispatcherServlet().getWebApplicationContext()
 				.getBean(DispatcherServlet.class);
 		Assertions.assertNotNull(dispatcherServlet);
@@ -75,7 +78,7 @@ public class InheritedServletConfigTest {
 		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
 
 		String contentAsString = res.getContentAsString();
-		Assertions.assertEquals("withsufix", contentAsString);
+		Assertions.assertEquals("withsufix.test", contentAsString);
 	}
 
 	@Test

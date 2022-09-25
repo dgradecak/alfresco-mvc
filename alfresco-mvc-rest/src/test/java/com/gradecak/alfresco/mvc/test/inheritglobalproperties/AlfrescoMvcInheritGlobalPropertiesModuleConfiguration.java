@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.inheritglobalproperties;
+package com.gradecak.alfresco.mvc.test.inheritglobalproperties;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -23,7 +23,6 @@ import com.gradecak.alfresco.mvc.rest.annotation.AlfrescoDispatcherWebscript;
 import com.gradecak.alfresco.mvc.rest.annotation.EnableAlfrescoMvcRest;
 
 @Configuration
-@ImportResource("web-servlet-test.xml")
 @EnableAlfrescoMvcRest(@AlfrescoDispatcherWebscript(servletContext = AlfrescoMvcServletContext.class, inheritGlobalProperties = true))
 public class AlfrescoMvcInheritGlobalPropertiesModuleConfiguration {
 

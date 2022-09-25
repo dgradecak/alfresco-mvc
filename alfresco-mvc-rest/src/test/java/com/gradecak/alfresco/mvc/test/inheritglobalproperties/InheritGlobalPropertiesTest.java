@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.inheritglobalproperties;
+package com.gradecak.alfresco.mvc.test.inheritglobalproperties;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,16 +29,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript;
 
 @ExtendWith(SpringExtension.class)
-@ContextHierarchy({ @ContextConfiguration(locations = "/test-restjsonmodule.xml"),
-		@ContextConfiguration(classes = AlfrescoMvcNotInheritGlobalPropertiesModuleConfiguration.class) })
+@ContextHierarchy({ @ContextConfiguration(locations = { "/mock-alfresco-context.xml", "/test-restjsonmodule.xml" }),
+		@ContextConfiguration(classes = AlfrescoMvcInheritGlobalPropertiesModuleConfiguration.class) })
 @TestPropertySource(properties = "test.exists=true")
+@WebAppConfiguration
 @TestInstance(Lifecycle.PER_CLASS)
-public class NotInheritGlobalPropertiesTest {
+public class InheritGlobalPropertiesTest {
 
 	@Autowired
 	private Environment env;
@@ -59,19 +61,16 @@ public class NotInheritGlobalPropertiesTest {
 		Assertions.assertNull(env.getProperty("myKey"));
 
 		Environment servletEnvironment = dispatcherWebscript.getDispatcherServlet().getEnvironment();
-		Assertions.assertNull(servletEnvironment.getProperty("myKey"));
-
+		Assertions.assertEquals("myValue", servletEnvironment.getProperty("myKey"));
+		
 		Assertions.assertEquals("true", servletEnvironment.getProperty("test.exists"));
 	}
 
 	@Test
 	public void when_alfrescoMvcInheritGlobalProperties_expect_propertyNotExists() throws Exception {
-		Assertions.assertNull(env.getProperty("myKey"));
-
 		Environment servletEnvironment = dispatcherWebscript.getDispatcherServlet().getEnvironment();
-		Assertions.assertNull(servletEnvironment.getProperty("myKey"));
 		Assertions.assertNull(servletEnvironment.getProperty("myKey1"));
-
+		
 		Assertions.assertEquals("true", servletEnvironment.getProperty("test.exists"));
 	}
 

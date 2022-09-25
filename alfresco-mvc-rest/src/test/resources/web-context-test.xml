@@ -9,14 +9,13 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
-
-  <import resource="web-servlet-test.xml"/>
-
-  <bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript">
-    <property name="contextConfigLocation" value="classpath:test-webscriptdispatcher-context.xml" />
-  </bean>
-  <alias name="webscript.alfresco-mvc.mvc.post" alias="webscript.alfresco-mvc.mvc.get" />
-  <alias name="webscript.alfresco-mvc.mvc.post" alias="webscript.alfresco-mvc.mvc.delete" />
-
+	<context:annotation-config />
+	<import resource="mock-alfresco-context.xml"/>
+		
+	<bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.webscript.DispatcherWebscript">
+		<property name="contextConfigLocation" value="classpath:test-webscriptdispatcher-context.xml" />
+	</bean>
+	<alias name="webscript.alfresco-mvc.mvc.post" alias="webscript.alfresco-mvc.mvc.get" />
+	<alias name="webscript.alfresco-mvc.mvc.post" alias="webscript.alfresco-mvc.mvc.delete" />
 
 </beans>

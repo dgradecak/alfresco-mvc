@@ -39,7 +39,7 @@ import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.WebscriptRequestW
 /**
  * 
  * class used to process the response with alfresco rest API behavior only if
- * the anootaion {@link AlfrescoRestResponse} is used
+ * the annotation {@link AlfrescoRestResponse} is used
  */
 @ControllerAdvice
 public class AlfrescoApiResponseInterceptor implements ResponseBodyAdvice<Object> {
@@ -62,43 +62,41 @@ public class AlfrescoApiResponseInterceptor implements ResponseBodyAdvice<Object
 			Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 			ServerHttpResponse response) {
 
-		boolean useAlfrescoResponse = globalAlfrescoResponse;
-
-		if (!useAlfrescoResponse) {
-			AlfrescoRestResponse methodAnnotation = returnType.getMethodAnnotation(AlfrescoRestResponse.class);
-			if (methodAnnotation == null) {
-				methodAnnotation = returnType.getContainingClass().getAnnotation(AlfrescoRestResponse.class);
-			}
-
-			if (methodAnnotation != null) {
-				useAlfrescoResponse = true;
-			}
+		if (!(request instanceof ServletServerHttpRequest)) {
+			throw new RuntimeException(
+					"the request must be an instance of org.springframework.http.server.ServletServerHttpRequest");
 		}
 
-		if (useAlfrescoResponse) {
-			if (!(request instanceof ServletServerHttpRequest)) {
-				throw new RuntimeException(
-						"the request must be an instance of org.springframework.http.server.ServletServerHttpRequest");
-			}
+		HttpServletRequest r = ((ServletServerHttpRequest) request).getServletRequest();
 
-			HttpServletRequest r = ((ServletServerHttpRequest) request).getServletRequest();
-
-			if (!(r instanceof WebscriptRequestWrapper)) {
-				throw new RuntimeException(
-						"the request must be an instance of com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.WebscriptRequestWrapper. It seems the request is not coming from Alfresco @MVC");
-			}
-
-			WebScriptServletRequest a = ((WebscriptRequestWrapper) r).getWebScriptServletRequest();
-
-			return webscriptHelper.processAdditionsToTheResponse(null, null, null, getDefaultParameters(a), body);
+		if (!(r instanceof WebscriptRequestWrapper)) {
+			throw new RuntimeException(
+					"the request must be an instance of com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.WebscriptRequestWrapper. It seems the request is not coming from Alfresco @MVC");
 		}
 
-		return body;
+		WebScriptServletRequest a = ((WebscriptRequestWrapper) r).getWebScriptServletRequest();
+
+		return webscriptHelper.processAdditionsToTheResponse(null, null, null, getDefaultParameters(a), body);
 	}
 
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-		return converterType.isAssignableFrom(MappingJackson2HttpMessageConverter.class);
+		if (converterType.isAssignableFrom(MappingJackson2HttpMessageConverter.class)) {
+			boolean useAlfrescoResponse = globalAlfrescoResponse;
+
+			if (!useAlfrescoResponse) {
+				AlfrescoRestResponse methodAnnotation = returnType.getMethodAnnotation(AlfrescoRestResponse.class);
+				if (methodAnnotation == null) {
+					methodAnnotation = returnType.getContainingClass().getAnnotation(AlfrescoRestResponse.class);
+				}
+
+				if (methodAnnotation != null) {
+					useAlfrescoResponse = true;
+				}
+			}
+			return useAlfrescoResponse;
+		}
+		return false;
 	}
 
 	static public Params getDefaultParameters(WebScriptRequest wsr) {

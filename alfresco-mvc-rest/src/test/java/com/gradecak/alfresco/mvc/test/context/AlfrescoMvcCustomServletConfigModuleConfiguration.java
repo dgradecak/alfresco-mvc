@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.inheritservletconfig;
+package com.gradecak.alfresco.mvc.test.context;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.gradecak.alfresco.mvc.rest.annotation.EnableWebAlfrescoMvc;
+import com.gradecak.alfresco.mvc.rest.annotation.AlfrescoDispatcherWebscript;
+import com.gradecak.alfresco.mvc.rest.annotation.EnableAlfrescoMvcRest;
 
 @Configuration
-@EnableWebAlfrescoMvc
-public class AlfrescoMvcServletContext implements WebMvcConfigurer {
-
-	@Bean
-	SuffixController suffixController() {
-		return new SuffixController();
-	}
+@EnableAlfrescoMvcRest(@AlfrescoDispatcherWebscript(servletContext = AlfrescoMvcServletContext.class))
+public class AlfrescoMvcCustomServletConfigModuleConfiguration {
 
 }

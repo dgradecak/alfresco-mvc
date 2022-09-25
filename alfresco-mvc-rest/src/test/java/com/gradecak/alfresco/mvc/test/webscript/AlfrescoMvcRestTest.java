@@ -14,27 +14,97 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.webscript;
+package com.gradecak.alfresco.mvc.test.webscript;
+
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.anyString;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 
+import org.alfresco.service.namespace.NamespaceService;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.google.common.collect.ImmutableMap;
+import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextConfiguration;
+import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscript;
+import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 
-public abstract class AbstractAlfrescoMvcTest {
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(locations = { "/test-webscriptdispatcher-annotation-enable-context.xml" })
+@Import(DefaultAlfrescoMvcServletContextConfiguration.class)
+@WebAppConfiguration
+@TestInstance(Lifecycle.PER_CLASS)
+public class AlfrescoMvcRestTest {
+
+	@Autowired
+	private DispatcherWebscript webScript;
+	
+	@Autowired
+	private NamespaceService namespaceService;
 
 	MockWebscript mockWebscript;
+
+	@BeforeAll
+	public void beforeAll() throws Exception {
+		when(namespaceService.getPrefixes(anyString())).thenReturn(List.of("uri"));
+		when(namespaceService.getNamespaceURI(anyString())).thenReturn("uri");
+		mockWebscript = MockWebscriptBuilder.singleWebscript(webScript);
+	}
+
+	@BeforeEach
+	public void before() throws Exception {
+		mockWebscript.newRequest();
+	}
+
+	@Test
+	public void when_alfrescoMvcReceivesRegularExpressionInUrlEncoded_expect_ok() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/regexp/abc%24def").execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("abc$def", contentAsString);
+	}
+
+	@Test
+	public void when_alfrescoMvcReceivesRegularExpressionInUrlDecoded_expect_ok() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/regexp/abc$def").execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("abc$def", contentAsString);
+	}
+
+	@Test
+	public void when_alfrescoMvcReceivesRegularExpressionInUrlDecoded2_expect_ok() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/regexp/abc.de.fe").execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("abc.de.fe", contentAsString);
+	}
 
 	@Test
 	public void when_getWithRequiredParamId_expect_okWithIdInBody() throws Exception {
@@ -153,10 +223,59 @@ public abstract class AbstractAlfrescoMvcTest {
 
 		// the response has been changed in the advice
 		String contentAsString = res.getContentAsString();
-		Assertions.assertEquals("{\"storeRef\":{\"protocol\":\"a\",\"identifier\":\"a\"},\"id\":\"b\"}",
-				contentAsString);
+		Assertions.assertEquals("\"a\"", contentAsString);
+	}
 
-		Assertions.assertEquals("true", res.getHeader("TEST_ADVICE_APPLIED"));
+	@Test
+	public void when_alfrescoMvcParamSerializationIsUsed_expect_okAndNodrefFullySerialized() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/noderef")
+				.withParameters(Map.of("nodeRef", "abc")).execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		// the response has been changed in the advice
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("\"abc\"", contentAsString);
+	}
+
+	@Test
+	public void when_alfrescoMvcPathSerializationIsUsed_expect_okAndNodrefFullyDeserialized() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/noderef/abc").execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		// the response has been changed in the advice
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("\"abc\"", contentAsString);
+	}
+
+	@Test
+	public void when_alfrescoMvcSerializationIsUsed_expect_okAndQNameFullySerialized() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/qname").execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		// the response has been changed in the advice
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("\"{uri}created\"", contentAsString);
+	}
+
+	@Test
+	public void when_alfrescoMvcParamSerializationIsUsed_expect_okAndQNameFullySerialized() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/qname")
+				.withParameters(Map.of("qname", "cm:created")).execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		// the response has been changed in the advice
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("\"{uri}created\"", contentAsString);
+	}
+	
+	@Test
+	public void when_alfrescoMvcPathSerializationIsUsed_expect_okAndQNameFullySerialized() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/qname/cm:created").execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		// the response has been changed in the advice
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("\"{uri}created\"", contentAsString);
 	}
 
 	@Test
@@ -167,12 +286,11 @@ public abstract class AbstractAlfrescoMvcTest {
 		// the response has been changed in the advice
 		String contentAsString = res.getContentAsString();
 
-		// TODO: since a mock is being used for webscriptHelper and if the response i
+		// TODO: since a mock is being used for webscriptHelper and if the response is
 		// correctly processed by AlfrescoApiResponseInterceptor
 		// there will always be an empty string unless we do something more to handle
 		// this (so it is expected as is)
 		Assertions.assertEquals("", contentAsString);
-		Assertions.assertEquals("true", res.getHeader("TEST_ADVICE_APPLIED"));
 	}
 
 	@Test
@@ -190,5 +308,5 @@ public abstract class AbstractAlfrescoMvcTest {
 	}
 
 	// TODO add file upload test
-
+	// TODO add other HTTP methods
 }

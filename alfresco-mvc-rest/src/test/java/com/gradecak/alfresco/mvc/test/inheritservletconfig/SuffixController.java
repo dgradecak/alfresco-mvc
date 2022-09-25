@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.inheritservletconfig;
+package com.gradecak.alfresco.mvc.test.inheritservletconfig;
 
 import java.io.IOException;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gradecak.alfresco.mvc.inheritservletconfig;
+package com.gradecak.alfresco.mvc.test.inheritservletconfig;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -23,15 +23,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.gradecak.alfresco.mvc.rest.annotation.AlfrescoDispatcherWebscript;
 import com.gradecak.alfresco.mvc.rest.annotation.EnableAlfrescoMvcRest;
-import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.ServletConfigOptions;
 
 @Configuration
-@ImportResource("web-servlet-test.xml")
-@EnableAlfrescoMvcRest(@AlfrescoDispatcherWebscript(servletContext = AlfrescoMvcServletContext.class, servletConfigOptions = ServletConfigOptions.DISABLED_PARENT_HANDLER_MAPPINGS))
-public class AlfrescoMvcCustomServletConfigModuleConfiguration implements WebMvcConfigurer {
+@EnableAlfrescoMvcRest(@AlfrescoDispatcherWebscript(servletContext = AlfrescoMvcServletContext.class))
+public class AlfrescoMvcServletConfigModuleConfiguration implements WebMvcConfigurer {
 
 	@Override
 	public void configurePathMatch(PathMatchConfigurer configurer) {
-		configurer.setUseSuffixPatternMatch(false);
+		configurer.setUseSuffixPatternMatch(true);
 	}
 }

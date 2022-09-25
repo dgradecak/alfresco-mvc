@@ -23,7 +23,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.QName;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +45,10 @@ import com.gradecak.alfresco.mvc.rest.annotation.AlfrescoRestResponse;
 @Controller
 @RequestMapping("/test")
 public class TestController {
+
+	public TestController() {
+		System.out.println();
+	}
 
 	@RequestMapping(value = "/get", method = { RequestMethod.GET })
 	public ResponseEntity<?> get(@RequestParam String id) {
@@ -64,7 +70,6 @@ public class TestController {
 		}
 
 		return ResponseEntity.ok().headers(new HttpHeaders(headers)).body("success");
-
 	}
 
 	@RequestMapping(value = "/post", method = { RequestMethod.POST })
@@ -103,7 +108,7 @@ public class TestController {
 	}
 
 	@RequestMapping(value = "/download", method = { RequestMethod.GET })
-	public ResponseEntity<?> download() throws IOException {
+	public ResponseEntity<Resource> download() throws IOException {
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mvc.delete.desc.xml\"")
 				.body(new ClassPathResource(
@@ -111,8 +116,23 @@ public class TestController {
 	}
 
 	@GetMapping(value = "noderef")
-	public ResponseEntity<?> noderef() throws IOException {
-		return ResponseEntity.ok(new NodeRef("a://a/a"));
+	public ResponseEntity<NodeRef> noderefParam(@RequestParam(required = false) NodeRef nodeRef) throws IOException {
+		return ResponseEntity.ok(nodeRef != null ? nodeRef : new NodeRef("a://a/a"));
+	}
+
+	@GetMapping(value = "noderef/{nodeRef}")
+	public ResponseEntity<NodeRef> noderefPathVariable(@PathVariable NodeRef nodeRef) throws IOException {
+		return ResponseEntity.ok(nodeRef);
+	}
+
+	@GetMapping(value = "qname")
+	public ResponseEntity<QName> qnameParam(@RequestParam(required = false) QName qname) throws IOException {
+		return ResponseEntity.ok(qname != null ? qname : QName.createQName("uri", "created"));
+	}
+
+	@GetMapping(value = "qname/{qname}")
+	public ResponseEntity<QName> qnamePathVariable(@PathVariable QName qname) throws IOException {
+		return ResponseEntity.ok(qname);
 	}
 
 	@GetMapping(value = "noderefAlfrescoResponse")
