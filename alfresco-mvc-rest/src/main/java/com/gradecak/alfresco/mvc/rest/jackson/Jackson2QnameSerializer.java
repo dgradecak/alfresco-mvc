@@ -18,7 +18,8 @@ package com.gradecak.alfresco.mvc.rest.jackson;
 
 import java.io.IOException;
 
-import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.namespace.NamespacePrefixResolver;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -27,17 +28,18 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 public class Jackson2QnameSerializer extends StdSerializer<QName> {
 
-	private ServiceRegistry serviceRegistry;
+	private NamespaceService namespaceService;
 
-	public Jackson2QnameSerializer(ServiceRegistry serviceRegistry) {
+	public Jackson2QnameSerializer(NamespaceService namespaceService) {
 		super(QName.class);
-		this.serviceRegistry = serviceRegistry;
+		this.namespaceService = namespaceService;
 	}
 
 	@Override
 	public void serialize(QName value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-		String prefixString = value.toPrefixString(serviceRegistry.getNamespaceService());
-		jgen.writeString(prefixString);
+		// String prefixString = value.toPrefixString(namespaceService);
+		String string = value.toString();
+		jgen.writeString(value.toString());
 	}
 
 	@Override

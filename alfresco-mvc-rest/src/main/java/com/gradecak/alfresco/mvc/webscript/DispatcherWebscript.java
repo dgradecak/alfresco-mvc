@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -58,6 +58,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 public class DispatcherWebscript extends AbstractWebScript
@@ -118,41 +119,7 @@ public class DispatcherWebscript extends AbstractWebScript
 		ApplicationContext refreshContext = event.getApplicationContext();
 		if (refreshContext != null && refreshContext.equals(applicationContext)) {
 
-			s = new DispatcherServlet() {
-
-				private static final long serialVersionUID = -7492692694742840997L;
-
-				@Override
-				protected WebApplicationContext initWebApplicationContext() {
-					WebApplicationContext wac = createWebApplicationContext(applicationContext);
-					if (wac == null) {
-						wac = super.initWebApplicationContext();
-					}
-
-					return wac;
-				}
-
-				@Override
-				protected void postProcessWebApplicationContext(ConfigurableWebApplicationContext wac) {
-					wac.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
-
-						@Override
-						public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-								throws BeansException {
-
-							if (!beanFactory.containsBean("dispatcherServlet")) {
-								AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
-										.genericBeanDefinition(DispatcherServlet.class).getBeanDefinition();
-								beanDefinition
-										.setInstanceSupplier(() -> DispatcherWebscript.this.getDispatcherServlet());
-								beanDefinition.setPrimary(true);
-								((BeanDefinitionRegistry) beanFactory).registerBeanDefinition("dispatcherServlet",
-										beanDefinition);
-							}
-						}
-					});
-				}
-			};
+			s = new DispatcherWebscriptServlet((WebApplicationContext) applicationContext, this, servletName);
 
 			if (!servletConfigOptions.isEmpty()) {
 				s.setDetectAllHandlerMappings(
@@ -165,9 +132,7 @@ public class DispatcherWebscript extends AbstractWebScript
 						.contains(ServletConfigOptions.DISABLED_PARENT_HANDLER_EXCEPTION_RESOLVERS));
 			}
 
-			if (contextClass != null) {
-				s.setContextClass(contextClass);
-			}
+			s.setContextClass(contextClass != null ? contextClass : AnnotationConfigWebApplicationContext.class);
 			s.setContextConfigLocation(contextConfigLocation);
 			configureDispatcherServlet(s);
 
@@ -270,7 +235,7 @@ public class DispatcherWebscript extends AbstractWebScript
 		}
 
 		public Enumeration<String> getInitParameterNames() {
-			return Collections.enumeration(new HashSet<String>());
+			return Collections.enumeration(Collections.emptySet());
 		}
 	}
 
@@ -326,6 +291,67 @@ public class DispatcherWebscript extends AbstractWebScript
 	public static enum ServletConfigOptions {
 		DISABLED_PARENT_HANDLER_MAPPINGS, DISABLED_PARENT_HANDLER_ADAPTERS, DISABLED_PARENT_VIEW_RESOLVERS,
 		DISABLED_PARENT_HANDLER_EXCEPTION_RESOLVERS
+	}
+
+	public static class DispatcherWebscriptServlet extends DispatcherServlet {
+		private static final long serialVersionUID = -7492692694742840997L;
+
+		private final WebApplicationContext applicationContext;
+		private final DispatcherWebscript dispatcherWebscript;
+
+		public DispatcherWebscriptServlet(WebApplicationContext applicationContext,
+				DispatcherWebscript dispatcherWebscript, String servletName) {
+			super(applicationContext);
+			setContextId(servletName);
+			this.applicationContext = applicationContext;
+			this.dispatcherWebscript = dispatcherWebscript;
+		}
+
+		@Override
+		protected WebApplicationContext initWebApplicationContext() {
+			WebApplicationContext wac = createWebApplicationContext(applicationContext);
+			if (wac == null) {
+				wac = super.initWebApplicationContext();
+			}
+			return wac;
+		}
+
+		@Override
+		protected void postProcessWebApplicationContext(ConfigurableWebApplicationContext wac) {
+			wac.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
+
+				@Override
+				public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+
+					if (beanFactory.containsBean("dispatcherServlet")) {
+						BeanDefinition beanDefinition = (BeanDefinition) beanFactory
+								.getBeanDefinition("dispatcherServlet");
+						if (!(beanDefinition instanceof AbstractBeanDefinition)) {
+							throw new RuntimeException(
+									"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
+						}
+						Class<?> beanClass = ((AbstractBeanDefinition) beanDefinition).getBeanClass();
+						if (!(beanClass.isAssignableFrom(DispatcherWebscriptServlet.class))) {
+							throw new RuntimeException(
+									"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
+						}
+						((AbstractBeanDefinition) beanDefinition)
+								.setInstanceSupplier(() -> DispatcherWebscriptServlet.this);
+					} else {
+						AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
+								.genericBeanDefinition(DispatcherWebscriptServlet.class).getBeanDefinition();
+						beanDefinition.setPrimary(true);
+						beanDefinition.setInstanceSupplier(() -> DispatcherWebscriptServlet.this);
+						((BeanDefinitionRegistry) beanFactory).registerBeanDefinition("dispatcherServlet",
+								beanDefinition);
+					}
+				}
+			});
+		}
+
+		public DispatcherWebscript getDispatcherWebscript() {
+			return this.dispatcherWebscript;
+		}
 	}
 
 }

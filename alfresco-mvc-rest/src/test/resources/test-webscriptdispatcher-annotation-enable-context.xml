@@ -9,10 +9,12 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
-
+	<context:annotation-config />
+    <mvc:annotation-driven />
+	
 	<import resource="test-restjsonmodule.xml"/>
-	<import resource="web-servlet-test.xml"/>
+	<import resource="mock-alfresco-context.xml"/>
 
-	<bean id="webscript.alfresco-mvc.mvc.post" class="com.gradecak.alfresco.mvc.config.AlfrescoMvcRestModuleConfigurationEnable" />
+	<bean class="com.gradecak.alfresco.mvc.config.AlfrescoMvcRestModuleConfigurationEnable" />
 
 </beans>

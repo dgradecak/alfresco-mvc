@@ -18,7 +18,7 @@ package com.gradecak.alfresco.mvc.rest.jackson;
 
 import java.io.IOException;
 
-import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.core.convert.converter.Converter;
 
@@ -28,21 +28,26 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 public class Jackson2QnameDeserializer extends JsonDeserializer<QName> implements Converter<String, QName> {
 
-	private ServiceRegistry serviceRegistry;
+	private NamespaceService namespaceService;
 
-	public Jackson2QnameDeserializer(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
+	public Jackson2QnameDeserializer(NamespaceService namespaceService) {
+		this.namespaceService = namespaceService;
+	}
+	
+	@Override
+	public Class<?> handledType() {
+		return QName.class;
 	}
 
 	@Override
 	public QName deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 		String qname = jp.getText();
-		return QName.createQName(qname, serviceRegistry.getNamespaceService());
+		return QName.createQName(qname, namespaceService);
 	}
 
 	@Override
 	public QName convert(String qname) {
-		return QName.createQName(qname, serviceRegistry.getNamespaceService());
+		return QName.createQName(qname, namespaceService);
 	}
 
 }

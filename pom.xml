@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.gradecak.alfresco-mvc</groupId>
-	<version>7.5.1-RELEASE</version>
+	<version>8.0.0</version>
 	<artifactId>alfresco-mvc-bom</artifactId>
 	<packaging>pom</packaging>
 
@@ -35,24 +37,27 @@
 	</scm>
 
 	<properties>
+		<java.version>11</java.version>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.build.sourceVersion>11</maven.build.sourceVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<alfresco.version>6.2.0-A6</alfresco.version>
-		<spring.version>5.1.8.RELEASE</spring.version>
-		<javax.servlet-api.version>3.0.1</javax.servlet-api.version>
+		<dependency.spring.version>5.3.9</dependency.spring.version>
+		<dependency.javax.servlet-api.version>4.0.1</dependency.javax.servlet-api.version>
+		<dependency.acs-community-packaging.version>7.1.0.1</dependency.acs-community-packaging.version>
 	</properties>
 
 	<modules>
 		<module>alfresco-mvc-rest</module>
 		<module>alfresco-mvc-aop</module>
-		<module>alfresco-mvc-querytemplate</module>
 	</modules>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>org.alfresco</groupId>
-				<artifactId>alfresco-content-services-community-distribution</artifactId>
-				<version>${alfresco.version}</version>
+				<artifactId>acs-community-packaging</artifactId>
+				<version>${dependency.acs-community-packaging.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -60,21 +65,21 @@
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
-				<version>${javax.servlet-api.version}</version>
+				<version>${dependency.javax.servlet-api.version}</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>3.0.0</version>
+				<version>3.8.0</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
-				<version>${spring.version}</version>
+				<version>${dependency.spring.version}</version>
 				<scope>test</scope>
 				<exclusions>
 					<exclusion>
@@ -86,7 +91,7 @@
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
-				<version>5.5.1</version>
+				<version>5.7.1</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -100,13 +105,6 @@
 			<dependency>
 				<groupId>com.gradecak.alfresco-mvc</groupId>
 				<artifactId>alfresco-mvc-aop</artifactId>
-				<version>${project.version}</version>
-				<scope>compile</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>com.gradecak.alfresco-mvc</groupId>
-				<artifactId>alfresco-mvc-querytemplate</artifactId>
 				<version>${project.version}</version>
 				<scope>compile</scope>
 			</dependency>
