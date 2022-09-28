@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -108,6 +109,7 @@ public class DispatcherWebscript extends AbstractWebScript
 
 		WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
 		try {
+			// wrapper.setAttribute(WebUtils.INCLUDE_SERVLET_PATH_ATTRIBUTE, "/s/mvc");
 			s.service(wrapper, sr);
 
 		} catch (Throwable e) {
@@ -283,6 +285,12 @@ public class DispatcherWebscript extends AbstractWebScript
 			return "";
 		}
 
+		@Override
+		public String getPathInfo() {
+			return super.getPathInfo();
+			// return "/s/mvc/swagger-ui/index.html";
+		}
+
 		public WebScriptServletRequest getWebScriptServletRequest() {
 			return origReq;
 		}
@@ -335,8 +343,18 @@ public class DispatcherWebscript extends AbstractWebScript
 							throw new RuntimeException(
 									"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
 						}
-						((AbstractBeanDefinition) beanDefinition)
-								.setInstanceSupplier(() -> DispatcherWebscriptServlet.this);
+						Supplier<?> supplier = ((AbstractBeanDefinition) beanDefinition).getInstanceSupplier();
+						if (supplier != null) {
+							Object object = supplier.get();
+							if (!(object instanceof DispatcherWebscriptServlet)) {
+								throw new RuntimeException(
+										"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
+							}
+						} else {
+							((AbstractBeanDefinition) beanDefinition)
+									.setInstanceSupplier(() -> DispatcherWebscriptServlet.this);
+						}
+
 					} else {
 						AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
 								.genericBeanDefinition(DispatcherWebscriptServlet.class).getBeanDefinition();

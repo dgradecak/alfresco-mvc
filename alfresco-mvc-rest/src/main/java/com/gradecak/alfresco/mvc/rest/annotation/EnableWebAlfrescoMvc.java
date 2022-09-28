@@ -23,9 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.context.annotation.Import;
-
-import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextConfiguration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
  * use this class in order to import
@@ -41,7 +39,6 @@ import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextCon
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@EnableAlfrescoMvcDispatcherServlet
-@Import({ DefaultAlfrescoMvcServletContextConfiguration.class })
+@EnableWebMvc
 public @interface EnableWebAlfrescoMvc {
 }

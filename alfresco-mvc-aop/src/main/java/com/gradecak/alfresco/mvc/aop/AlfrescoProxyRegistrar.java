@@ -26,6 +26,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
@@ -48,6 +49,11 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 		Assert.notNull(annotationMetadata, "AnnotationMetadata must not be null!");
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null!");
 
+		// Guard against calls for sub-classes
+		if (annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcAop.class.getName()) == null) {
+			return;
+		}
+		
 		boolean proxyBeanRegistered = false;
 		for (String beanName : PackageAutoProxyCreator.DEFAULT_INTERCEPTORS) {
 			if (registry.containsBeanDefinition(beanName)) {
@@ -55,20 +61,21 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 				break;
 			}
 		}
-
+		
 		if (!proxyBeanRegistered) {
 			XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(registry);
 			xmlReader.loadBeanDefinitions("classpath:com/gradecak/alfresco-mvc/alfresco-mvc-aop.xml");
 		}
 
-		// Guard against calls for sub-classes
-		if (annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcAop.class.getName()) == null) {
-			return;
-		}
-
 		this.attributes = new AnnotationAttributes(
 				annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcAop.class.getName()));
 		this.metadata = annotationMetadata;
+		
+		boolean defaultPropertiesSupport = attributes.getBoolean("defaultPropertiesSupport");		
+		if(defaultPropertiesSupport) {
+			RootBeanDefinition beanDefinition = new RootBeanDefinition(PropertySourcesPlaceholderConfigurer.class);
+			registry.registerBeanDefinition("propertySourcesPlaceholderConfigurer", beanDefinition);
+		}
 
 		Iterable<String> basePackages = getBasePackages();
 		for (String basePackage : basePackages) {
@@ -115,13 +122,13 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 		return packages;
 	}
 
-	public static BeanDefinition registerOrEscalateApcAsRequired(Class<PackageAutoProxyCreator> cls,
+	public static void registerOrEscalateApcAsRequired(Class<PackageAutoProxyCreator> cls,
 			BeanDefinitionRegistry registry, Object source, String basePackage) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 
 		String proxyPackageBeanName = PACKAGE_PROXY_CREATOR_BEAN_NAME + "." + basePackage;
 		if (registry.containsBeanDefinition(proxyPackageBeanName)) {
-			return null;
+			return;
 		}
 
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
@@ -130,6 +137,5 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 		beanDefinition.getPropertyValues().add("basePackage", basePackage);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		registry.registerBeanDefinition(proxyPackageBeanName, beanDefinition);
-		return beanDefinition;
 	}
 }

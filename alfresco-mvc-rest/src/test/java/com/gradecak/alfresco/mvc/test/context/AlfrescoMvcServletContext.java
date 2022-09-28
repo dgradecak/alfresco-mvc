@@ -17,12 +17,15 @@
 package com.gradecak.alfresco.mvc.test.context;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.gradecak.alfresco.mvc.rest.annotation.EnableAlfrescoMvcDispatcherServlet;
+import com.gradecak.alfresco.mvc.rest.annotation.EnableWebAlfrescoMvc;
+import com.gradecak.alfresco.mvc.rest.config.DefaultAlfrescoMvcServletContextConfiguration;
 
 @Configuration
-@EnableAlfrescoMvcDispatcherServlet
+@EnableWebAlfrescoMvc
+@Import(DefaultAlfrescoMvcServletContextConfiguration.class)
 public class AlfrescoMvcServletContext implements WebMvcConfigurer {
 
 }
