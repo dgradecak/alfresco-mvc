@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.gradecak.alfresco-mvc</groupId>
 		<version>8.0.0</version>
-		<artifactId>alfresco-mvc-bom</artifactId>
+		<artifactId>alfresco-mvc-parent</artifactId>
 		<relativePath>../</relativePath>
 	</parent>
 

@@ -18,6 +18,8 @@ package com.gradecak.alfresco.mvc.rest.config;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -34,11 +36,14 @@ import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.lang.Nullable;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gradecak.alfresco.mvc.rest.AlfrescoApiResponseInterceptor;
 import com.gradecak.alfresco.mvc.rest.jackson.Jackson2NodeRefDeserializer;
@@ -53,7 +58,7 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 	private final NamespaceService namespaceService;
 
 	@Autowired
-	public DefaultAlfrescoMvcServletContextConfiguration(RestJsonModule alfrescoRestJsonModule,
+	public DefaultAlfrescoMvcServletContextConfiguration(@Nullable RestJsonModule alfrescoRestJsonModule,
 			NamespaceService namespaceService) {
 		this.alfrescoRestJsonModule = alfrescoRestJsonModule;
 		this.namespaceService = namespaceService;
@@ -78,21 +83,56 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 		return resolver;
 	}
 
-	private void configureMultipartResolver(final CommonsMultipartResolver resolver) {
+	void configureMultipartResolver(final CommonsMultipartResolver resolver) {
 	}
 
 	@Bean
 	@Primary
 	public ObjectMapper objectMapper() {
+		return jackson2ObjectMapperBuilder().build();
+	}
+	
+	@Bean
+	@Primary
+	public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
 		DateFormat DATE_FORMAT_ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 		DATE_FORMAT_ISO8601.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-		return Jackson2ObjectMapperBuilder.json().failOnEmptyBeans(false).failOnUnknownProperties(false)
-				.dateFormat(DATE_FORMAT_ISO8601).modulesToInstall(alfrescoRestJsonModule)
-				.serializers(jackson2NodeRefSerializer(), jackson2QnameSerializer())
-				.deserializers(jackson2NodeRefDeserializer(), jackson2QnameDeserializer())
-				.featuresToEnable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY).findModulesViaServiceLoader(true)
-				.build();
+		List<JsonDeserializer<?>> customJsonDeserializers = new ArrayList<>(customJsonDeserializers());
+		customJsonDeserializers.add(jackson2NodeRefDeserializer());
+		customJsonDeserializers.add(jackson2QnameDeserializer());
+
+		List<JsonSerializer<?>> customJsonSerilizers = new ArrayList<>(customJsonSerilizers());
+		customJsonSerilizers.add(jackson2NodeRefSerializer());
+		customJsonSerilizers.add(jackson2QnameSerializer());
+
+		Jackson2ObjectMapperBuilder builder = Jackson2ObjectMapperBuilder.json().failOnEmptyBeans(false)
+				.failOnUnknownProperties(false).dateFormat(DATE_FORMAT_ISO8601)
+				.serializers(customJsonSerilizers.toArray(new JsonSerializer[0]))
+				.deserializers(customJsonDeserializers.toArray(new JsonDeserializer[0]))
+				.featuresToEnable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+				.findModulesViaServiceLoader(true);
+
+		if (alfrescoRestJsonModule != null) {
+			builder.modulesToInstall(alfrescoRestJsonModule);
+		}
+
+		customizeJackson2ObjectMapperBuilder(builder);
+
+		return builder;
+	}
+
+	protected void customizeJackson2ObjectMapperBuilder(Jackson2ObjectMapperBuilder builder) {
+		// TODO Auto-generated method stub
+
+	}
+
+	protected List<JsonDeserializer<?>> customJsonDeserializers() {
+		return Collections.emptyList();
+	}
+
+	protected List<JsonSerializer<?>> customJsonSerilizers() {
+		return Collections.emptyList();
 	}
 
 	@Override

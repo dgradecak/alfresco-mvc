@@ -18,12 +18,11 @@ package com.gradecak.alfresco.mvc.test.inheritservletconfig;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.gradecak.alfresco.mvc.rest.annotation.EnableWebAlfrescoMvc;
-
 @Configuration
-@EnableWebAlfrescoMvc
+@EnableWebMvc
 public class AlfrescoMvcServletContext implements WebMvcConfigurer {
 
 	@Bean

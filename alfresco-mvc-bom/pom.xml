@@ -5,13 +5,13 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.gradecak.alfresco-mvc</groupId>
+	<groupId>com.gradecak.alfresco-mvc</groupId>	
+	<artifactId>alfresco-mvc-bom</artifactId>
 	<version>8.0.0</version>
-	<artifactId>alfresco-mvc-parent</artifactId>
 	<packaging>pom</packaging>
 
-	<name>Alfresco MVC parent</name>
-	<description>Parent for Alfresco @MVC project</description>
+	<name>Alfresco MVC bom</name>
+	<description>Bom for Alfresco @MVC project</description>
 	<url>https://github.com/dgradecak/alfresco-mvc</url>
 
 	<licenses>
@@ -42,28 +42,15 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.build.sourceVersion>11</maven.build.sourceVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<dependency.spring.version>5.3.9</dependency.spring.version>
-		<dependency.javax.servlet-api.version>4.0.1</dependency.javax.servlet-api.version>
-		<dependency.acs-community-packaging.version>7.1.0.1</dependency.acs-community-packaging.version>
 	</properties>
 
 	<modules>
 		<module>alfresco-mvc-rest</module>
 		<module>alfresco-mvc-aop</module>
-		<module>alfresco-mvc-bom</module>
 	</modules>
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.alfresco</groupId>
-				<artifactId>acs-community-packaging</artifactId>
-				<version>${dependency.acs-community-packaging.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-				<optional>true</optional>
-			</dependency>
-
 			<dependency>
 				<groupId>com.gradecak.alfresco-mvc</groupId>
 				<artifactId>alfresco-mvc-rest</artifactId>
@@ -77,56 +64,8 @@
 				<version>${project.version}</version>
 				<scope>compile</scope>
 			</dependency>
-
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>${dependency.javax.servlet-api.version}</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>3.8.0</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-test</artifactId>
-				<version>${dependency.spring.version}</version>
-				<scope>test</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>junit</groupId>
-						<artifactId>junit</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-engine</artifactId>
-				<version>5.7.1</version>
-				<scope>test</scope>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<repositories>
-		<repository>
-			<id>alfresco-public</id>
-			<url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-		</repository>
-		<repository>
-			<id>alfresco-public-snapshots</id>
-			<url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<build>
 		<plugins>

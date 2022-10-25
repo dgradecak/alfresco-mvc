@@ -262,7 +262,8 @@ public class DispatcherWebscript extends AbstractWebScript
 				origUri = origUri.replaceAll("\\$", "%24");
 			}
 
-			Pattern pattern = Pattern.compile("(^" + origReq.getServiceContextPath() + "/)(.*)(/" + origUri + ")");
+			Pattern pattern = Pattern
+					.compile("(^" + origReq.getServiceContextPath() + "/)(.*)(/" + Pattern.quote(origUri) + ")");
 			Matcher matcher = pattern.matcher(uri);
 
 			if (matcher.find()) {
@@ -278,17 +279,11 @@ public class DispatcherWebscript extends AbstractWebScript
 		}
 
 		public String getContextPath() {
-			return origReq.getContextPath();
+			return "";
 		}
 
 		public String getServletPath() {
 			return "";
-		}
-
-		@Override
-		public String getPathInfo() {
-			return super.getPathInfo();
-			// return "/s/mvc/swagger-ui/index.html";
 		}
 
 		public WebScriptServletRequest getWebScriptServletRequest() {
@@ -338,11 +333,11 @@ public class DispatcherWebscript extends AbstractWebScript
 							throw new RuntimeException(
 									"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
 						}
-						Class<?> beanClass = ((AbstractBeanDefinition) beanDefinition).getBeanClass();
-						if (!(beanClass.isAssignableFrom(DispatcherWebscriptServlet.class))) {
-							throw new RuntimeException(
-									"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
-						}
+//						Class<?> beanClass = ((AbstractBeanDefinition) beanDefinition).getBeanClass();
+//						if (!(beanClass.isAssignableFrom(DispatcherWebscriptServlet.class))) {
+//							throw new RuntimeException(
+//									"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
+//						}
 						Supplier<?> supplier = ((AbstractBeanDefinition) beanDefinition).getInstanceSupplier();
 						if (supplier != null) {
 							Object object = supplier.get();

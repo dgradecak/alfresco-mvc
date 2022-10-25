@@ -277,6 +277,16 @@ public class AlfrescoMvcRestTest {
 		String contentAsString = res.getContentAsString();
 		Assertions.assertEquals("\"{uri}created\"", contentAsString);
 	}
+	
+	@Test
+	public void when_alfrescoMvcPathQnameSerializationIsUsed_expect_okAndQNameFullySerialized() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/qname/{uri}created").execute();
+		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+
+		// the response has been changed in the advice
+		String contentAsString = res.getContentAsString();
+		Assertions.assertEquals("\"{uri}created\"", contentAsString);
+	}
 
 	@Test
 	public void when_alfrescoRestSerializationIsUsedButMocked_expect_okAndNodrefNotSerialized() throws Exception {
