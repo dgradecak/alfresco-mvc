@@ -62,7 +62,7 @@ public class InheritGlobalPropertiesTest {
 
 		Environment servletEnvironment = dispatcherWebscript.getDispatcherServlet().getEnvironment();
 		Assertions.assertEquals("myValue", servletEnvironment.getProperty("myKey"));
-		
+
 		Assertions.assertEquals("true", servletEnvironment.getProperty("test.exists"));
 	}
 
@@ -70,7 +70,7 @@ public class InheritGlobalPropertiesTest {
 	public void when_alfrescoMvcInheritGlobalProperties_expect_propertyNotExists() throws Exception {
 		Environment servletEnvironment = dispatcherWebscript.getDispatcherServlet().getEnvironment();
 		Assertions.assertNull(servletEnvironment.getProperty("myKey1"));
-		
+
 		Assertions.assertEquals("true", servletEnvironment.getProperty("test.exists"));
 	}
 

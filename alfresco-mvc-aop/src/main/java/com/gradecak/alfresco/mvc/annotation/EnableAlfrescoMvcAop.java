@@ -43,6 +43,6 @@ public @interface EnableAlfrescoMvcAop {
 	String[] basePackages() default {};
 
 	Class<?>[] basePackageClasses() default {};
-	
+
 	boolean defaultPropertiesSupport() default true;
 }

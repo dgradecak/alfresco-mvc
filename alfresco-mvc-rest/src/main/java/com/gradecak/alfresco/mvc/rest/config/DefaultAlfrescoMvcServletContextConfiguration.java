@@ -91,7 +91,7 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 	public ObjectMapper objectMapper() {
 		return jackson2ObjectMapperBuilder().build();
 	}
-	
+
 	@Bean
 	@Primary
 	public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
@@ -123,8 +123,6 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 	}
 
 	protected void customizeJackson2ObjectMapperBuilder(Jackson2ObjectMapperBuilder builder) {
-		// TODO Auto-generated method stub
-
 	}
 
 	protected List<JsonDeserializer<?>> customJsonDeserializers() {

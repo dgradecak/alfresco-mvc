@@ -53,7 +53,7 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 		if (annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcAop.class.getName()) == null) {
 			return;
 		}
-		
+
 		boolean proxyBeanRegistered = false;
 		for (String beanName : PackageAutoProxyCreator.DEFAULT_INTERCEPTORS) {
 			if (registry.containsBeanDefinition(beanName)) {
@@ -61,7 +61,7 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 				break;
 			}
 		}
-		
+
 		if (!proxyBeanRegistered) {
 			XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(registry);
 			xmlReader.loadBeanDefinitions("classpath:com/gradecak/alfresco-mvc/alfresco-mvc-aop.xml");
@@ -70,9 +70,9 @@ public class AlfrescoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 		this.attributes = new AnnotationAttributes(
 				annotationMetadata.getAnnotationAttributes(EnableAlfrescoMvcAop.class.getName()));
 		this.metadata = annotationMetadata;
-		
-		boolean defaultPropertiesSupport = attributes.getBoolean("defaultPropertiesSupport");		
-		if(defaultPropertiesSupport) {
+
+		boolean defaultPropertiesSupport = attributes.getBoolean("defaultPropertiesSupport");
+		if (defaultPropertiesSupport) {
 			RootBeanDefinition beanDefinition = new RootBeanDefinition(PropertySourcesPlaceholderConfigurer.class);
 			registry.registerBeanDefinition("propertySourcesPlaceholderConfigurer", beanDefinition);
 		}

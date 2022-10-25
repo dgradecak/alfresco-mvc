@@ -61,7 +61,7 @@ public class AlfrescoMvcRestTest {
 
 	@Autowired
 	private DispatcherWebscript webScript;
-	
+
 	@Autowired
 	private NamespaceService namespaceService;
 
@@ -267,7 +267,7 @@ public class AlfrescoMvcRestTest {
 		String contentAsString = res.getContentAsString();
 		Assertions.assertEquals("\"{uri}created\"", contentAsString);
 	}
-	
+
 	@Test
 	public void when_alfrescoMvcPathSerializationIsUsed_expect_okAndQNameFullySerialized() throws Exception {
 		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/qname/cm:created").execute();
@@ -277,7 +277,7 @@ public class AlfrescoMvcRestTest {
 		String contentAsString = res.getContentAsString();
 		Assertions.assertEquals("\"{uri}created\"", contentAsString);
 	}
-	
+
 	@Test
 	public void when_alfrescoMvcPathQnameSerializationIsUsed_expect_okAndQNameFullySerialized() throws Exception {
 		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/qname/{uri}created").execute();

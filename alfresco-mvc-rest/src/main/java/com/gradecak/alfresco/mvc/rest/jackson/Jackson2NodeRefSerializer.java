@@ -27,6 +27,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 public class Jackson2NodeRefSerializer extends StdSerializer<NodeRef> {
 
+	private static final long serialVersionUID = 1L;
+
 	public Jackson2NodeRefSerializer() {
 		super(NodeRef.class);
 	}

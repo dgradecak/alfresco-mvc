@@ -33,7 +33,7 @@ public class Jackson2QnameDeserializer extends JsonDeserializer<QName> implement
 	public Jackson2QnameDeserializer(NamespaceService namespaceService) {
 		this.namespaceService = namespaceService;
 	}
-	
+
 	@Override
 	public Class<?> handledType() {
 		return QName.class;
