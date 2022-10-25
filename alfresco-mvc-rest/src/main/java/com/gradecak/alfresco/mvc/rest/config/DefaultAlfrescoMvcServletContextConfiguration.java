@@ -58,11 +58,6 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 	private final NamespaceService namespaceService;
 
 	@Autowired
-	public DefaultAlfrescoMvcServletContextConfiguration(NamespaceService namespaceService) {
-		this(null, namespaceService);
-	}
-	
-	@Autowired
 	public DefaultAlfrescoMvcServletContextConfiguration(@Nullable RestJsonModule alfrescoRestJsonModule,
 			NamespaceService namespaceService) {
 		this.alfrescoRestJsonModule = alfrescoRestJsonModule;
