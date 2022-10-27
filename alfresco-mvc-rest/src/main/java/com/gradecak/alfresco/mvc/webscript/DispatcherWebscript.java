@@ -17,6 +17,9 @@
 package com.gradecak.alfresco.mvc.webscript;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -52,6 +55,7 @@ import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
+import org.springframework.extensions.webscripts.WrappingWebScriptRequest;
 import org.springframework.extensions.webscripts.WrappingWebScriptResponse;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletRequest;
 import org.springframework.extensions.webscripts.servlet.WebScriptServletResponse;
@@ -94,10 +98,14 @@ public class DispatcherWebscript extends AbstractWebScript
 	}
 
 	public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
+		WebScriptServletRequest origReq;
+		if(req instanceof WrappingWebScriptRequest) {
+			origReq = (WebScriptServletRequest)((WrappingWebScriptRequest) req).getNext();
+		} else {
+			origReq = (WebScriptServletRequest) req;
+		}
 
-		final WebScriptServletRequest origReq = (WebScriptServletRequest) req;
-
-		WebScriptServletResponse wsr = null;
+		WebScriptServletResponse wsr;
 		if (res instanceof WrappingWebScriptResponse) {
 			wsr = (WebScriptServletResponse) ((WrappingWebScriptResponse) res).getNext();
 		} else {
@@ -113,6 +121,7 @@ public class DispatcherWebscript extends AbstractWebScript
 			s.service(wrapper, sr);
 
 		} catch (Throwable e) {
+			LOGGER.error("Failed to call {}", origReq.getURL());
 			throw new IOException(e);
 		}
 	}
@@ -253,6 +262,15 @@ public class DispatcherWebscript extends AbstractWebScript
 		@Override
 		public String getRequestURI() {
 			String uri = super.getRequestURI();
+			try {
+				uri = URLDecoder.decode(uri, StandardCharsets.UTF_8.toString());
+			} catch (UnsupportedEncodingException e) {
+				LOGGER.error(e.getMessage(), e);
+				return "";
+			}
+
+			LOGGER.debug("Processing [{}] {}", super.getMethod(), uri);
+
 			if (uri.contains("$")) {
 				uri = uri.replaceAll("\\$", "%24");
 			}
@@ -263,12 +281,17 @@ public class DispatcherWebscript extends AbstractWebScript
 			}
 
 			Pattern pattern = Pattern
-					.compile("(^" + origReq.getServiceContextPath() + "/)(.*)(/" + Pattern.quote(origUri) + ")");
+					.compile(
+							"(^" + origReq.getServiceContextPath() + "/)" +
+							"(.*)" +
+							"(/" + Pattern.quote(origUri) + ")"
+					);
 			Matcher matcher = pattern.matcher(uri);
-
 			if (matcher.find()) {
 				try {
-					return matcher.group(EXTENSION_PATH_REGEXP_GROUP_INDEX);
+					String result = matcher.group(EXTENSION_PATH_REGEXP_GROUP_INDEX);
+					LOGGER.debug("Found [{}] {} ---> {}", super.getMethod(), uri, result);
+					return result;
 				} catch (Exception e) {
 					// let an empty string be returned
 					LOGGER.warn("no such group (3) in regexp while URI evaluation", e);
