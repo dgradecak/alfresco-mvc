@@ -38,6 +38,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.lang.Nullable;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -50,6 +51,8 @@ import com.gradecak.alfresco.mvc.rest.jackson.Jackson2NodeRefDeserializer;
 import com.gradecak.alfresco.mvc.rest.jackson.Jackson2NodeRefSerializer;
 import com.gradecak.alfresco.mvc.rest.jackson.Jackson2QnameDeserializer;
 import com.gradecak.alfresco.mvc.rest.jackson.Jackson2QnameSerializer;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Configuration
 public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConfigurer {
@@ -75,15 +78,20 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 	}
 
 	@Bean
-	public CommonsMultipartResolver multipartResolver() {
-		final CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setMaxUploadSize(-1);
-		resolver.setDefaultEncoding("utf-8");
+	public MultipartResolver multipartResolver() {
+		MultipartResolver resolver = createMultipartResolver();
 		configureMultipartResolver(resolver);
 		return resolver;
 	}
 
-	void configureMultipartResolver(final CommonsMultipartResolver resolver) {
+	protected MultipartResolver createMultipartResolver() {
+		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+		resolver.setMaxUploadSize(-1);
+		resolver.setDefaultEncoding("utf-8");
+		return resolver;
+	}
+
+	protected void configureMultipartResolver(final MultipartResolver resolver) {
 	}
 
 	@Bean
