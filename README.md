@@ -28,6 +28,8 @@ For the correct version supported on your Alfresco version [please check the wik
 
 [The docs are on the wiki page](https://github.com/dgradecak/alfresco-mvc/wiki)
 
+[The Samples are provided on ](https://github.com/dgradecak/alfresco-mvc-sample)
+
 You should use it when
 -
 - You need custom APIs

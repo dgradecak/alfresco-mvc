@@ -99,8 +99,8 @@ public class DispatcherWebscript extends AbstractWebScript
 
 	public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 		WebScriptServletRequest origReq;
-		if(req instanceof WrappingWebScriptRequest) {
-			origReq = (WebScriptServletRequest)((WrappingWebScriptRequest) req).getNext();
+		if (req instanceof WrappingWebScriptRequest) {
+			origReq = (WebScriptServletRequest) ((WrappingWebScriptRequest) req).getNext();
 		} else {
 			origReq = (WebScriptServletRequest) req;
 		}
@@ -280,12 +280,8 @@ public class DispatcherWebscript extends AbstractWebScript
 				origUri = origUri.replaceAll("\\$", "%24");
 			}
 
-			Pattern pattern = Pattern
-					.compile(
-							"(^" + origReq.getServiceContextPath() + "/)" +
-							"(.*)" +
-							"(/" + Pattern.quote(origUri) + ")"
-					);
+			Pattern pattern = Pattern.compile(
+					"(^" + origReq.getServiceContextPath() + "/)" + "(.*)" + "(/" + Pattern.quote(origUri) + ")");
 			Matcher matcher = pattern.matcher(uri);
 			if (matcher.find()) {
 				try {
@@ -356,11 +352,7 @@ public class DispatcherWebscript extends AbstractWebScript
 							throw new RuntimeException(
 									"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
 						}
-//						Class<?> beanClass = ((AbstractBeanDefinition) beanDefinition).getBeanClass();
-//						if (!(beanClass.isAssignableFrom(DispatcherWebscriptServlet.class))) {
-//							throw new RuntimeException(
-//									"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
-//						}
+
 						Supplier<?> supplier = ((AbstractBeanDefinition) beanDefinition).getInstanceSupplier();
 						if (supplier != null) {
 							Object object = supplier.get();
@@ -372,7 +364,6 @@ public class DispatcherWebscript extends AbstractWebScript
 							((AbstractBeanDefinition) beanDefinition)
 									.setInstanceSupplier(() -> DispatcherWebscriptServlet.this);
 						}
-
 					} else {
 						AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
 								.genericBeanDefinition(DispatcherWebscriptServlet.class).getBeanDefinition();

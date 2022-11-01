@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.gradecak.alfresco-mvc</groupId>	
-	<artifactId>alfresco-mvc-bom</artifactId>
+	<artifactId>alfresco-mvc-dependencies</artifactId>
 	<version>8.0.0</version>
 	<packaging>pom</packaging>
 

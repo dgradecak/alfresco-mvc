@@ -52,8 +52,6 @@ import com.gradecak.alfresco.mvc.rest.jackson.Jackson2NodeRefSerializer;
 import com.gradecak.alfresco.mvc.rest.jackson.Jackson2QnameDeserializer;
 import com.gradecak.alfresco.mvc.rest.jackson.Jackson2QnameSerializer;
 
-import javax.servlet.http.HttpServletRequest;
-
 @Configuration
 public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConfigurer {
 
@@ -71,7 +69,7 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
 		resolvers.add(new ParamsHandlerMethodArgumentResolver());
 	}
-
+	
 	@Bean
 	public AlfrescoApiResponseInterceptor alfrescoResponseInterceptor(ResourceWebScriptHelper webscriptHelper) {
 		return new AlfrescoApiResponseInterceptor(webscriptHelper);
@@ -103,8 +101,6 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 	@Bean
 	@Primary
 	public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
-		DateFormat DATE_FORMAT_ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-		DATE_FORMAT_ISO8601.setTimeZone(TimeZone.getTimeZone("UTC"));
 
 		List<JsonDeserializer<?>> customJsonDeserializers = new ArrayList<>(customJsonDeserializers());
 		customJsonDeserializers.add(jackson2NodeRefDeserializer());
@@ -115,7 +111,7 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 		customJsonSerilizers.add(jackson2QnameSerializer());
 
 		Jackson2ObjectMapperBuilder builder = Jackson2ObjectMapperBuilder.json().failOnEmptyBeans(false)
-				.failOnUnknownProperties(false).dateFormat(DATE_FORMAT_ISO8601)
+				.failOnUnknownProperties(false).dateFormat(dateFormat())
 				.serializers(customJsonSerilizers.toArray(new JsonSerializer[0]))
 				.deserializers(customJsonDeserializers.toArray(new JsonDeserializer[0]))
 				.featuresToEnable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
@@ -128,6 +124,12 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 		customizeJackson2ObjectMapperBuilder(builder);
 
 		return builder;
+	}
+
+	protected DateFormat dateFormat() {
+		DateFormat dateFormatIso8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		dateFormatIso8601.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return dateFormatIso8601;
 	}
 
 	protected void customizeJackson2ObjectMapperBuilder(Jackson2ObjectMapperBuilder builder) {
@@ -154,23 +156,19 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 		converters.add(new MappingJackson2HttpMessageConverter(objectMapper()));
 	}
 
-	@Bean
-	Jackson2NodeRefDeserializer jackson2NodeRefDeserializer() {
+	protected Jackson2NodeRefDeserializer jackson2NodeRefDeserializer() {
 		return new Jackson2NodeRefDeserializer();
 	}
 
-	@Bean
-	Jackson2QnameDeserializer jackson2QnameDeserializer() {
+	protected Jackson2QnameDeserializer jackson2QnameDeserializer() {
 		return new Jackson2QnameDeserializer(namespaceService);
 	}
 
-	@Bean
-	Jackson2NodeRefSerializer jackson2NodeRefSerializer() {
+	protected Jackson2NodeRefSerializer jackson2NodeRefSerializer() {
 		return new Jackson2NodeRefSerializer();
 	}
 
-	@Bean
-	Jackson2QnameSerializer jackson2QnameSerializer() {
+	protected Jackson2QnameSerializer jackson2QnameSerializer() {
 		return new Jackson2QnameSerializer(namespaceService);
 	}
 
