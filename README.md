@@ -44,3 +44,19 @@ You would benefit from
 
 For supported Alfresco versions, check the [release notes](https://github.com/dgradecak/alfresco-mvc/releases)
 
+
+Maven local installation
+-
+mvn clean install -Dgpg.skip
+
+
+Profiles
+-
+We are using profiles to test against different Alfresco versions. If no configured Maven profiles are provided the default will be used and is specified by <activeByDefault>true</activeByDefault> in the pom.xml
+
+example: mvn package -Pcommunity-7.2.0
+
+Testing
+-
+From v8.0.0 we have decided to only run our unit tests against the Alfresco Community versions. Despite not being tested on Alfresco Enterprise it has to be compatible with the respectively tested Alfresco Community distribution
+
