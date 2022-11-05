@@ -165,7 +165,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.10.1</version>
 				<configuration>
-					<release>11</release>
+					<release>${maven.compiler.source}</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -183,7 +183,7 @@
 							<gpgArguments>
 								<arg>--pinentry-mode</arg>
 								<arg>loopback</arg>
-							</gpgArguments>							
+							</gpgArguments>
 						</configuration>
 					</execution>
 				</executions>
@@ -210,9 +210,6 @@
 
 		<profile>
 			<id>community-7.2.0</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<properties>
 				<dependency.acs-community-packaging.version>7.2.0</dependency.acs-community-packaging.version>
 				<dependency.spring-test.version>5.3.15</dependency.spring-test.version>
@@ -221,6 +218,9 @@
 
 		<profile>
 			<id>community-7.3.0</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<properties>
 				<dependency.acs-community-packaging.version>7.3.0</dependency.acs-community-packaging.version>
 				<dependency.spring-test.version>5.3.23</dependency.spring-test.version>
