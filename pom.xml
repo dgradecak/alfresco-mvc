@@ -48,7 +48,7 @@
 	<modules>
 		<module>alfresco-mvc-rest</module>
 		<module>alfresco-mvc-aop</module>
-		<module>alfresco-mvc-dependencies</module>
+		<module>alfresco-mvc-bom</module>
 	</modules>
 
 	<dependencyManagement>

@@ -12,7 +12,7 @@
 		<relativePath>../</relativePath>
 	</parent>
 
-	<artifactId>alfresco-mvc-dependencies</artifactId>
+	<artifactId>alfresco-mvc-bom</artifactId>
 	<packaging>pom</packaging>
 
 	<name>Alfresco MVC dependencies</name>
