@@ -40,4 +40,4 @@ jobs:
         with:
           java-version: 11
       - name: Run integration test
-        run: ./mvnw test -Pcommunity-${{ matrix.alfresco-boot-version }}
+        run: ./mvnw test -Pcommunity-${{ matrix.alfresco-version }}
