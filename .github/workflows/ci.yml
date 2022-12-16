@@ -24,6 +24,8 @@ jobs:
     strategy:
       matrix:
         include:
+          - alfresco-version: 6.1.2-ga
+            experimental: false
           - alfresco-version: 6.2.0-ga
             experimental: false
           - alfresco-version: 7.1.0.1
