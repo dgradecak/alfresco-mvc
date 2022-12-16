@@ -16,18 +16,20 @@
 
 package com.gradecak.alfresco.mvc.test.inheritservletconfig;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.gradecak.alfresco.mvc.rest.annotation.AlfrescoDispatcherWebscript;
+import com.gradecak.alfresco.mvc.rest.annotation.EnableAlfrescoMvcRest;
+
 @Configuration
-@EnableWebMvc
-public class AlfrescoMvcServletContext implements WebMvcConfigurer {
+@EnableAlfrescoMvcRest(@AlfrescoDispatcherWebscript(servletContext = AlfrescoMvcServletContext.class))
+public class AlfrescoMvcServletConfigModuleWithoutSuffixConfiguration implements WebMvcConfigurer {
 
-	@Bean
-	SuffixController suffixController() {
-		return new SuffixController();
+	@Override
+	public void configurePathMatch(PathMatchConfigurer configurer) {
+		configurer.setUseSuffixPatternMatch(false);
 	}
-
 }

@@ -26,7 +26,7 @@ import com.gradecak.alfresco.mvc.rest.annotation.EnableAlfrescoMvcRest;
 
 @Configuration
 @EnableAlfrescoMvcRest(@AlfrescoDispatcherWebscript(servletContext = AlfrescoMvcServletContext.class))
-public class AlfrescoMvcServletConfigModuleConfiguration implements WebMvcConfigurer {
+public class AlfrescoMvcServletConfigModuleWithSuffixConfiguration implements WebMvcConfigurer {
 
 	@Override
 	public void configurePathMatch(PathMatchConfigurer configurer) {

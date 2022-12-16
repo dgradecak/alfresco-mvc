@@ -16,14 +16,12 @@
 
 package com.gradecak.alfresco.mvc.test.inheritglobalproperties;
 
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.gradecak.alfresco.mvc.rest.annotation.EnableWebAlfrescoMvc;
-
 @Configuration
-@EnableWebAlfrescoMvc
+@EnableWebMvc
 //@ComponentScan(basePackageClasses = { SuffixController.class })
 public class AlfrescoMvcServletContext implements WebMvcConfigurer {
 

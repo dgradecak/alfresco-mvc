@@ -18,6 +18,8 @@ package com.gradecak.alfresco.mvc.rest.config;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -34,11 +36,15 @@ import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.lang.Nullable;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gradecak.alfresco.mvc.rest.AlfrescoApiResponseInterceptor;
 import com.gradecak.alfresco.mvc.rest.jackson.Jackson2NodeRefDeserializer;
@@ -53,7 +59,7 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 	private final NamespaceService namespaceService;
 
 	@Autowired
-	public DefaultAlfrescoMvcServletContextConfiguration(RestJsonModule alfrescoRestJsonModule,
+	public DefaultAlfrescoMvcServletContextConfiguration(@Nullable RestJsonModule alfrescoRestJsonModule,
 			NamespaceService namespaceService) {
 		this.alfrescoRestJsonModule = alfrescoRestJsonModule;
 		this.namespaceService = namespaceService;
@@ -63,36 +69,78 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
 		resolvers.add(new ParamsHandlerMethodArgumentResolver());
 	}
-
+	
 	@Bean
 	public AlfrescoApiResponseInterceptor alfrescoResponseInterceptor(ResourceWebScriptHelper webscriptHelper) {
 		return new AlfrescoApiResponseInterceptor(webscriptHelper);
 	}
 
 	@Bean
-	public CommonsMultipartResolver multipartResolver() {
-		final CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setMaxUploadSize(-1);
-		resolver.setDefaultEncoding("utf-8");
+	public MultipartResolver multipartResolver() {
+		MultipartResolver resolver = createMultipartResolver();
 		configureMultipartResolver(resolver);
 		return resolver;
 	}
 
-	private void configureMultipartResolver(final CommonsMultipartResolver resolver) {
+	protected MultipartResolver createMultipartResolver() {
+		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+		resolver.setMaxUploadSize(-1);
+		resolver.setDefaultEncoding("utf-8");
+		return resolver;
+	}
+
+	protected void configureMultipartResolver(final MultipartResolver resolver) {
 	}
 
 	@Bean
 	@Primary
 	public ObjectMapper objectMapper() {
-		DateFormat DATE_FORMAT_ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-		DATE_FORMAT_ISO8601.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return jackson2ObjectMapperBuilder().build();
+	}
 
-		return Jackson2ObjectMapperBuilder.json().failOnEmptyBeans(false).failOnUnknownProperties(false)
-				.dateFormat(DATE_FORMAT_ISO8601).modulesToInstall(alfrescoRestJsonModule)
-				.serializers(jackson2NodeRefSerializer(), jackson2QnameSerializer())
-				.deserializers(jackson2NodeRefDeserializer(), jackson2QnameDeserializer())
-				.featuresToEnable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY).findModulesViaServiceLoader(true)
-				.build();
+	@Bean
+	@Primary
+	public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
+
+		List<JsonDeserializer<?>> customJsonDeserializers = new ArrayList<>(customJsonDeserializers());
+		customJsonDeserializers.add(jackson2NodeRefDeserializer());
+		customJsonDeserializers.add(jackson2QnameDeserializer());
+
+		List<JsonSerializer<?>> customJsonSerilizers = new ArrayList<>(customJsonSerilizers());
+		customJsonSerilizers.add(jackson2NodeRefSerializer());
+		customJsonSerilizers.add(jackson2QnameSerializer());
+
+		Jackson2ObjectMapperBuilder builder = Jackson2ObjectMapperBuilder.json().failOnEmptyBeans(false)
+				.failOnUnknownProperties(false).dateFormat(dateFormat())
+				.serializers(customJsonSerilizers.toArray(new JsonSerializer[0]))
+				.deserializers(customJsonDeserializers.toArray(new JsonDeserializer[0]))
+				.featuresToEnable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+				.findModulesViaServiceLoader(true);
+
+		if (alfrescoRestJsonModule != null) {
+			builder.modulesToInstall(alfrescoRestJsonModule);
+		}
+
+		customizeJackson2ObjectMapperBuilder(builder);
+
+		return builder;
+	}
+
+	protected DateFormat dateFormat() {
+		DateFormat dateFormatIso8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		dateFormatIso8601.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return dateFormatIso8601;
+	}
+
+	protected void customizeJackson2ObjectMapperBuilder(Jackson2ObjectMapperBuilder builder) {
+	}
+
+	protected List<JsonDeserializer<?>> customJsonDeserializers() {
+		return Collections.emptyList();
+	}
+
+	protected List<JsonSerializer<?>> customJsonSerilizers() {
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -108,23 +156,19 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 		converters.add(new MappingJackson2HttpMessageConverter(objectMapper()));
 	}
 
-	@Bean
-	Jackson2NodeRefDeserializer jackson2NodeRefDeserializer() {
+	protected Jackson2NodeRefDeserializer jackson2NodeRefDeserializer() {
 		return new Jackson2NodeRefDeserializer();
 	}
 
-	@Bean
-	Jackson2QnameDeserializer jackson2QnameDeserializer() {
+	protected Jackson2QnameDeserializer jackson2QnameDeserializer() {
 		return new Jackson2QnameDeserializer(namespaceService);
 	}
 
-	@Bean
-	Jackson2NodeRefSerializer jackson2NodeRefSerializer() {
+	protected Jackson2NodeRefSerializer jackson2NodeRefSerializer() {
 		return new Jackson2NodeRefSerializer();
 	}
 
-	@Bean
-	Jackson2QnameSerializer jackson2QnameSerializer() {
+	protected Jackson2QnameSerializer jackson2QnameSerializer() {
 		return new Jackson2QnameSerializer(namespaceService);
 	}
 

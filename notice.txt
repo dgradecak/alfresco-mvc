@@ -1,6 +1,6 @@
 Alfresco @MVC
 
-Copyright (c) [2010-2015] Pleo Soft d.o.o 
+Copyright (c) [2010-2022] Pleo Soft d.o.o 
 http://www.pleosoft.com
 
 

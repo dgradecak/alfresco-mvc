@@ -33,7 +33,7 @@ public class Jackson2QnameDeserializer extends JsonDeserializer<QName> implement
 	public Jackson2QnameDeserializer(NamespaceService namespaceService) {
 		this.namespaceService = namespaceService;
 	}
-	
+
 	@Override
 	public Class<?> handledType() {
 		return QName.class;
@@ -42,12 +42,12 @@ public class Jackson2QnameDeserializer extends JsonDeserializer<QName> implement
 	@Override
 	public QName deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 		String qname = jp.getText();
-		return QName.createQName(qname, namespaceService);
+		return QName.resolveToQName(namespaceService, qname);
 	}
 
 	@Override
 	public QName convert(String qname) {
-		return QName.createQName(qname, namespaceService);
+		return QName.resolveToQName(namespaceService, qname);
 	}
 
 }

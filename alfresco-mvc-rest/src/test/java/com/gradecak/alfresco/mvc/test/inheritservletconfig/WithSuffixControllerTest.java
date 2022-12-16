@@ -39,10 +39,10 @@ import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 
 @ExtendWith(SpringExtension.class)
 @ContextHierarchy({ @ContextConfiguration(locations = { "/mock-alfresco-context.xml", "/test-restjsonmodule.xml" }),
-		@ContextConfiguration(classes = AlfrescoMvcServletConfigModuleConfiguration.class) })
+		@ContextConfiguration(classes = AlfrescoMvcServletConfigModuleWithSuffixConfiguration.class) })
 @WebAppConfiguration
 @TestInstance(Lifecycle.PER_CLASS)
-public class InheritedServletConfigTest {
+public class WithSuffixControllerTest {
 
 	@Autowired
 	private DispatcherWebscript dispatcherWebscript;
@@ -61,10 +61,11 @@ public class InheritedServletConfigTest {
 
 	/**
 	 * @deprecated as of Spring 5.2.4. See class-level note in
-	 * {@link RequestMappingHandlerMapping} on the deprecation of path extension
-	 * config options. As there is no replacement for this method, in Spring 5.2.x it is
-	 * necessary to set it to {@code false}. In Spring 5.3 the default changes to
-	 * {@code false} and use of this property becomes unnecessary.
+	 *             {@link RequestMappingHandlerMapping} on the deprecation of path
+	 *             extension config options. As there is no replacement for this
+	 *             method, in Spring 5.2.x it is necessary to set it to
+	 *             {@code false}. In Spring 5.3 the default changes to {@code false}
+	 *             and use of this property becomes unnecessary.
 	 */
 	@Deprecated
 	@Test
@@ -79,17 +80,17 @@ public class InheritedServletConfigTest {
 		String contentAsString = res.getContentAsString();
 		Assertions.assertEquals("withsufix", contentAsString);
 	}
-
-	@Test
-	public void when_alfrescoMvcDispatcherServletConfigOptionsWithoutSuffix_expect_ok() throws Exception {
-		DispatcherServlet dispatcherServlet = dispatcherWebscript.getDispatcherServlet().getWebApplicationContext()
-				.getBean(DispatcherServlet.class);
-		Assertions.assertNotNull(dispatcherServlet);
-
-		MockHttpServletResponse res = mockWebscript.withControllerMapping("/test/withoutsufix").execute();
-		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
-
-		String contentAsString = res.getContentAsString();
-		Assertions.assertEquals("withoutsufix", contentAsString);
-	}
+//
+//	@Test
+//	public void when_alfrescoMvcDispatcherServletConfigOptionsWithoutSuffix_expect_ok() throws Exception {
+//		DispatcherServlet dispatcherServlet = dispatcherWebscript.getDispatcherServlet().getWebApplicationContext()
+//				.getBean(DispatcherServlet.class);
+//		Assertions.assertNotNull(dispatcherServlet);
+//
+//		MockHttpServletResponse res = mockWebscript.withControllerMapping("/test/withoutsufix").execute();
+//		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
+//
+//		String contentAsString = res.getContentAsString();
+//		Assertions.assertEquals("withoutsufix", contentAsString);
+//	}
 }

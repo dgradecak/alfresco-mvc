@@ -12,3 +12,5 @@ local
 *iml
 *.log
 *.log.*
+
+private-key.gpg

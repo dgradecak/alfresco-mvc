@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.gradecak.alfresco-mvc</groupId>
 		<version>8.0.0</version>
-		<artifactId>alfresco-mvc-bom</artifactId>
+		<artifactId>alfresco-mvc-parent</artifactId>
 		<relativePath>../</relativePath>
 	</parent>
 
@@ -14,10 +14,6 @@
 
 	<name>Alfresco MVC rest</name>
 	<description>Glue between SpringMVC and Alfresco. This library enables the usage of Spring @MVC within Alfresco.</description>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 
 	<dependencies>
 		<dependency>
@@ -68,39 +64,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
 </project>
