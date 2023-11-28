@@ -27,6 +27,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.gradecak.alfresco.mvc.rest.annotation.AlfrescoDispatcherWebscript;
@@ -79,7 +80,7 @@ public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
 				.get("servletConfigOptions");
 		Class<? extends WebApplicationContext> servletContextClass = webscriptAttributes
 				.getClass("servletContextClass");
-		HttpMethod[] httpMethods = (HttpMethod[]) webscriptAttributes.get("httpMethods");
+		RequestMethod[] httpRequestMethods = (RequestMethod[]) webscriptAttributes.get("httpMethods");
 		boolean inheritGlobalProperties = (Boolean) webscriptAttributes.get("inheritGlobalProperties");
 
 		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
@@ -94,8 +95,8 @@ public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
 
 		registry.registerBeanDefinition(webscript, beanDefinition);
 
-		for (HttpMethod httpMethod : httpMethods) {
-			registry.registerAlias(webscript, getWebscriptName(webscript, httpMethod));
+		for (RequestMethod httpRequestMethod : httpRequestMethods) {
+			registry.registerAlias(webscript, getWebscriptName(webscript, httpRequestMethod.asHttpMethod()));
 		}
 	}
 

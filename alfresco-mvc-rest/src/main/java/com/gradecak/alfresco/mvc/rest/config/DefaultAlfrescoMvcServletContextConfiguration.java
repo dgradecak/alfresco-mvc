@@ -39,7 +39,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.lang.Nullable;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -83,9 +83,7 @@ public class DefaultAlfrescoMvcServletContextConfiguration implements WebMvcConf
 	}
 
 	protected MultipartResolver createMultipartResolver() {
-		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setMaxUploadSize(-1);
-		resolver.setDefaultEncoding("utf-8");
+		StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
 		return resolver;
 	}
 

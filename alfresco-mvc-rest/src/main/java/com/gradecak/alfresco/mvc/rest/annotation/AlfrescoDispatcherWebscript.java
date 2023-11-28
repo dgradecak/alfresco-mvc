@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpMethod;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.gradecak.alfresco.mvc.rest.config.AlfrescoRestRegistrar;
@@ -40,7 +40,7 @@ import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.ServletConfigOpti
 public @interface AlfrescoDispatcherWebscript {
 	String name() default "alfresco-mvc.mvc";
 
-	HttpMethod[] httpMethods() default { HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PUT };
+	RequestMethod[] httpMethods() default { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT };
 
 	Class<?> servletContext();
 

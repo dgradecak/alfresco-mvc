@@ -74,7 +74,7 @@ public class WithSuffixControllerTest {
 				.getBean(DispatcherServlet.class);
 		Assertions.assertNotNull(dispatcherServlet);
 
-		MockHttpServletResponse res = mockWebscript.withControllerMapping("/test/withsufix.test").execute();
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/withsufix.test").execute();
 		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
 
 		String contentAsString = res.getContentAsString();

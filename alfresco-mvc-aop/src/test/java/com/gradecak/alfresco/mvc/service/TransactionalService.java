@@ -16,7 +16,7 @@
 
 package com.gradecak.alfresco.mvc.service;
 
-import javax.transaction.SystemException;
+import jakarta.transaction.SystemException;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;

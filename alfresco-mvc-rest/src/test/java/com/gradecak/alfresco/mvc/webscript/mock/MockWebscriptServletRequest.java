@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Match;
