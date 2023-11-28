@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Container;

@@ -24,7 +24,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import org.alfresco.service.namespace.NamespaceService;
 import org.apache.commons.io.IOUtils;
@@ -187,7 +187,7 @@ public class AlfrescoMvcRestTest {
 		MockHttpServletResponse res = mockWebscript.withPostRequest().withParameters(ImmutableMap.of("id", "testId"))
 				.withControllerMapping("test/get").execute();
 		Assertions.assertEquals(res.getStatus(), HttpStatus.METHOD_NOT_ALLOWED.value());
-		Assertions.assertEquals("Request method 'POST' not supported", res.getErrorMessage());
+		Assertions.assertEquals("Method 'POST' is not supported.", res.getErrorMessage());
 	}
 
 	@Test
