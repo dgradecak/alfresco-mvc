@@ -24,15 +24,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - alfresco-version: 6.1.2-ga
-            experimental: false
-          - alfresco-version: 6.2.0-ga
-            experimental: false
-          - alfresco-version: 7.1.0.1
-            experimental: false
-          - alfresco-version: 7.2.0
-            experimental: false
-          - alfresco-version: 7.3.0
+          - alfresco-version: 23.1.0
             experimental: false
     steps:
       - uses: actions/checkout@v2
