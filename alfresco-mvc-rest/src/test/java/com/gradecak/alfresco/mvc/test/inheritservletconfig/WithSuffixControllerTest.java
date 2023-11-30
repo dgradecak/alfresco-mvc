@@ -80,17 +80,4 @@ public class WithSuffixControllerTest {
 		String contentAsString = res.getContentAsString();
 		Assertions.assertEquals("withsufix", contentAsString);
 	}
-//
-//	@Test
-//	public void when_alfrescoMvcDispatcherServletConfigOptionsWithoutSuffix_expect_ok() throws Exception {
-//		DispatcherServlet dispatcherServlet = dispatcherWebscript.getDispatcherServlet().getWebApplicationContext()
-//				.getBean(DispatcherServlet.class);
-//		Assertions.assertNotNull(dispatcherServlet);
-//
-//		MockHttpServletResponse res = mockWebscript.withControllerMapping("/test/withoutsufix").execute();
-//		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
-//
-//		String contentAsString = res.getContentAsString();
-//		Assertions.assertEquals("withoutsufix", contentAsString);
-//	}
 }

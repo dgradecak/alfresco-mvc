@@ -13,16 +13,16 @@
   </bean>
   
   <bean id="ServiceRegistry" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="org.alfresco.service.ServiceRegistry" />
+    <constructor-arg value="org.alfresco.service.ServiceRegistry" type="java.lang.Class"/>
   </bean>
   
   <bean id="NamespaceService" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="org.alfresco.service.namespace.NamespaceService" />
+    <constructor-arg value="org.alfresco.service.namespace.NamespaceService" type="java.lang.Class"/>
   </bean>
   
   
   <bean id="webscriptHelper" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="org.alfresco.rest.framework.webscripts.ResourceWebScriptHelper" />
+    <constructor-arg value="org.alfresco.rest.framework.webscripts.ResourceWebScriptHelper" type="java.lang.Class"/>
   </bean>  
 
   <!-- bean class="org.springframework.mock.web.MockServletContext" id="mockServletContext" />

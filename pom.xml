@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.gradecak.alfresco-mvc</groupId>
-	<version>8.0.0</version>
+	<version>9.0.0</version>
 	<artifactId>alfresco-mvc-parent</artifactId>
 	<packaging>pom</packaging>
 
@@ -40,9 +42,8 @@
 		<maven.compiler.target>17</maven.compiler.target>
 		<maven.build.sourceVersion>17</maven.build.sourceVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<dependency.jakarta.servlet-api.version>6.0.0</dependency.jakarta.servlet-api.version>
-		<dependency.mockito.version>4.8.1</dependency.mockito.version>
-		<dependency.junit-jupiter.version>5.9.1</dependency.junit-jupiter.version>
+		<dependency.mockito.version>5.7.0</dependency.mockito.version>
+		<dependency.junit-jupiter.version>5.10.1</dependency.junit-jupiter.version>
 	</properties>
 
 	<modules>
@@ -63,6 +64,15 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.alfresco</groupId>
+				<artifactId>alfresco-community-repo</artifactId>
+				<version>${dependency.alfresco-community-repo.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+				<optional>true</optional>
+			</dependency>
+
+			<dependency>
 				<groupId>com.gradecak.alfresco-mvc</groupId>
 				<artifactId>alfresco-mvc-rest</artifactId>
 				<version>${project.version}</version>
@@ -77,31 +87,12 @@
 			</dependency>
 
 			<dependency>
-				<groupId>jakarta.servlet</groupId>
-				<artifactId>jakarta.servlet-api</artifactId>
-				<version>${dependency.jakarta.servlet-api.version}</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${dependency.mockito.version}</version>
 				<scope>provided</scope>
 			</dependency>
 
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-test</artifactId>
-				<version>${dependency.spring-test.version}</version>
-				<scope>test</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>junit</groupId>
-						<artifactId>junit</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
@@ -118,7 +109,8 @@
 		</repository>
 		<repository>
 			<id>alfresco-public-snapshots</id>
-			<url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
+			<url>
+				https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
@@ -193,52 +185,13 @@
 
 	<profiles>
 		<profile>
-			<id>community-6.1.2-ga</id>
-			<properties>
-				<dependency.acs-community-packaging.version>6.1.2-ga</dependency.acs-community-packaging.version>
-				<dependency.spring-test.version>5.1.3.RELEASE</dependency.spring-test.version>
-			</properties>
-		</profile>
-	
-		<profile>
-			<id>community-6.2.0-ga</id>
-			<properties>
-				<dependency.acs-community-packaging.version>6.2.0-ga</dependency.acs-community-packaging.version>
-				<dependency.spring-test.version>5.1.8.RELEASE</dependency.spring-test.version>
-			</properties>
-		</profile>
-
-		<profile>
-			<id>community-7.1.0.1</id>
-			<properties>
-				<dependency.acs-community-packaging.version>7.1.0.1</dependency.acs-community-packaging.version>
-				<dependency.spring-test.version>5.3.9</dependency.spring-test.version>
-			</properties>
-		</profile>
-
-		<profile>
-			<id>community-7.2.0</id>
-			<properties>
-				<dependency.acs-community-packaging.version>7.2.0</dependency.acs-community-packaging.version>
-				<dependency.spring-test.version>5.3.15</dependency.spring-test.version>
-			</properties>
-		</profile>
-
-		<profile>
-			<id>community-7.3.0</id>
-			<properties>
-				<dependency.acs-community-packaging.version>7.3.0</dependency.acs-community-packaging.version>
-				<dependency.spring-test.version>5.3.23</dependency.spring-test.version>
-			</properties>
-		</profile>
-		<profile>
 			<id>community-23.1.0</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
 				<dependency.acs-community-packaging.version>23.1.0</dependency.acs-community-packaging.version>
-				<dependency.spring-test.version>6.1.0</dependency.spring-test.version>
+				<dependency.alfresco-community-repo.version>23.1.0.255</dependency.alfresco-community-repo.version>
 			</properties>
 		</profile>
 	</profiles>

@@ -12,7 +12,7 @@
   <context:property-placeholder location="values.properties" />
 
   <bean id="ServiceRegistry" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="org.alfresco.service.ServiceRegistry" />
+    <constructor-arg value="org.alfresco.service.ServiceRegistry" type="java.lang.Class"/>
   </bean>
   
   <import resource="classpath:com/gradecak/alfresco-mvc/alfresco-mvc-aop.xml" />
