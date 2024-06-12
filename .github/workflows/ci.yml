@@ -27,6 +27,8 @@ jobs:
         include:
           - alfresco-version: 23.1.0
             experimental: false
+          - alfresco-version: 23.2.1
+            experimental: false            
     steps:
       - uses: actions/checkout@v3
         with:

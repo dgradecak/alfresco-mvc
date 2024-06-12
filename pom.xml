@@ -186,12 +186,20 @@
 	<profiles>
 		<profile>
 			<id>community-23.1.0</id>
+			<properties>
+				<dependency.acs-community-packaging.version>23.1.0</dependency.acs-community-packaging.version>
+				<dependency.alfresco-community-repo.version>23.1.0.255</dependency.alfresco-community-repo.version>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>community-23.2.1</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<dependency.acs-community-packaging.version>23.1.0</dependency.acs-community-packaging.version>
-				<dependency.alfresco-community-repo.version>23.1.0.255</dependency.alfresco-community-repo.version>
+				<dependency.acs-community-packaging.version>23.2.1</dependency.acs-community-packaging.version>
+				<dependency.alfresco-community-repo.version>23.2.0.60</dependency.alfresco-community-repo.version>
 			</properties>
 		</profile>
 	</profiles>
