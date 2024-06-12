@@ -59,35 +59,13 @@ public class WithoutSuffixControllerTest {
 		mockWebscript.newRequest();
 	}
 
-	/**
-	 * @deprecated as of Spring 5.2.4. See class-level note in
-	 *             {@link RequestMappingHandlerMapping} on the deprecation of path
-	 *             extension config options. As there is no replacement for this
-	 *             method, in Spring 5.2.x it is necessary to set it to
-	 *             {@code false}. In Spring 5.3 the default changes to {@code false}
-	 *             and use of this property becomes unnecessary.
-	 */
-//	@Deprecated
-//	@Test
-//	public void when_alfrescoMvcDispatcherServletConfigOptionsWithSuffix_expect_suffixHandledAndOk() throws Exception {
-//		DispatcherServlet dispatcherServlet = dispatcherWebscript.getDispatcherServlet().getWebApplicationContext()
-//				.getBean(DispatcherServlet.class);
-//		Assertions.assertNotNull(dispatcherServlet);
-//
-//		MockHttpServletResponse res = mockWebscript.withControllerMapping("/test/withsufix.test").execute();
-//		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
-//
-//		String contentAsString = res.getContentAsString();
-//		Assertions.assertEquals("withsufix", contentAsString);
-//	}
-
 	@Test
 	public void when_alfrescoMvcDispatcherServletConfigOptionsWithoutSuffix_expect_ok() throws Exception {
 		DispatcherServlet dispatcherServlet = dispatcherWebscript.getDispatcherServlet().getWebApplicationContext()
 				.getBean(DispatcherServlet.class);
 		Assertions.assertNotNull(dispatcherServlet);
 
-		MockHttpServletResponse res = mockWebscript.withControllerMapping("/test/withoutsufix").execute();
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/withoutsufix").execute();
 		Assertions.assertEquals(HttpStatus.OK.value(), res.getStatus());
 
 		String contentAsString = res.getContentAsString();
