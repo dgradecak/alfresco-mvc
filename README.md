@@ -54,7 +54,7 @@ Profiles
 -
 We are using profiles to test against different Alfresco versions. If no configured Maven profiles are provided the default will be used and is specified by <activeByDefault>true</activeByDefault> in the pom.xml
 
-example: mvn package -Pcommunity-7.2.0
+example: mvn package -Pcommunity-23.1.0
 
 Testing
 -
