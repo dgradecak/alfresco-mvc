@@ -16,7 +16,7 @@ jobs:
           distribution: 'temurin'
           java-version: 17
       - name: Build with Maven
-        run: ./mvnw compile
+        run: ./mvnw compile -DskipTests=true
 
   test:
     name: "tests (Alfresco version ${{ matrix.alfresco-version }})"
