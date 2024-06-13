@@ -40,7 +40,8 @@ import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.ServletConfigOpti
 public @interface AlfrescoDispatcherWebscript {
 	String name() default "alfresco-mvc.mvc";
 
-	RequestMethod[] httpMethods() default { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT };
+	RequestMethod[] httpMethods() default { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
+			RequestMethod.PUT, RequestMethod.HEAD, RequestMethod.PATCH, RequestMethod.OPTIONS, RequestMethod.TRACE };
 
 	Class<?> servletContext();
 

@@ -24,6 +24,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
@@ -44,7 +45,7 @@ import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 @TestInstance(Lifecycle.PER_CLASS)
 public class WithSuffixControllerTest {
 
-	@Autowired
+	@Autowired @Qualifier("webscript.alfresco-mvc.mvc.get")
 	private DispatcherWebscript dispatcherWebscript;
 
 	MockWebscript mockWebscript;

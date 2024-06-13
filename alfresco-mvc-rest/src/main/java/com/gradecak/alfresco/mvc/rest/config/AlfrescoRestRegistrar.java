@@ -16,10 +16,17 @@
 
 package com.gradecak.alfresco.mvc.rest.config;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -33,11 +40,12 @@ import org.springframework.web.context.WebApplicationContext;
 import com.gradecak.alfresco.mvc.rest.annotation.AlfrescoDispatcherWebscript;
 import com.gradecak.alfresco.mvc.rest.annotation.EnableAlfrescoMvcRest;
 import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript;
+import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.DispatcherWebscriptServlet;
 import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.ServletConfigOptions;
 
-public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
+import jakarta.servlet.ServletContext;
 
-	private AnnotationAttributes attributes;
+public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
 
 	public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
 
@@ -56,12 +64,9 @@ public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
 						.toArray(new AnnotationAttributes[0]));
 			}
 
-			this.attributes = new AnnotationAttributes(annotationAttributes);
-
-		} else {
-			this.attributes = new AnnotationAttributes(annotationAttributes);
 		}
 
+		AnnotationAttributes attributes = new AnnotationAttributes(annotationAttributes);
 		AnnotationAttributes[] dispatcherWebscripts = (AnnotationAttributes[]) attributes.get("value");
 
 		for (AnnotationAttributes dispatcherWebscript : dispatcherWebscripts) {
@@ -83,20 +88,47 @@ public class AlfrescoRestRegistrar implements ImportBeanDefinitionRegistrar {
 		RequestMethod[] httpRequestMethods = (RequestMethod[]) webscriptAttributes.get("httpMethods");
 		boolean inheritGlobalProperties = (Boolean) webscriptAttributes.get("inheritGlobalProperties");
 
-		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-		beanDefinition.setBeanClass(DispatcherWebscript.class);
+		GenericBeanDefinition dispatcherWebscriptServletDefinition = new GenericBeanDefinition();
+		dispatcherWebscriptServletDefinition.setBeanClass(DispatcherWebscriptServlet.class);
+		ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
+		//constructorArgumentValues.addIndexedArgumentValue(0, new RuntimeBeanReference(WebApplicationContext.class));
+		constructorArgumentValues.addIndexedArgumentValue(1, new RuntimeBeanReference(ServletContext.class));
+		constructorArgumentValues.addIndexedArgumentValue(2, webscript);
+		constructorArgumentValues.addIndexedArgumentValue(3, servletContextClass);
+		constructorArgumentValues.addIndexedArgumentValue(4, servletContext);
+		constructorArgumentValues.addIndexedArgumentValue(5, inheritGlobalProperties);
+		dispatcherWebscriptServletDefinition.setConstructorArgumentValues(constructorArgumentValues);
+		dispatcherWebscriptServletDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
 
-		DispatcherWebscript ws = new DispatcherWebscript(webscript, inheritGlobalProperties);
-		ws.setContextClass(servletContextClass);
-		ws.setContextConfigLocation(servletContext.getName());
-		ws.addServletConfigOptions(servletConfigOptions);
-		beanDefinition.setInstanceSupplier(() -> ws);
-		beanDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
+		EnumSet<ServletConfigOptions> servletConfigOptionsList = EnumSet.noneOf(ServletConfigOptions.class);
+		servletConfigOptionsList.addAll(Arrays.asList(servletConfigOptions));
+		if (!servletConfigOptionsList.isEmpty()) {
+			MutablePropertyValues mutablePropertyValues = new MutablePropertyValues(List.of(
+					new PropertyValue("detectAllHandlerMappings",
+							!servletConfigOptionsList.contains(ServletConfigOptions.DISABLED_PARENT_HANDLER_MAPPINGS)),
+					new PropertyValue("detectAllHandlerAdapters",
+							!servletConfigOptionsList.contains(ServletConfigOptions.DISABLED_PARENT_HANDLER_ADAPTERS)),
+					new PropertyValue("detectAllViewResolvers",
+							!servletConfigOptionsList.contains(ServletConfigOptions.DISABLED_PARENT_VIEW_RESOLVERS)),
+					new PropertyValue("detectAllHandlerExceptionResolvers", !servletConfigOptionsList
+							.contains(ServletConfigOptions.DISABLED_PARENT_HANDLER_EXCEPTION_RESOLVERS))));
+			dispatcherWebscriptServletDefinition.setPropertyValues(mutablePropertyValues);
+		}
 
-		registry.registerBeanDefinition(webscript, beanDefinition);
+		registry.registerBeanDefinition("dispatcherWebscriptServlet", dispatcherWebscriptServletDefinition);
+
+		GenericBeanDefinition disaptcherWebscriptDefinition = new GenericBeanDefinition();
+		disaptcherWebscriptDefinition.setBeanClass(DispatcherWebscript.class);
+
+		ConstructorArgumentValues constructorArgumentValues2 = new ConstructorArgumentValues();
+		constructorArgumentValues2.addIndexedArgumentValue(0,
+				new RuntimeBeanReference(DispatcherWebscriptServlet.class));
+		disaptcherWebscriptDefinition.setConstructorArgumentValues(constructorArgumentValues2);
+		disaptcherWebscriptDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
 
 		for (RequestMethod httpRequestMethod : httpRequestMethods) {
-			registry.registerAlias(webscript, getWebscriptName(webscript, httpRequestMethod.asHttpMethod()));
+			registry.registerBeanDefinition(getWebscriptName(webscript, httpRequestMethod.asHttpMethod()),
+					disaptcherWebscriptDefinition);
 		}
 	}
 

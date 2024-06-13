@@ -3,7 +3,7 @@
   <url>/mvc</url>
   <url>/mvc/{path}</url>
   <authentication>user</authentication>
-  <transaction>none</transaction>
+  <transaction>required</transaction>
   <format default="json"></format>
   <formdata multipart-processing="false" />
 </webscript>

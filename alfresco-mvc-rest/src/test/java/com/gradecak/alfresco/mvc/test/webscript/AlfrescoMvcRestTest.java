@@ -16,15 +16,13 @@
 
 package com.gradecak.alfresco.mvc.test.webscript;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.anyString;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.servlet.http.Cookie;
 
 import org.alfresco.service.namespace.NamespaceService;
 import org.apache.commons.io.IOUtils;
@@ -35,8 +33,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
@@ -52,6 +50,8 @@ import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscript;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 
+import jakarta.servlet.http.Cookie;
+
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = { "/test-webscriptdispatcher-annotation-enable-context.xml" })
 @Import(DefaultAlfrescoMvcServletContextConfiguration.class)
@@ -60,7 +60,12 @@ import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 public class AlfrescoMvcRestTest {
 
 	@Autowired
+	@Qualifier("webscript.alfresco-mvc.mvc.get")
 	private DispatcherWebscript webScript;
+
+	@Autowired
+	@Qualifier("webscript.alfresco-mvc.mvc.post")
+	private DispatcherWebscript webScriptPost;
 
 	@Autowired
 	private NamespaceService namespaceService;
@@ -77,6 +82,13 @@ public class AlfrescoMvcRestTest {
 	@BeforeEach
 	public void before() throws Exception {
 		mockWebscript.newRequest();
+	}
+
+	@Test
+	public void when_postRequestToAlfrescoMvcReceivesNotDefinedHttpMethod_expect_methodNotAllowed() throws Exception {
+		MockHttpServletResponse res = mockWebscript.withControllerMapping("test/regexp/abc%24def")
+				.withMethod(HttpMethod.POST).execute();
+		Assertions.assertEquals(HttpStatus.METHOD_NOT_ALLOWED.value(), res.getStatus());
 	}
 
 	@Test
@@ -191,7 +203,7 @@ public class AlfrescoMvcRestTest {
 	}
 
 	@Test
-	public void when_ambigousMethodInvoked_expect_handledIOException() throws Exception {
+	public void when_ambigousMethodInvoked_expect_handledIOException() {
 		Assertions.assertThrows(IOException.class, () -> {
 			mockWebscript.withPostRequest().withMethod(HttpMethod.DELETE).withControllerMapping("test/ambigousMethod")
 					.execute();

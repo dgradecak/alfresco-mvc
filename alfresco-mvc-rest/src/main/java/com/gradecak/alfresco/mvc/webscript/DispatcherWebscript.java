@@ -20,36 +20,23 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequestWrapper;
-import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.extensions.webscripts.AbstractWebScript;
@@ -61,40 +48,25 @@ import org.springframework.extensions.webscripts.servlet.WebScriptServletRequest
 import org.springframework.extensions.webscripts.servlet.WebScriptServletResponse;
 import org.springframework.util.Assert;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
-import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
-public class DispatcherWebscript extends AbstractWebScript
-		implements ApplicationListener<ContextRefreshedEvent>, ServletContextAware, ApplicationContextAware {
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class DispatcherWebscript extends AbstractWebScript {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherWebscript.class);
 	private static final int EXTENSION_PATH_REGEXP_GROUP_INDEX = 3;
 
-	protected DispatcherServlet s;
-	private String contextConfigLocation;
-	private Class<?> contextClass;
-	private ApplicationContext applicationContext;
-	private ServletContext servletContext;
+	private final DispatcherWebscriptServlet dispatcherServlet;
 
-	private final EnumSet<ServletConfigOptions> servletConfigOptions = EnumSet.noneOf(ServletConfigOptions.class);
-	private final String servletName;
-	private final boolean inheritGlobalProperties;
-
-	public DispatcherWebscript() {
-		this("alfresco-mvc.mvc", false);
-	}
-
-	public DispatcherWebscript(final String servletName) {
-		this(servletName, false);
-	}
-
-	public DispatcherWebscript(final String servletName, boolean inheritGlobalProperties) {
-		Assert.hasText(servletName,
-				"[Assertion failed] - this String servletName must have text; it must not be null, empty, or blank");
-		this.servletName = servletName;
-		this.inheritGlobalProperties = inheritGlobalProperties;
+	public DispatcherWebscript(DispatcherWebscriptServlet dispatcherServlet) {
+		this.dispatcherServlet = dispatcherServlet;
 	}
 
 	public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -118,7 +90,7 @@ public class DispatcherWebscript extends AbstractWebScript
 		WebscriptRequestWrapper wrapper = new WebscriptRequestWrapper(origReq);
 		try {
 			// wrapper.setAttribute(WebUtils.INCLUDE_SERVLET_PATH_ATTRIBUTE, "/s/mvc");
-			s.service(wrapper, sr);
+			dispatcherServlet.service(wrapper, sr);
 
 		} catch (Throwable e) {
 			LOGGER.error("Failed to call {}", origReq.getURL());
@@ -126,111 +98,24 @@ public class DispatcherWebscript extends AbstractWebScript
 		}
 	}
 
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		ApplicationContext refreshContext = event.getApplicationContext();
-		if (refreshContext != null && refreshContext.equals(applicationContext)) {
-
-			s = new DispatcherWebscriptServlet((WebApplicationContext) applicationContext, this, servletName);
-
-			if (!servletConfigOptions.isEmpty()) {
-				s.setDetectAllHandlerMappings(
-						!servletConfigOptions.contains(ServletConfigOptions.DISABLED_PARENT_HANDLER_MAPPINGS));
-				s.setDetectAllHandlerAdapters(
-						!servletConfigOptions.contains(ServletConfigOptions.DISABLED_PARENT_HANDLER_ADAPTERS));
-				s.setDetectAllViewResolvers(
-						!servletConfigOptions.contains(ServletConfigOptions.DISABLED_PARENT_VIEW_RESOLVERS));
-				s.setDetectAllHandlerExceptionResolvers(!servletConfigOptions
-						.contains(ServletConfigOptions.DISABLED_PARENT_HANDLER_EXCEPTION_RESOLVERS));
-			}
-
-			s.setContextClass(contextClass != null ? contextClass : AnnotationConfigWebApplicationContext.class);
-			s.setContextConfigLocation(contextConfigLocation);
-			configureDispatcherServlet(s);
-
-			try {
-				s.init(new DelegatingServletConfig(servletName));
-				LOGGER.info("Alfresco @MVC Dispatcher Webscript: {} has been started", servletName);
-			} catch (ServletException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	protected void configureDispatcherServlet(DispatcherServlet dispatcherServlet) {
-		if (inheritGlobalProperties) {
-			final Properties globalProperties = (Properties) this.applicationContext.getBean("global-properties");
-
-			ConfigurableEnvironment servletEnv = dispatcherServlet.getEnvironment();
-			servletEnv.merge(new AbstractEnvironment() {
-				@Override
-				public MutablePropertySources getPropertySources() {
-					MutablePropertySources mutablePropertySources = new MutablePropertySources();
-					mutablePropertySources
-							.addFirst(new PropertiesPropertySource("alfresco-global.properties", globalProperties));
-					return mutablePropertySources;
-				}
-			});
-		}
-	}
-
 	public DispatcherServlet getDispatcherServlet() {
-		return s;
-	}
-
-	public String getContextConfigLocation() {
-		return contextConfigLocation;
-	}
-
-	public void setContextConfigLocation(String contextConfigLocation) {
-		this.contextConfigLocation = contextConfigLocation;
-	}
-
-	public ApplicationContext getApplicationContext() {
-		return applicationContext;
-	}
-
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-	}
-
-	public ServletContext getServletContext() {
-		return servletContext;
-	}
-
-	public void setServletContext(ServletContext servletContext) {
-		this.servletContext = servletContext;
-	}
-
-	public void setContextClass(Class<?> contextClass) {
-		this.contextClass = contextClass;
-	}
-
-	public Class<?> getContextClass() {
-		return this.contextClass;
-	}
-
-	public void addServletConfigOptions(ServletConfigOptions[] detectServletConfig) {
-		if (detectServletConfig != null) {
-			this.servletConfigOptions.addAll(Arrays.asList(detectServletConfig));
-		}
-	}
-
-	public ServletConfigOptions[] getServletConfigOptions() {
-		return servletConfigOptions.toArray(new ServletConfigOptions[0]);
+		return dispatcherServlet;
 	}
 
 	/**
 	 * Internal implementation of the {@link ServletConfig} interface, to be passed
 	 * to the servlet adapter.
 	 */
-	public class DelegatingServletConfig implements ServletConfig {
+	static public class DelegatingServletConfig implements ServletConfig {
 
-		final private String name;
+		private final String name;
+		private final ServletContext rootServletContext;
 
-		public DelegatingServletConfig(final String name) {
+		public DelegatingServletConfig(ServletContext servletContext, String name) {
 			Assert.hasText(name,
 					"[Assertion failed] - this String name must have text; it must not be null, empty, or blank");
 			this.name = name;
+			this.rootServletContext = servletContext;
 		}
 
 		public String getServletName() {
@@ -238,7 +123,7 @@ public class DispatcherWebscript extends AbstractWebScript
 		}
 
 		public ServletContext getServletContext() {
-			return DispatcherWebscript.this.servletContext;
+			return this.rootServletContext;
 		}
 
 		public String getInitParameter(String paramName) {
@@ -319,14 +204,61 @@ public class DispatcherWebscript extends AbstractWebScript
 		private static final long serialVersionUID = -7492692694742840997L;
 
 		private final WebApplicationContext applicationContext;
-		private final DispatcherWebscript dispatcherWebscript;
+		private final Class<? extends WebApplicationContext> servletContextClass;
+		private final boolean inheritGlobalProperties;
 
-		public DispatcherWebscriptServlet(WebApplicationContext applicationContext,
-				DispatcherWebscript dispatcherWebscript, String servletName) {
-			super(applicationContext);
+		public DispatcherWebscriptServlet(WebApplicationContext applicationContext, ServletContext rootServletContext,
+				String servletName, Class<? extends WebApplicationContext> servletContextClass, Class<?> servletContext,
+				boolean inheritGlobalProperties) {
+			super(null);
 			setContextId(servletName);
 			this.applicationContext = applicationContext;
-			this.dispatcherWebscript = dispatcherWebscript;
+			this.servletContextClass = servletContextClass;
+			this.setContextClass(
+					servletContextClass != null ? servletContextClass : AnnotationConfigWebApplicationContext.class);
+			this.setContextConfigLocation(servletContext.getName());
+			this.inheritGlobalProperties = inheritGlobalProperties;
+
+			configureDispatcherServlet();
+
+			try {
+				this.init(new DelegatingServletConfig(rootServletContext, servletName));
+				LOGGER.info("Alfresco @MVC Dispatcher Webscript: {} has been started", servletName);
+			} catch (ServletException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public void setEnvironment(Environment environment) {
+			ConfigurableEnvironment servletEnv = super.getEnvironment();
+
+			if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
+				servletEnv.merge(configurableEnvironment);
+			}
+
+			if (inheritGlobalProperties) {
+				final Properties globalProperties = (Properties) this.applicationContext.getBean("global-properties");
+
+				servletEnv.merge(new AbstractEnvironment() {
+					@Override
+					public MutablePropertySources getPropertySources() {
+						MutablePropertySources mutablePropertySources = new MutablePropertySources();
+						mutablePropertySources
+								.addFirst(new PropertiesPropertySource("alfresco-global.properties", globalProperties));
+						return mutablePropertySources;
+					}
+				});
+			}
+
+			super.setEnvironment(servletEnv);
+		}
+
+		protected void configureDispatcherServlet() {
+		}
+
+		public Class<? extends WebApplicationContext> getServletContextClass() {
+			return servletContextClass;
 		}
 
 		@Override
@@ -345,40 +277,23 @@ public class DispatcherWebscript extends AbstractWebScript
 				@Override
 				public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
-					if (beanFactory.containsBean("dispatcherServlet")) {
-						BeanDefinition beanDefinition = (BeanDefinition) beanFactory
-								.getBeanDefinition("dispatcherServlet");
-						if (!(beanDefinition instanceof AbstractBeanDefinition)) {
-							throw new RuntimeException(
-									"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
-						}
-
-						Supplier<?> supplier = ((AbstractBeanDefinition) beanDefinition).getInstanceSupplier();
-						if (supplier != null) {
-							Object object = supplier.get();
-							if (!(object instanceof DispatcherWebscriptServlet)) {
-								throw new RuntimeException(
-										"Webscript dispatcherServlet has not been configured. Make sure to @Import(com.gradecak.alfresco.mvc.rest.config.AlfrescoRestServletRegistrar.class)");
-							}
-						} else {
-							((AbstractBeanDefinition) beanDefinition)
-									.setInstanceSupplier(() -> DispatcherWebscriptServlet.this);
-						}
-					} else {
+					if (!beanFactory.containsLocalBean("dispatcherServlet")) {
 						AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
 								.genericBeanDefinition(DispatcherWebscriptServlet.class).getBeanDefinition();
 						beanDefinition.setPrimary(true);
+						beanDefinition.setBeanClass(DispatcherServlet.class);
 						beanDefinition.setInstanceSupplier(() -> DispatcherWebscriptServlet.this);
 						((BeanDefinitionRegistry) beanFactory).registerBeanDefinition("dispatcherServlet",
 								beanDefinition);
+					} else {
+						log("dispatcherServlet is already registered. @AlfrescoMVC context should not define a dispatcherServlet bean");
+						throw new RuntimeException(
+								"dispatcherServlet is already registered. @AlfrescoMVC context should not define a dispatcherServlet bean");
 					}
 				}
 			});
 		}
 
-		public DispatcherWebscript getDispatcherWebscript() {
-			return this.dispatcherWebscript;
-		}
 	}
 
 }

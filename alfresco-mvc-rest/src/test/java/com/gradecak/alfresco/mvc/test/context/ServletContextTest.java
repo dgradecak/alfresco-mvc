@@ -16,6 +16,8 @@
 
 package com.gradecak.alfresco.mvc.test.context;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +26,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
@@ -32,6 +35,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript;
+import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.DispatcherWebscriptServlet;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscript;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 
@@ -42,8 +46,11 @@ import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 @TestInstance(Lifecycle.PER_CLASS)
 public class ServletContextTest {
 
-	@Autowired
+	@Autowired @Qualifier("webscript.alfresco-mvc.mvc.get")
 	private DispatcherWebscript dispatcherWebscript;
+	
+	@Autowired
+	private DispatcherWebscriptServlet dispatcherWebscriptServlet;
 
 	@Autowired
 	ApplicationContext applicationContext;
@@ -59,15 +66,15 @@ public class ServletContextTest {
 	public void before() throws Exception {
 		mockWebscript.newRequest();
 	}
-
+	
 	@Test
 	public void when_alfrescoMvcDispatcherServletContextConfigured_expect_applicationContextCorrectAndDispatcherServletConfigured() {
-		Assertions.assertEquals(applicationContext, dispatcherWebscript.getApplicationContext());
-		Assertions.assertEquals(dispatcherWebscript, applicationContext.getBean(DispatcherWebscript.class));
-
+		Map<String, DispatcherWebscript> beansOfType = applicationContext.getBeansOfType(DispatcherWebscript.class);		
+		Assertions.assertEquals(8, beansOfType.size());
+		
 		DispatcherServlet dispatcherServletSame = dispatcherWebscript.getDispatcherServlet().getWebApplicationContext()
 				.getBean(DispatcherServlet.class);
 
-		Assertions.assertEquals(dispatcherWebscript.getDispatcherServlet(), dispatcherServletSame);
+		Assertions.assertEquals(dispatcherWebscriptServlet, dispatcherServletSame);
 	}
 }

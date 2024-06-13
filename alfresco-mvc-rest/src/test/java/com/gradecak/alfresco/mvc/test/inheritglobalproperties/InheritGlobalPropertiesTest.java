@@ -32,7 +32,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript;
+import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript.DispatcherWebscriptServlet;
 
 @ExtendWith(SpringExtension.class)
 @ContextHierarchy({ @ContextConfiguration(locations = { "/mock-alfresco-context.xml", "/test-restjsonmodule.xml" }),
@@ -46,7 +46,7 @@ public class InheritGlobalPropertiesTest {
 	private Environment env;
 
 	@Autowired
-	private DispatcherWebscript dispatcherWebscript;
+	private DispatcherWebscriptServlet dispatcherWebscriptServlet;
 
 	@BeforeAll
 	public void beforeAll() throws Exception {
@@ -60,7 +60,7 @@ public class InheritGlobalPropertiesTest {
 	public void when_alfrescoMvcInheritGlobalProperties_expect_propertyExists() throws Exception {
 		Assertions.assertNull(env.getProperty("myKey"));
 
-		Environment servletEnvironment = dispatcherWebscript.getDispatcherServlet().getEnvironment();
+		Environment servletEnvironment = dispatcherWebscriptServlet.getEnvironment();
 		Assertions.assertEquals("myValue", servletEnvironment.getProperty("myKey"));
 
 		Assertions.assertEquals("true", servletEnvironment.getProperty("test.exists"));
@@ -68,7 +68,7 @@ public class InheritGlobalPropertiesTest {
 
 	@Test
 	public void when_alfrescoMvcInheritGlobalProperties_expect_propertyNotExists() throws Exception {
-		Environment servletEnvironment = dispatcherWebscript.getDispatcherServlet().getEnvironment();
+		Environment servletEnvironment = dispatcherWebscriptServlet.getEnvironment();
 		Assertions.assertNull(servletEnvironment.getProperty("myKey1"));
 
 		Assertions.assertEquals("true", servletEnvironment.getProperty("test.exists"));
@@ -76,9 +76,10 @@ public class InheritGlobalPropertiesTest {
 
 	@Test
 	public void when_alfrescoMvcDispatcherServlet_expect_beanExists() throws Exception {
-		DispatcherServlet dispatcherServlet = dispatcherWebscript.getDispatcherServlet().getWebApplicationContext()
+		DispatcherServlet dispatcherServlet = dispatcherWebscriptServlet.getWebApplicationContext()
 				.getBean(DispatcherServlet.class);
 		Assertions.assertNotNull(dispatcherServlet);
+		Assertions.assertSame(dispatcherServlet, dispatcherWebscriptServlet);
 	}
 
 }
