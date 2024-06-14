@@ -1,19 +1,22 @@
-/**
- * Copyright gradecak.com
-
+/*-
+ * #%L
+ * Alfresco MVC aop
+ * %%
+ * Copyright (C) 2007 - 2024 gradecak.com
+ * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * #L%
  */
-
 package com.gradecak.alfresco.mvc.aop;
 
 import java.util.ArrayList;
@@ -24,13 +27,6 @@ import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.ObjectUtils;
 
-/**
- * a proxy creator that applies the specified advisors to the classes defined in
- * the base package. The default advisors are {@link AuthenticationAdvice},
- * {@link RunAsAdvice} and {@link TransactionalAdvice} however your own might be
- * added and the default could be skipped by setting skipDefaultInterceptos to
- * true
- */
 public class PackageAutoProxyCreator extends AbstractAutoProxyCreator implements InitializingBean {
 
 	private static final long serialVersionUID = -1219238254256448615L;

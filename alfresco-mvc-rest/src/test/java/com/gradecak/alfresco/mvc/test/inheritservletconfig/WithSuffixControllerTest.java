@@ -1,19 +1,22 @@
-/**
- * Copyright gradecak.com
-
+/*-
+ * #%L
+ * Alfresco MVC rest
+ * %%
+ * Copyright (C) 2007 - 2024 gradecak.com
+ * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * #L%
  */
-
 package com.gradecak.alfresco.mvc.test.inheritservletconfig;
 
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +35,6 @@ import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.gradecak.alfresco.mvc.webscript.DispatcherWebscript;
 import com.gradecak.alfresco.mvc.webscript.mock.MockWebscript;
@@ -45,7 +47,8 @@ import com.gradecak.alfresco.mvc.webscript.mock.MockWebscriptBuilder;
 @TestInstance(Lifecycle.PER_CLASS)
 public class WithSuffixControllerTest {
 
-	@Autowired @Qualifier("webscript.alfresco-mvc.mvc.get")
+	@Autowired
+	@Qualifier("webscript.alfresco-mvc.mvc.get")
 	private DispatcherWebscript dispatcherWebscript;
 
 	MockWebscript mockWebscript;
@@ -60,14 +63,6 @@ public class WithSuffixControllerTest {
 		mockWebscript.newRequest();
 	}
 
-	/**
-	 * @deprecated as of Spring 5.2.4. See class-level note in
-	 *             {@link RequestMappingHandlerMapping} on the deprecation of path
-	 *             extension config options. As there is no replacement for this
-	 *             method, in Spring 5.2.x it is necessary to set it to
-	 *             {@code false}. In Spring 5.3 the default changes to {@code false}
-	 *             and use of this property becomes unnecessary.
-	 */
 	@Deprecated
 	@Test
 	public void when_alfrescoMvcDispatcherServletConfigOptionsWithSuffix_expect_suffixHandledAndOk() throws Exception {
